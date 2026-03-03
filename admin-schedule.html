@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Schedules | PLV Grades Portal</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dfdlqf6ng/image/upload/v1772078917/PamantasanNgLungsodNgValenzuelaLogo_t53djy.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* CORE VARIABLES */
+        :root { --bg-body: #f0f4f8; --text-main: #0f172a; --text-muted: #64748b; --glass-bg: rgba(255, 255, 255, 0.75); --glass-border: rgba(255, 255, 255, 0.9); --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.9); --glass-shadow: 0 24px 48px -12px rgba(0, 35, 102, 0.08); --accent-primary: #003DA5; --accent-hover: #00287A; --accent-light: rgba(0, 61, 165, 0.08); --accent-gold: #D4AF37; --input-bg: rgba(255, 255, 255, 0.9); --input-border: rgba(0, 35, 102, 0.1); --blob-1: #cce0ff; --blob-2: #ffeb99; --blob-3: #e0ebff; --success: #10b981; --danger: #e11d48; }
+        .dark-theme { --bg-body: #040914; --text-main: #f8fafc; --text-muted: #94a3b8; --glass-bg: rgba(10, 15, 30, 0.6); --glass-border: rgba(255, 255, 255, 0.06); --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.04); --glass-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.8); --accent-primary: #3b82f6; --accent-hover: #60a5fa; --accent-light: rgba(59, 130, 246, 0.15); --accent-gold: #FCD34D; --input-bg: rgba(0, 0, 0, 0.4); --input-border: rgba(255, 255, 255, 0.1); --blob-1: #001f5c; --blob-2: #422b00; --blob-3: #001233; --success: #34d399; --danger: #fb7185; }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.4s ease; }
+        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; position: relative; }
+        
+        .ambient-mesh { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; z-index: -1; pointer-events: none; } 
+        .blob { position: absolute; filter: blur(120px); opacity: 0.6; border-radius: 50%; animation: float 18s infinite alternate ease-in-out; } 
+        .blob-1 { width: 600px; height: 600px; background: var(--blob-1); top: -10%; left: -10%; } 
+        .blob-2 { width: 700px; height: 700px; background: var(--blob-2); bottom: -20%; right: -10%; animation-delay: -5s; } 
+        .blob-3 { width: 500px; height: 500px; background: var(--blob-3); top: 40%; left: 40%; animation-delay: -10s; } 
+
+        .glass { background: var(--glass-bg); backdrop-filter: blur(32px); border: 1px solid var(--glass-border); box-shadow: var(--glass-highlight), var(--glass-shadow); border-radius: 28px; }
+        .sidebar { width: 300px; height: 100vh; padding: 40px 24px; display: flex; flex-direction: column; position: sticky; top: 0; z-index: 10; border-right: 1px solid var(--glass-border); background: rgba(var(--bg-body), 0.3); backdrop-filter: blur(24px); } 
+        .logo-container { display: flex; align-items: center; gap: 14px; margin-bottom: 48px; padding: 0 12px; } .logo-img { width: 52px; height: 52px; border-radius: 50%; box-shadow: 0 8px 16px rgba(0,0,0,0.1); } .logo-text h2 { font-size: 22px; font-weight: 800; color: var(--text-main); line-height: 1.1; } .logo-text p { font-size: 11px; font-weight: 800; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .nav-menu { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 8px; } .nav-item a { text-decoration: none; color: var(--text-muted); font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 16px; padding: 14px 18px; border-radius: 18px; cursor: pointer;} .nav-item a i { font-size: 22px; transition: transform 0.3s ease; } .nav-item a:hover { background: var(--accent-light); color: var(--accent-primary); } .nav-item a.active { background: var(--accent-primary); color: #fff; box-shadow: 0 10px 24px -8px var(--accent-primary); }
+
+        .main-wrapper { flex: 1; padding: 40px 48px; display: flex; flex-direction: column; gap: 32px; max-width: 1600px; margin: 0 auto; width: 100%; } 
+        .header { display: flex; justify-content: space-between; align-items: center; } .header h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; } .header p { color: var(--text-muted); font-weight: 600; font-size: 15px; } .header-actions { display: flex; align-items: center; gap: 16px; }
+        .icon-btn { width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: var(--glass-highlight), 0 4px 12px rgba(0,0,0,0.02); font-size: 20px; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease; } .theme-toggle { background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6)); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255,255,255,0.8); color: #d97706; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; } .theme-toggle:hover { transform: translateY(-3px) scale(1.05); } .dark-theme .theme-toggle { background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255,255,255,0.05); color: #93c5fd; }
+
+        .card { padding: 32px; display: flex; flex-direction: column; position: relative; overflow: hidden; margin-bottom: 24px;}
+        .form-section-title { font-size: 15px; font-weight: 800; color: var(--accent-primary); border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;} 
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } .form-group { display: flex; flex-direction: column; gap: 8px; } .form-group.full { grid-column: span 2; } 
+        .form-label { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; } 
+        .form-control { background: var(--input-bg); border: 1px solid var(--input-border); padding: 14px 16px; border-radius: 12px; font-size: 15px; color: var(--text-main); font-weight: 500; outline: none; transition: all 0.3s; } .form-control:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 4px var(--accent-light); }
+        select.form-control { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 256 256'%3E%3Cpath fill='%2364748b' d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 48px; }
+
+        .btn { padding: 14px 24px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; } .btn-primary { background: var(--accent-primary); color: #fff; box-shadow: 0 8px 16px var(--accent-light); } .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); } 
+        .btn-delete { background: rgba(225, 29, 72, 0.1); color: var(--danger); width: 36px; height: 36px; border-radius: 8px; display: flex; justify-content: center; align-items: center; } .btn-delete:hover { background: var(--danger); color: #fff; }
+
+        .search-wrapper { position: relative; width: 300px; margin-bottom: 20px; }
+        .search-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 18px; }
+        .search-input { width: 100%; padding: 12px 16px 12px 48px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main); font-size: 14px; font-weight: 500; outline: none; }
+        .search-input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-light); }
+
+        .table-container { width: 100%; overflow-x: auto; margin-top: 16px; } 
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; } 
+        .modern-table th { padding: 0 16px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--glass-border); } 
+        .modern-table td { padding: 16px; background: var(--input-bg); border-top: 1px solid var(--input-border); border-bottom: 1px solid var(--input-border); font-size: 14px; font-weight: 600; vertical-align: middle; } 
+        .modern-table td:first-child { border-left: 1px solid var(--input-border); border-radius: 12px 0 0 12px; } 
+        .modern-table td:last-child { border-right: 1px solid var(--input-border); border-radius: 0 12px 12px 0; }
+
+        .toast { position: fixed; bottom: 32px; right: 32px; background: var(--success); color: #fff; padding: 16px 24px; border-radius: 12px; font-weight: 600; box-shadow: 0 12px 24px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 12px; transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;} .toast.show { transform: translateX(0); } .toast.error { background: var(--danger); }
+
+        @media (max-width: 1024px) { body { flex-direction: column; } .sidebar { width: 100%; height: auto; flex-direction: row; padding: 20px; justify-content: space-between; align-items: center; z-index: 100; border-right: none; border-bottom: 1px solid var(--glass-border);} .nav-menu { display: none; } .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } }
+    
+        /* ===== MOBILE NAVIGATION ===== */
+        .mobile-nav-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border-top: 1px solid var(--glass-border);
+            box-shadow: 0 -8px 32px rgba(0,0,0,0.1);
+            z-index: 200;
+            padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+        }
+        .mobile-nav-bar ul {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            padding: 0 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            gap: 4px;
+        }
+        .mobile-nav-bar ul::-webkit-scrollbar { display: none; }
+        .mobile-nav-bar ul li {
+            flex: 0 0 auto;
+            scroll-snap-align: start;
+        }
+        .mobile-nav-bar ul li a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 8px 14px;
+            border-radius: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+            min-width: 60px;
+            white-space: nowrap;
+        }
+        .mobile-nav-bar ul li a i { font-size: 22px; }
+        .mobile-nav-bar ul li a:hover,
+        .mobile-nav-bar ul li a.active {
+            color: var(--accent-primary);
+            background: var(--accent-light);
+        }
+        @media (max-width: 1024px) {
+            .mobile-nav-bar { display: block; }
+            .main-wrapper { padding: 24px 20px; padding-bottom: 90px !important; }
+            .sidebar { position: sticky; top: 0; }
+            .logo-container { margin-bottom: 0 !important; }
+        }
+        @media (max-width: 768px) {
+            .main-wrapper { padding: 16px 12px; padding-bottom: 90px !important; }
+            .header h1 { font-size: 22px; }
+            .header { gap: 8px; }
+            .card { padding: 20px 16px; }
+            .bento-grid { gap: 16px; }
+            .tab-controls { width: 100%; }
+            .tab-btn { flex: 1; padding: 10px 12px; font-size: 12px; }
+            .table-controls-wrapper { flex-direction: column; align-items: stretch; }
+            .search-wrapper { width: 100% !important; }
+            .form-grid { grid-template-columns: 1fr !important; gap: 14px; }
+            .form-section-title, .form-group.full { grid-column: span 1 !important; }
+            .modern-table { font-size: 13px; }
+            .modern-table th, .modern-table td { padding: 10px 8px; }
+            .action-btn { padding: 6px 8px; font-size: 12px; }
+            .btn { padding: 12px 16px; font-size: 14px; }
+            .modal-box { padding: 24px 20px !important; width: 95% !important; }
+        }
+
+        </style>
+</head>
+<body>
+
+    <div class="ambient-mesh"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo-container">
+            <img src="https://res.cloudinary.com/dfdlqf6ng/image/upload/v1772078917/PamantasanNgLungsodNgValenzuelaLogo_t53djy.png" alt="PLV Logo" class="logo-img">
+            <div class="logo-text"><h2>PLV Admin</h2><p>System Management</p></div>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="admin-dashboard.html"><i class="ph-fill ph-squares-four"></i> Dashboard Overview</a></li>
+            <li class="nav-item"><a href="admin-records.html"><i class="ph ph-pen"></i></i> Student Records</a></li>
+            <li class="nav-item"><a href="admin-sections.html"><i class="ph-fill ph-users-three"></i> Manage Sections</a></li>
+            <li class="nav-item"><a href="admin-subjects.html"><i class="ph ph-notebook"></i></i> Manage Subjects</a></li>
+            <li class="nav-item"><a href="admin-schedule.html" class="active"><i class="ph-fill ph-clock"></i> Manage Schedules</a></li>
+            <li class="nav-item"><a href="admin-accounts.html"><i class="ph-fill ph-users"></i> Student Accounts</a></li>
+            <li class="nav-item"><a href="admin-activities.html"><i class="ph-fill ph-clipboard-text"></i> Activities Setup</a></li>
+            <li class="nav-item"><a href="admin-grades.html"><i class="ph-fill ph-exam"></i> Input Grades</a></li>
+            <li class="nav-item"><a href="admin-settings.html"><i class="ph-fill ph-gear"></i> System Settings</a></li>
+            <li class="nav-item" style="margin-top:auto;"><a onclick="window.logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="header">
+            <div><h1>Schedule Management</h1><p>Assign distinct schedules for different sections.</p></div>
+            <div class="header-actions"><div class="icon-btn theme-toggle" id="themeToggle"><i class="ph-fill ph-sun" id="themeIcon"></i></div></div>
+        </header>
+
+        <!-- ADD SCHEDULE FORM -->
+        <div class="card glass">
+            <div class="form-section-title"><i class="ph-bold ph-calendar-plus"></i> Assign Class Schedule</div>
+            <form id="assignScheduleForm">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label class="form-label">Select Subject</label>
+                        <select id="subSelect" class="form-control" required>
+                            <option value="">Loading subjects...</option>
+                        </select>
+                    </div>
+                    
+                    <!-- NEW SECTION INPUT -->
+                    <div class="form-group">
+                        <label class="form-label">Section Name</label>
+                        <input type="text" id="schedSection" class="form-control" placeholder="e.g. Block A" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Time & Days</label>
+                        <input type="text" id="schedTime" class="form-control" placeholder="e.g. MWF 10:00 AM - 1:00 PM" required>
+                    </div>
+                    
+                    <div class="form-group full">
+                        <label class="form-label">Room / Location</label>
+                        <input type="text" id="schedRoom" class="form-control" placeholder="e.g. Lab 2 / AVR" required>
+                    </div>
+                    
+                    <div class="form-group full" style="margin-top: 10px;">
+                        <button type="submit" id="saveBtn" class="btn btn-primary"><i class="ph-bold ph-floppy-disk"></i> Save & Update Students</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- LIST OF SCHEDULES -->
+        <div class="card glass">
+            <div class="form-section-title"><i class="ph-bold ph-list-dashes"></i> Active Class Schedules</div>
+            
+            <div class="search-wrapper">
+                <i class="ph-bold ph-magnifying-glass"></i>
+                <input type="text" class="search-input" id="schedSearch" placeholder="Search by subject or section..." onkeyup="window.filterTable()">
+            </div>
+
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Section</th>
+                            <th>Time & Days</th>
+                            <th>Room</th>
+                            <th style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <tr><td colspan="5" style="text-align: center;">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast"><i id="toast-icon" class="ph-fill ph-check-circle" style="font-size: 24px;"></i><span id="toast-msg">Success!</span></div>
+
+    <!-- FIREBASE LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, setDoc, deleteDoc, doc, getDocs, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (!user || user.role !== 'admin') window.location.href = 'index.html';
+        window.logout = function() { localStorage.removeItem('loggedInUser'); window.location.href = 'index.html'; }
+
+        const app = initializeApp({ apiKey: "AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI", authDomain: "plv-grades-portal.firebaseapp.com", projectId: "plv-grades-portal", storageBucket: "plv-grades-portal.firebasestorage.app", messagingSenderId: "951401194726", appId: "1:951401194726:web:28ea9972358d0e30fb4727", measurementId: "G-TKG574DYYB" });
+        const db = getFirestore(app);
+
+        window.showToast = function(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            document.getElementById('toast-msg').innerText = message;
+            toast.className = 'toast'; 
+            if(type === 'error') { toast.classList.add('error'); icon.className = 'ph-fill ph-warning-circle'; } else { icon.className = 'ph-fill ph-check-circle'; }
+            toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        let allSchedules = [];
+
+        // --- INIT: LOAD DATA ---
+        async function initPage() {
+            // 1. Populate Dropdown
+            const subSelect = document.getElementById('subSelect');
+            subSelect.innerHTML = '<option value="">-- Select Subject --</option>';
+            try {
+                const subSnap = await getDocs(collection(db, "subjects"));
+                subSnap.forEach(d => {
+                    const data = d.data();
+                    subSelect.innerHTML += `<option value="${data.subjectCode}">${data.subjectCode}: ${data.subjectName}</option>`;
+                });
+            } catch(e) { console.error("Err loading subjects", e); }
+
+            // 2. Load Schedules Table
+            await loadSchedules();
+        }
+
+        // --- FETCH SCHEDULES ---
+        async function loadSchedules() {
+            const tbody = document.getElementById('scheduleTableBody');
+            tbody.innerHTML = '';
+            
+            try {
+                const q = query(collection(db, "class_schedules"));
+                const snap = await getDocs(q);
+                
+                if (snap.empty) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No specific section schedules found.</td></tr>';
+                    allSchedules = [];
+                    return;
+                }
+
+                allSchedules = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    data.id = d.id;
+                    allSchedules.push(data);
+                });
+
+                window.renderTable(allSchedules);
+
+            } catch(e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--danger);">Error loading data.</td></tr>';
+            }
+        }
+
+        window.renderTable = function(data) {
+            const tbody = document.getElementById('scheduleTableBody');
+            tbody.innerHTML = '';
+            
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No matching schedules.</td></tr>';
+                return;
+            }
+
+            data.forEach(data => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong style="color:var(--accent-primary)">${data.subjectCode}</strong></td>
+                        <td>${data.section}</td>
+                        <td>${data.time}</td>
+                        <td>${data.room}</td>
+                        <td style="text-align: center;">
+                            <button class="btn btn-delete" title="Delete Schedule" onclick="window.deleteSchedule('${data.id}')">
+                                <i class="ph-bold ph-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.filterTable = function() {
+            const query = document.getElementById('schedSearch').value.toLowerCase();
+            const filtered = allSchedules.filter(item => 
+                item.subjectCode.toLowerCase().includes(query) || 
+                item.section.toLowerCase().includes(query)
+            );
+            window.renderTable(filtered);
+        }
+
+        // --- SAVE SCHEDULE & SYNC STUDENTS ---
+        document.getElementById('assignScheduleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            btn.innerHTML = 'Saving & Syncing...'; btn.disabled = true;
+
+            const subCode = document.getElementById('subSelect').value;
+            const section = document.getElementById('schedSection').value.trim();
+            const time = document.getElementById('schedTime').value.trim();
+            const room = document.getElementById('schedRoom').value.trim();
+            
+            // Logic: Create Composite ID to ensure unique schedule per section
+            const docId = `${subCode}_${section}`;
+            const fullScheduleString = `${time} | ${room}`;
+
+            try {
+                // 1. Save to class_schedules collection (For Admin View)
+                await setDoc(doc(db, "class_schedules", docId), {
+                    subjectCode: subCode,
+                    section: section,
+                    time: time,
+                    room: room
+                });
+
+                // 2. BATCH UPDATE: Find all students in this section & subject and update their enrollment
+                const enrollQuery = query(
+                    collection(db, "enrollments"), 
+                    where("subjectCode", "==", subCode),
+                    where("section", "==", section)
+                );
+                
+                const enrollSnap = await getDocs(enrollQuery);
+                
+                if(!enrollSnap.empty) {
+                    const batch = writeBatch(db);
+                    enrollSnap.forEach(docSnap => {
+                        batch.update(docSnap.ref, { schedule: fullScheduleString });
+                    });
+                    await batch.commit();
+                    window.showToast(`Schedule Saved! Updated ${enrollSnap.size} students.`);
+                } else {
+                    window.showToast("Schedule Saved! No students currently in this section.");
+                }
+
+                e.target.reset();
+                loadSchedules(); 
+            } catch(error) {
+                console.error(error);
+                window.showToast("Failed to save schedule.", "error");
+            } finally {
+                btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Save & Update Students'; btn.disabled = false;
+            }
+        });
+
+        // --- DELETE SCHEDULE ---
+        window.deleteSchedule = async function(id) {
+            if(!confirm(`Delete this schedule? Note: This won't remove the schedule text from existing students' dashboards automatically.`)) return;
+            try {
+                await deleteDoc(doc(db, "class_schedules", id));
+                window.showToast("Schedule Deleted.");
+                loadSchedules();
+            } catch(e) {
+                console.error(e);
+                window.showToast("Delete failed.", "error");
+            }
+        }
+
+        // Init
+        initPage();
+
+        const themeToggleBtn = document.getElementById('themeToggle'); const themeIcon = document.getElementById('themeIcon'); const body = document.body;
+        if (localStorage.getItem('theme') === 'dark') { body.classList.add('dark-theme'); themeIcon.className = 'ph-fill ph-moon'; } else { themeIcon.className = 'ph-fill ph-sun'; }
+        themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); const isDark = body.classList.contains('dark-theme'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeIcon.style.transform = 'rotate(360deg)'; setTimeout(() => { themeIcon.className = isDark ? 'ph-fill ph-moon' : 'ph-fill ph-sun'; themeIcon.style.transform = 'rotate(0deg)'; }, 150); });
+    </script>
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-nav-bar">
+        <ul>
+            <li><a href="admin-dashboard.html" id="mnav-dash"><i class="ph-fill ph-squares-four"></i>Dashboard</a></li>
+            <li><a href="admin-records.html" id="mnav-rec"><i class="ph ph-pen"></i>Records</a></li>
+            <li><a href="admin-subjects.html" id="mnav-sub"><i class="ph ph-notebook"></i>Subjects</a></li>
+            <li><a href="admin-schedule.html" id="mnav-sch"><i class="ph-fill ph-clock"></i>Schedules</a></li>
+            <li><a href="admin-accounts.html" id="mnav-acc"><i class="ph-fill ph-users"></i>Accounts</a></li>
+            <li><a href="admin-activities.html" id="mnav-act"><i class="ph-fill ph-clipboard-text"></i>Activities</a></li>
+            <li><a href="admin-grades.html" id="mnav-grd"><i class="ph-fill ph-exam"></i>Grades</a></li>
+            <li><a href="admin-settings.html" id="mnav-set"><i class="ph-fill ph-gear"></i>Settings</a></li>
+            <li><a href="#" onclick="window.logout()" id="mnav-out"><i class="ph ph-sign-out"></i>Logout</a></li>
+        </ul>
+    </nav>
+
+    <script>
+        (function() {
+            var el = document.getElementById('mnav-sch');
+            if (el) el.classList.add('active');
+        })();
+    </script>
+</body>
+</html>

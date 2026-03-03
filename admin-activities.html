@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activities & Scoring | PLV Grades Portal</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dfdlqf6ng/image/upload/v1772078917/PamantasanNgLungsodNgValenzuelaLogo_t53djy.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+        /* CORE DESIGN PRESERVED */
+        :root { --bg-body: #f0f4f8; --text-main: #0f172a; --text-muted: #64748b; --glass-bg: rgba(255, 255, 255, 0.75); --glass-border: rgba(255, 255, 255, 0.9); --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.9); --glass-shadow: 0 24px 48px -12px rgba(0, 35, 102, 0.08); --accent-primary: #003DA5; --accent-hover: #00287A; --accent-light: rgba(0, 61, 165, 0.08); --accent-gold: #D4AF37; --input-bg: rgba(255, 255, 255, 0.9); --input-border: rgba(0, 35, 102, 0.1); --blob-1: #cce0ff; --blob-2: #ffeb99; --blob-3: #e0ebff; --success: #10b981; --danger: #e11d48; }
+        .dark-theme { --bg-body: #040914; --text-main: #f8fafc; --text-muted: #94a3b8; --glass-bg: rgba(10, 15, 30, 0.6); --glass-border: rgba(255, 255, 255, 0.06); --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.04); --glass-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.8); --accent-primary: #3b82f6; --accent-hover: #60a5fa; --accent-light: rgba(59, 130, 246, 0.15); --accent-gold: #FCD34D; --input-bg: rgba(0, 0, 0, 0.4); --input-border: rgba(255, 255, 255, 0.1); --blob-1: #001f5c; --blob-2: #422b00; --blob-3: #001233; --success: #34d399; --danger: #fb7185; }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.4s ease; }
+        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; position: relative; }
+        .ambient-mesh { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; z-index: -1; pointer-events: none; } .blob { position: absolute; filter: blur(120px); opacity: 0.6; border-radius: 50%; animation: float 18s infinite alternate ease-in-out; } .blob-1 { width: 600px; height: 600px; background: var(--blob-1); top: -10%; left: -10%; } .blob-2 { width: 700px; height: 700px; background: var(--blob-2); bottom: -20%; right: -10%; animation-delay: -5s; } .blob-3 { width: 500px; height: 500px; background: var(--blob-3); top: 40%; left: 40%; animation-delay: -10s; } @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(60px, 40px) scale(1.1); } }
+        
+        .glass { background: var(--glass-bg); backdrop-filter: blur(32px); border: 1px solid var(--glass-border); box-shadow: var(--glass-highlight), var(--glass-shadow); border-radius: 28px; }
+        .sidebar { width: 300px; height: 100vh; padding: 40px 24px; display: flex; flex-direction: column; position: sticky; top: 0; z-index: 10; border-right: 1px solid var(--glass-border); background: rgba(var(--bg-body), 0.3); backdrop-filter: blur(24px); } 
+        .logo-container { display: flex; align-items: center; gap: 14px; margin-bottom: 48px; padding: 0 12px; } .logo-img { width: 52px; height: 52px; border-radius: 50%; box-shadow: 0 8px 16px rgba(0,0,0,0.1); } .logo-text h2 { font-size: 22px; font-weight: 800; color: var(--text-main); line-height: 1.1; } .logo-text p { font-size: 11px; font-weight: 800; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .nav-menu { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 8px; } .nav-item a { text-decoration: none; color: var(--text-muted); font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 16px; padding: 14px 18px; border-radius: 18px; cursor: pointer; } .nav-item a i { font-size: 22px; transition: transform 0.3s ease; } .nav-item a:hover { background: var(--accent-light); color: var(--accent-primary); } .nav-item a.active { background: var(--accent-primary); color: #fff; box-shadow: 0 10px 24px -8px var(--accent-primary); }
+        .main-wrapper { flex: 1; padding: 40px 48px; display: flex; flex-direction: column; gap: 32px; max-width: 1600px; margin: 0 auto; width: 100%; } 
+        .header { display: flex; justify-content: space-between; align-items: center; } .header h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; } .header p { color: var(--text-muted); font-weight: 600; font-size: 15px; } .header-actions { display: flex; align-items: center; gap: 16px; }
+        .icon-btn { width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: var(--glass-highlight), 0 4px 12px rgba(0,0,0,0.02); font-size: 20px; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease; } .theme-toggle { background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6)); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255,255,255,0.8); color: #d97706; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; } .theme-toggle:hover { transform: translateY(-3px) scale(1.05); } .dark-theme .theme-toggle { background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255,255,255,0.05); color: #93c5fd; }
+        
+        .card { padding: 32px; display: flex; flex-direction: column; position: relative; overflow: hidden; margin-bottom: 24px;}
+        .tab-controls { display: flex; background: rgba(0,0,0,0.05); padding: 6px; border-radius: 14px; margin-bottom: 24px; width: fit-content; } .dark-theme .tab-controls { background: rgba(255,255,255,0.05); } 
+        .tab-btn { background: transparent; border: none; padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.3s; } 
+        .tab-btn.active { background: var(--glass-bg); color: var(--accent-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); } 
+        .tab-content { display: none; } .tab-content.active { display: block; animation: fadeIn 0.3s ease; } @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .form-section-title { grid-column: span 2; font-size: 14px; font-weight: 800; color: var(--accent-primary); border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; margin-top: 8px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;} 
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } .form-group { display: flex; flex-direction: column; gap: 8px; } .form-group.full { grid-column: span 2; } 
+        .form-label { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; } 
+        .form-control { background: var(--input-bg); border: 1px solid var(--input-border); padding: 14px 16px; border-radius: 12px; font-size: 15px; color: var(--text-main); font-weight: 500; outline: none; transition: all 0.3s; } .form-control:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 4px var(--accent-light); } select.form-control option { background: var(--bg-body); color: var(--text-main); }
+        
+        .btn { padding: 14px 24px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; } 
+        .btn-primary { background: var(--accent-primary); color: #fff; box-shadow: 0 8px 16px var(--accent-light); } .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); } 
+        .btn-outline { background: transparent; border: 1px solid var(--accent-primary); color: var(--accent-primary); } .btn-outline:hover { background: var(--accent-light); } 
+        .btn-secondary { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); } .btn-secondary:hover { border-color: var(--accent-primary); color: var(--accent-primary); } 
+        
+        /* Table Controls & Search */
+        .table-controls-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
+        .search-wrapper { position: relative; width: 300px; }
+        .search-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 18px; }
+        .search-input { width: 100%; padding: 12px 16px 12px 48px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main); font-size: 14px; font-weight: 500; outline: none; }
+        .search-input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-light); }
+
+        .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border-radius: 16px;} 
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; } 
+        .modern-table th { padding: 0 16px 8px; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--glass-border); } 
+        .modern-table td { padding: 12px 16px; background: var(--input-bg); border-top: 1px solid var(--input-border); border-bottom: 1px solid var(--input-border); font-size: 14px; font-weight: 600; vertical-align: middle; } 
+        .modern-table td:first-child { border-left: 1px solid var(--input-border); border-radius: 12px 0 0 12px; } 
+        .modern-table td:last-child { border-right: 1px solid var(--input-border); border-radius: 0 12px 12px 0; }
+        
+        /* Checkbox Styling */
+        .check-col { width: 40px; text-align: center; }
+        .custom-checkbox { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--text-muted); appearance: none; cursor: pointer; position: relative; transition: all 0.2s; }
+        .custom-checkbox:checked { background: var(--accent-primary); border-color: var(--accent-primary); }
+        .custom-checkbox:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 12px; font-weight: bold; }
+
+        .btn-icon-danger { width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(225, 29, 72, 0.2); background: rgba(225, 29, 72, 0.05); color: var(--danger); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; }
+        .btn-icon-danger:hover { background: var(--danger); color: #fff; transform: scale(1.1); box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); }
+
+        .btn-bulk-delete { background: var(--danger); color: white; border:none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); display: none; align-items: center; gap: 8px; transition: all 0.3s; }
+        .btn-bulk-delete.visible { display: inline-flex; animation: fadeIn 0.3s ease; }
+
+        .score-input { width: 100px; padding: 10px; text-align: center; font-weight: 700; color: var(--accent-primary); border: 1px solid var(--input-border); border-radius: 8px; background: var(--glass-bg); } .score-divider { font-size: 13px; color: var(--text-muted); margin-left: 8px; font-weight: 700;}
+        .upload-zone { border: 2px dashed var(--accent-primary); background: var(--accent-light); border-radius: 20px; padding: 48px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; cursor: pointer; transition: all 0.3s; margin-bottom: 24px;} .upload-zone:hover { background: rgba(0, 61, 165, 0.15); border-color: var(--accent-hover); } .dark-theme .upload-zone:hover { background: rgba(59, 130, 246, 0.2); } .upload-icon { font-size: 48px; color: var(--accent-primary); } .upload-text h4 { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;} .upload-text p { font-size: 13px; color: var(--text-muted); font-weight: 500;}
+        .progress-container { width: 100%; height: 8px; background: rgba(0,0,0,0.1); border-radius: 100px; margin-top: 20px; overflow: hidden; display: none; } .progress-bar { width: 0%; height: 100%; background: var(--accent-primary); transition: width 0.3s ease; border-radius: 100px; }
+        
+        .toast { position: fixed; bottom: 32px; right: 32px; background: var(--success); color: #fff; padding: 16px 24px; border-radius: 12px; font-weight: 600; box-shadow: 0 12px 24px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 12px; transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;} .toast.show { transform: translateX(0); } .toast.error { background: var(--danger); }
+
+        /* CUSTOM MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(4px); }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        .modal-box { background: var(--glass-bg); padding: 32px; border-radius: 24px; max-width: 400px; text-align: center; border: 1px solid var(--glass-border); box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal-overlay.open .modal-box { transform: scale(1); }
+        .modal-icon { width: 64px; height: 64px; background: rgba(225, 29, 72, 0.1); color: var(--danger); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; margin: 0 auto 16px; animation: pulse-red 2s infinite; }
+        .modal-box h3 { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .modal-box p { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 24px; line-height: 1.5; }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-modal-cancel { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); font-weight: 700; padding: 12px 24px; border-radius: 12px; cursor: pointer;}
+        .btn-modal-cancel:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
+        .btn-modal-delete { background: var(--danger); color: white; border: none; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); font-weight: 700; padding: 12px 24px; border-radius: 12px; cursor: pointer;}
+        .btn-modal-delete:hover { background: #be123c; transform: translateY(-2px); }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(225, 29, 72, 0); } 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
+
+        @media (max-width: 1024px) { body { flex-direction: column; } .sidebar { width: 100%; height: auto; flex-direction: row; padding: 20px; justify-content: space-between; align-items: center; z-index: 100; border-right: none; border-bottom: 1px solid var(--glass-border);} .nav-menu { display: none; } .form-grid { grid-template-columns: 1fr; } .form-group.full, .form-section-title { grid-column: span 1; } .search-wrapper { width: 100%; order: 2; } .table-controls-wrapper { flex-direction: column; align-items: flex-start; } .btn-bulk-delete { width: 100%; order: 1; justify-content: center; } }
+    
+        /* ===== MOBILE NAVIGATION ===== */
+        .mobile-nav-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--glass-bg); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); border-top: 1px solid var(--glass-border); box-shadow: 0 -8px 32px rgba(0,0,0,0.1); z-index: 200; padding: 6px 0 max(6px, env(safe-area-inset-bottom)); }
+        .mobile-nav-bar ul { display: flex; list-style: none; align-items: center; padding: 0 12px; overflow-x: auto; gap: 4px; }
+        .mobile-nav-bar ul li a { display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; color: var(--text-muted); font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 8px 14px; border-radius: 14px; min-width: 60px; }
+        .mobile-nav-bar ul li a i { font-size: 22px; }
+        .mobile-nav-bar ul li a.active { color: var(--accent-primary); background: var(--accent-light); }
+        @media (max-width: 1024px) { .mobile-nav-bar { display: block; } .main-wrapper { padding-bottom: 90px !important; } }
+    </style>
+</head>
+<body>
+    <div class="ambient-mesh"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo-container">
+            <img src="https://res.cloudinary.com/dfdlqf6ng/image/upload/v1772078917/PamantasanNgLungsodNgValenzuelaLogo_t53djy.png" alt="PLV Logo" class="logo-img">
+            <div class="logo-text"><h2>PLV Admin</h2><p>System Management</p></div>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="admin-dashboard.html"><i class="ph-fill ph-squares-four"></i> Dashboard Overview</a></li>
+            <li class="nav-item"><a href="admin-records.html"><i class="ph ph-pen"></i> Student Records</a></li>
+            <li class="nav-item"><a href="admin-sections.html"><i class="ph-fill ph-users-three"></i> Manage Sections</a></li>
+            <li class="nav-item"><a href="admin-subjects.html"><i class="ph ph-notebook"></i> Manage Subjects</a></li>
+            <li class="nav-item"><a href="admin-schedule.html"><i class="ph-fill ph-clock"></i> Manage Schedules</a></li>
+            <li class="nav-item"><a href="admin-accounts.html"><i class="ph-fill ph-users"></i> Student Accounts</a></li>
+            <li class="nav-item"><a href="admin-activities.html" class="active"><i class="ph-fill ph-clipboard-text"></i> Activities Setup</a></li>
+            <li class="nav-item"><a href="admin-grades.html"><i class="ph-fill ph-exam"></i> Input Grades</a></li>
+            <li class="nav-item"><a href="admin-settings.html"><i class="ph-fill ph-gear"></i> System Settings</a></li>
+            <li class="nav-item" style="margin-top:auto;"><a onclick="window.logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="header">
+            <div><h1>Activities & Scoring</h1><p>Create, upload, and manage class activities.</p></div>
+            <div class="header-actions"><div class="icon-btn theme-toggle" id="themeToggle"><i class="ph-fill ph-sun" id="themeIcon"></i></div></div>
+        </header>
+
+        <div class="card glass">
+            <!-- 3 Tabs Layout -->
+            <div class="tab-controls">
+                <button class="tab-btn active" onclick="window.toggleTab('act-manual', this)">Manual Entry</button>
+                <button class="tab-btn" onclick="window.toggleTab('act-bulk', this)">Bulk Excel Upload</button>
+                <button class="tab-btn" onclick="window.toggleTab('act-manage', this)">Manage & Delete</button>
+            </div>
+
+            <!-- MANUAL ENTRY: 2 STEP PROCESS -->
+            <div id="act-manual" class="tab-content active">
+                <form id="activityForm">
+                    <div class="form-grid">
+                        <div class="form-section-title"><i class="ph-bold ph-file-text"></i> Step 1: Activity Details</div>
+                        <div class="form-group"><label class="form-label">Subject Code</label>
+                            <!-- CHANGED TO DROPDOWN -->
+                            <select id="subCode" class="form-control" required>
+                                <option value="">Loading Subjects...</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label class="form-label">Class Section</label><select id="sectionSelect" class="form-control" required><option value="">Loading Sections...</option></select></div>
+                        <div class="form-group"><label class="form-label">Grading Period</label><select class="form-control" id="aTerm" required><option value="midterm">Midterm</option><option value="final">Final Term</option></select></div>
+                        <div class="form-group"><label class="form-label">Category</label><select class="form-control" id="aCat" required><option value="written">Written Output (30%)</option><option value="perf">Performance Based (30%)</option><option value="exam">Major Exam (40%)</option></select></div>
+                        <div class="form-group"><label class="form-label">Date</label><input type="date" id="aDate" class="form-control" required></div>
+                        <div class="form-group"><label class="form-label">Total Perfect Score</label><input type="number" id="perfectScore" class="form-control" placeholder="e.g. 50" min="1" required></div>
+                        <div class="form-group full"><label class="form-label">Activity Title</label><input type="text" id="aTitle" class="form-control" placeholder="e.g. Quiz 1: Algorithms" required></div>
+                        <div class="form-group full" style="margin-top: 10px;"><button type="submit" id="loadRosterBtn" class="btn btn-secondary"><i class="ph-bold ph-users"></i> Load Student Roster</button></div>
+                    </div>
+                </form>
+
+                <div id="roster-container" style="display: none; margin-top: 32px; border-top: 1px solid var(--glass-border); padding-top: 24px;">
+                    <div class="form-section-title"><i class="ph-bold ph-pencil-simple"></i> Step 2: Input Scores</div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Encoding scores for section <strong id="display-section" style="color: var(--accent-primary);"></strong>. Perfect score is <strong id="display-perfect" style="color: var(--accent-primary);"></strong>.</p>
+                    <form id="scoreForm">
+                        <div class="table-container">
+                            <table class="modern-table">
+                                <thead><tr><th>Student No.</th><th>Student Name</th><th>Score</th></tr></thead>
+                                <tbody id="roster-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="form-group full" style="margin-top: 24px;"><button type="submit" id="saveScoreBtn" class="btn btn-primary"><i class="ph-bold ph-floppy-disk"></i> Save Activity & Scores</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- BULK UPLOAD (EXCEL) -->
+            <div id="act-bulk" class="tab-content">
+                <div class="upload-zone" onclick="window.simulateUpload()">
+                    <i class="ph-fill ph-microsoft-excel-logo upload-icon"></i>
+                    <div class="upload-text"><h4>Click Here to Upload Excel File (.xlsx)</h4><p>Upload a spreadsheet containing the activity details and the students' scores simultaneously.</p></div>
+                </div>
+                <div class="progress-container" id="progressBarContainer"><div class="progress-bar" id="progressBar"></div></div>
+                <button class="btn btn-outline" style="margin-top:20px;" onclick="window.downloadTemplate()"><i class="ph-bold ph-download-simple"></i> Download Excel Template</button>
+            </div>
+
+            <!-- MANAGE / DELETE SUBMENU -->
+            <div id="act-manage" class="tab-content">
+                <div class="table-controls-wrapper">
+                    <div class="search-wrapper">
+                        <i class="ph-bold ph-magnifying-glass"></i>
+                        <input type="text" class="search-input" id="actSearch" placeholder="Search by title, subject..." onkeyup="window.handleSearch()">
+                    </div>
+                    <button class="btn btn-bulk-delete" id="bulkDeleteBtn" onclick="window.confirmBulkDelete()">
+                        <i class="ph-bold ph-trash"></i> Delete Selected (<span id="selectCount">0</span>)
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th class="check-col"><input type="checkbox" class="custom-checkbox" id="selectAll" onclick="window.toggleSelectAll()"></th>
+                                <th>Date</th>
+                                <th>Section</th>
+                                <th>Subject</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Total Pts</th>
+                                <th style="text-align:center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manageBody"><tr><td colspan="8">Loading activities...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"><i id="toast-icon" class="ph-fill ph-check-circle" style="font-size: 24px;"></i><span id="toast-msg">Success!</span></div>
+
+    <!-- CUSTOM CONFIRMATION MODAL -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-box glass">
+            <div class="modal-icon" id="modalIcon"><i class="ph-fill ph-warning-circle"></i></div>
+            <h3 id="modalTitle">Delete Activity?</h3>
+            <p id="modalDesc">This action cannot be undone. The activity and <b>all associated student scores</b> will be permanently removed.</p>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="window.closeModal()">Cancel</button>
+                <button class="btn-modal-delete" id="modalConfirmBtn" onclick="window.confirmAction()">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (!user || user.role !== 'admin') window.location.href = 'index.html';
+        window.logout = function() { localStorage.removeItem('loggedInUser'); window.location.href = 'index.html'; }
+
+        const app = initializeApp({ apiKey: "AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI", authDomain: "plv-grades-portal.firebaseapp.com", projectId: "plv-grades-portal", storageBucket: "plv-grades-portal.firebasestorage.app", messagingSenderId: "951401194726", appId: "1:951401194726:web:28ea9972358d0e30fb4727", measurementId: "G-TKG574DYYB" });
+        const db = getFirestore(app);
+
+        // UI & Tab Handling
+        window.toggleTab = function(showId, element) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            element.classList.add('active'); 
+            document.getElementById(showId).classList.add('active');
+            if(showId === 'act-manage') window.loadActivities(); 
+        }
+        
+        window.showToast = function(message, type='success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            document.getElementById('toast-msg').innerText = message;
+            toast.className = 'toast';
+            if(type === 'error') { toast.classList.add('error'); icon.className = 'ph-fill ph-warning-circle'; } else { icon.className = 'ph-fill ph-check-circle'; }
+            toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        let activeSubjectCode = ""; 
+        document.getElementById('aDate').valueAsDate = new Date();
+
+        // 1. Load Sections Dropdown from 'sections' collection
+        window.loadSections = async function() {
+            const select = document.getElementById('sectionSelect');
+            try {
+                const snap = await getDocs(collection(db, "sections"));
+                const sections = [];
+                snap.forEach(d => sections.push(d.data().sectionName));
+                sections.sort();
+                
+                select.innerHTML = '<option value="">Select Class Section</option>';
+                sections.forEach(sec => { select.innerHTML += `<option value="${sec}">${sec}</option>`; });
+            } catch(e) { console.error(e); }
+        }
+        window.loadSections();
+
+        // 1.5 Load Subjects Dropdown from 'subjects' collection
+        window.loadSubjects = async function() {
+            const select = document.getElementById('subCode');
+            try {
+                const snap = await getDocs(collection(db, "subjects"));
+                const subjects = [];
+                snap.forEach(d => subjects.push(d.data())); // Get data objects
+                subjects.sort((a,b) => a.subjectCode.localeCompare(b.subjectCode));
+
+                select.innerHTML = '<option value="">Select Subject</option>';
+                subjects.forEach(sub => {
+                    select.innerHTML += `<option value="${sub.subjectCode}">${sub.subjectCode}: ${sub.subjectName}</option>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+        window.loadSubjects();
+
+        // Helper: Check Duplicate
+        async function checkDuplicate(sub, term, cat, title, section) {
+            const q = query(collection(db, "activities"), 
+                where("subjectCode", "==", sub), 
+                where("term", "==", term), 
+                where("category", "==", cat), 
+                where("title", "==", title),
+                where("section", "==", section)
+            );
+            const snap = await getDocs(q); return !snap.empty;
+        }
+
+        // 2. Manual Entry Logic
+        document.getElementById('activityForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loadRosterBtn'); 
+            
+            const sub = document.getElementById('subCode').value;
+            const sec = document.getElementById('sectionSelect').value;
+            const term = document.getElementById('aTerm').value;
+            const cat = document.getElementById('aCat').value;
+            const title = document.getElementById('aTitle').value;
+
+            if(!sub || !sec) {
+                window.showToast("Please select Subject and Section", "error");
+                return;
+            }
+
+            const isDup = await checkDuplicate(sub, term, cat, title, sec);
+            if(isDup) { window.showToast("Activity already exists for this section!", "error"); return; }
+
+            btn.innerHTML = 'Loading...'; btn.disabled = true;
+            const perfScore = document.getElementById('perfectScore').value;
+            const tbody = document.getElementById('roster-body'); tbody.innerHTML = '';
+            
+            try {
+                // Fetch enrollments for specific section AND subject
+                const q = query(collection(db, "enrollments"), where("section", "==", sec), where("subjectCode", "==", sub));
+                const snap = await getDocs(q);
+                
+                if(snap.empty) { window.showToast("No students found in this section for this subject.", "error"); btn.disabled=false; btn.innerHTML='<i class="ph-bold ph-users"></i> Load Student Roster'; return; }
+                
+                let students = [];
+                snap.forEach(doc => { students.push(doc.data()); });
+                students.sort((a,b) => a.studentName.localeCompare(b.studentName));
+
+                students.forEach(data => {
+                    tbody.innerHTML += `<tr><td>${data.studentNo}</td><td>${data.studentName}</td><td><div style="display: flex; align-items: center;"><input type="number" class="score-input stud-score" data-sno="${data.studentNo}" min="0" max="${perfScore}" required placeholder="0"><span class="score-divider">/ ${perfScore}</span></div></td></tr>`;
+                });
+
+                document.getElementById('display-section').innerText = sec;
+                document.getElementById('display-perfect').innerText = perfScore;
+                document.getElementById('roster-container').style.display = 'block';
+            } catch(e) { console.error(e); window.showToast("Database Error", "error"); }
+            btn.innerHTML = '<i class="ph-bold ph-users"></i> Load Student Roster'; btn.disabled = false;
+        });
+
+        document.getElementById('scoreForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveScoreBtn'); btn.innerHTML = 'Saving...'; btn.disabled = true;
+            try {
+                // IMPORTANT: Save Section in Activity Doc
+                const actRef = await addDoc(collection(db, "activities"), { 
+                    subjectCode: document.getElementById('subCode').value, 
+                    section: document.getElementById('sectionSelect').value, // Added section
+                    term: document.getElementById('aTerm').value, 
+                    category: document.getElementById('aCat').value, 
+                    title: document.getElementById('aTitle').value, 
+                    perfectScore: Number(document.getElementById('perfectScore').value), 
+                    date: document.getElementById('aDate').value || new Date().toISOString()
+                });
+                const inputs = document.querySelectorAll('.stud-score');
+                for(let inp of inputs) { await addDoc(collection(db, "scores"), { activityId: actRef.id, studentNo: inp.dataset.sno, score: Number(inp.value) }); }
+                window.showToast('Activity and all student scores saved!');
+                document.getElementById('activityForm').reset(); document.getElementById('roster-container').style.display = 'none';
+                window.loadActivities(); 
+            } catch(e) { console.error(e); window.showToast("Failed to save scores", "error"); }
+            btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Save Activity & Scores'; btn.disabled = false;
+        });
+
+        // 3. Excel Logic
+        window.simulateUpload = function() {
+            const input = document.createElement('input'); input.type = 'file'; input.accept = '.xlsx, .xls';
+            input.onchange = e => { 
+                const file = e.target.files[0]; if(!file) return; 
+                const pContainer = document.getElementById('progressBarContainer');
+                const pBar = document.getElementById('progressBar');
+                pContainer.style.display = 'block'; pBar.style.width = '10%';
+                window.showToast(`Reading ${file.name}...`); 
+                
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet);
+                    pBar.style.width = '40%';
+                    
+                    try {
+                        const grouped = {};
+                        json.forEach(row => {
+                            let term = row.Term?.toLowerCase().includes("final") ? "final" : "midterm";
+                            let cat = "written";
+                            if(row.Category?.toLowerCase().includes("perf")) cat = "perf";
+                            if(row.Category?.toLowerCase().includes("exam")) cat = "exam";
+                            
+                            let dateStr = new Date().toISOString().split('T')[0];
+                            if(row.Date) {
+                                if(typeof row.Date === 'number') { const jsDate = new Date((row.Date - (25567 + 2))*86400*1000); dateStr = jsDate.toISOString().split('T')[0]; } 
+                                else { dateStr = row.Date; }
+                            }
+                            const sNoStr = String(row.Student_No);
+                            const sectionStr = row.Section || "Unknown"; // Need section in Excel
+
+                            // Unique key includes section now
+                            const key = `${row.Subject_Code}_${sectionStr}_${term}_${cat}_${row.Activity_Title}`;
+                            if(!grouped[key]) grouped[key] = { meta: { ...row, Section: sectionStr, Term: term, Category: cat, DateVal: dateStr }, scores: [] };
+                            grouped[key].scores.push({ sNo: sNoStr, score: row.Student_Score });
+                        });
+
+                        const totalActs = Object.keys(grouped).length;
+                        let processedCount = 0;
+                        
+                        for(let key in grouped) {
+                            const g = grouped[key];
+                            const isDup = await checkDuplicate(g.meta.Subject_Code, g.meta.Term, g.meta.Category, g.meta.Activity_Title, g.meta.Section);
+                            
+                            if(!isDup) {
+                                const actRef = await addDoc(collection(db, "activities"), {
+                                    subjectCode: g.meta.Subject_Code, 
+                                    section: g.meta.Section, // Save section
+                                    term: g.meta.Term, 
+                                    category: g.meta.Category, 
+                                    title: g.meta.Activity_Title, 
+                                    perfectScore: Number(g.meta.Perfect_Score), 
+                                    date: g.meta.DateVal
+                                });
+                                for(let s of g.scores) { await addDoc(collection(db, "scores"), { activityId: actRef.id, studentNo: s.sNo, score: Number(s.score) }); }
+                            }
+                            processedCount++; pBar.style.width = `${40 + (processedCount/totalActs * 60)}%`;
+                        }
+                        window.showToast("Bulk Activities Uploaded!"); setTimeout(() => pContainer.style.display = 'none', 1000);
+                        window.loadActivities();
+                    } catch(err) { console.error(err); window.showToast("Error during bulk upload", "error"); pContainer.style.display = 'none'; }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+            input.click();
+        }
+
+        window.downloadTemplate = function() {
+            const wb = XLSX.utils.book_new();
+            // Added Section Column
+            const ws_data = [["Subject_Code", "Section", "Term", "Category", "Activity_Title", "Date", "Perfect_Score", "Student_No", "Student_Score"], ["IT312", "Block A", "midterm", "written", "Quiz 1", "2023-10-15", 50, "2021-00001", 45]];
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "Template");
+            XLSX.writeFile(wb, "Activity_Score_Template.xlsx");
+            window.showToast("Template Downloaded!");
+        }
+
+        // 4. Manage/Delete Logic
+        let allActivitiesData = [];
+
+        window.loadActivities = async function() {
+            const tbody = document.getElementById('manageBody');
+            tbody.innerHTML = '<tr><td colspan="8">Loading...</td></tr>';
+            try {
+                const snap = await getDocs(collection(db, "activities"));
+                if(snap.empty) { tbody.innerHTML = '<tr><td colspan="8">No activities found.</td></tr>'; allActivitiesData = []; return; }
+                
+                let records = [];
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    d.id = doc.id;
+                    d.dateStr = d.date ? d.date.split('T')[0] : 'N/A';
+                    records.push(d);
+                });
+                
+                records.sort((a,b) => b.date.localeCompare(a.date));
+                allActivitiesData = records;
+
+                window.renderTable(records);
+            } catch(e) { console.error(e); tbody.innerHTML = '<tr><td colspan="8">Error loading data.</td></tr>'; }
+        }
+
+        window.renderTable = function(data) {
+            const tbody = document.getElementById('manageBody');
+            tbody.innerHTML = '';
+            
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8">No matching activities found.</td></tr>';
+                return;
+            }
+
+            data.forEach(d => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="check-col"><input type="checkbox" class="custom-checkbox row-checkbox" data-id="${d.id}" onclick="window.updateBulkBtn()"></td>
+                        <td>${d.dateStr}</td>
+                        <td>${d.section || '-'}</td>
+                        <td>${d.subjectCode}</td>
+                        <td>${d.title}</td>
+                        <td>${d.category.toUpperCase()}</td>
+                        <td>${d.perfectScore}</td>
+                        <td style="text-align:center;">
+                            <button class="btn-icon-danger" onclick="window.openDeleteModal('${d.id}')"><i class="ph-bold ph-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+            window.updateBulkBtn();
+        }
+
+        window.handleSearch = function() {
+            const query = document.getElementById('actSearch').value.toLowerCase();
+            const filtered = allActivitiesData.filter(item => 
+                item.title.toLowerCase().includes(query) || 
+                item.subjectCode.toLowerCase().includes(query) ||
+                (item.section && item.section.toLowerCase().includes(query))
+            );
+            window.renderTable(filtered);
+        }
+
+        window.toggleSelectAll = function() {
+            const masterCheck = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = masterCheck.checked);
+            window.updateBulkBtn();
+        }
+
+        window.updateBulkBtn = function() {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            const btn = document.getElementById('bulkDeleteBtn');
+            const masterCheck = document.getElementById('selectAll');
+            
+            if(checked.length === checkboxes.length && checkboxes.length > 0) masterCheck.checked = true;
+            else masterCheck.checked = false;
+
+            if(checked.length > 0) {
+                btn.classList.add('visible');
+                document.getElementById('selectCount').innerText = checked.length;
+            } else {
+                btn.classList.remove('visible');
+            }
+        }
+
+        let pendingAction = null;
+        
+        window.openDeleteModal = function(id) {
+            document.getElementById('modalTitle').innerText = 'Delete Activity?';
+            document.getElementById('modalDesc').innerHTML = `This action cannot be undone. The activity and <b>all associated student scores</b> will be permanently removed.`;
+            
+            pendingAction = async () => {
+                const btn = document.getElementById('modalConfirmBtn');
+                const originalText = btn.innerText; btn.innerText = "Deleting..."; btn.disabled = true;
+                try {
+                    await deleteActivityAndScores(id);
+                    window.showToast("Activity Deleted!");
+                    window.loadActivities();
+                    window.closeModal();
+                } catch(e) { console.error(e); window.showToast("Delete failed", "error"); }
+                finally { btn.innerText = originalText; btn.disabled = false; }
+            };
+            document.getElementById('customModal').classList.add('open');
+        }
+
+        window.confirmBulkDelete = function() {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if(selected.length === 0) return;
+
+            document.getElementById('modalTitle').innerText = 'Delete Multiple Activities?';
+            document.getElementById('modalDesc').innerHTML = `You are about to delete <b>${selected.length} activities</b> and their associated scores.<br>This cannot be undone.`;
+            
+            pendingAction = async () => {
+                const btn = document.getElementById('modalConfirmBtn');
+                const originalText = btn.innerText; btn.innerText = "Processing..."; btn.disabled = true;
+                try {
+                    const promises = [];
+                    selected.forEach(box => {
+                        promises.push(deleteActivityAndScores(box.getAttribute('data-id')));
+                    });
+                    await Promise.all(promises);
+                    window.showToast(`Deleted ${selected.length} activities successfully!`);
+                    window.loadActivities();
+                    window.closeModal();
+                    document.getElementById('selectAll').checked = false;
+                } catch(e) { console.error(e); window.showToast("Bulk delete failed partially or fully.", "error"); }
+                finally { btn.innerText = originalText; btn.disabled = false; }
+            };
+            document.getElementById('customModal').classList.add('open');
+        }
+
+        async function deleteActivityAndScores(actId) {
+            await deleteDoc(doc(db, "activities", actId));
+            const q = query(collection(db, "scores"), where("activityId", "==", actId));
+            const snap = await getDocs(q);
+            const batchPromises = snap.docs.map(d => deleteDoc(d.ref));
+            await Promise.all(batchPromises);
+        }
+
+        window.confirmAction = function() { if(pendingAction) pendingAction(); }
+        window.closeModal = function() { document.getElementById('customModal').classList.remove('open'); pendingAction = null; }
+
+        const themeToggleBtn = document.getElementById('themeToggle'); const themeIcon = document.getElementById('themeIcon'); const body = document.body;
+        if (localStorage.getItem('theme') === 'dark') { body.classList.add('dark-theme'); themeIcon.className = 'ph-fill ph-moon'; } else { themeIcon.className = 'ph-fill ph-sun'; }
+        themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); const isDark = body.classList.contains('dark-theme'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeIcon.style.transform = 'rotate(360deg)'; setTimeout(() => { themeIcon.className = isDark ? 'ph-fill ph-moon' : 'ph-fill ph-sun'; themeIcon.style.transform = 'rotate(0deg)'; }, 150); });
+    </script>
+    
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-nav-bar">
+        <ul>
+            <li><a href="admin-dashboard.html"><i class="ph-fill ph-squares-four"></i>Dashboard</a></li>
+            <li><a href="admin-sections.html"><i class="ph-fill ph-users-three"></i>Sections</a></li>
+            <li><a href="admin-accounts.html"><i class="ph-fill ph-users"></i>Accounts</a></li>
+            <li><a href="admin-activities.html" class="active"><i class="ph-fill ph-clipboard-text"></i>Activities</a></li>
+            <li><a href="#" onclick="window.logout()"><i class="ph ph-sign-out"></i>Logout</a></li>
+        </ul>
+    </nav>
+</body>
+</html>
