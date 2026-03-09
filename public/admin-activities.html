@@ -118,6 +118,7 @@
             <li class="nav-item"><a href="admin-accounts.html"><i class="ph-fill ph-users"></i> Student Accounts</a></li>
             <li class="nav-item"><a href="admin-activities.html" class="active"><i class="ph-fill ph-clipboard-text"></i> Activities Setup</a></li>
             <li class="nav-item"><a href="admin-grades.html"><i class="ph-fill ph-exam"></i> Input Grades</a></li>
+            <li class="nav-item"><a href="admin-attendance.html"><i class="ph-fill ph-calendar-check"></i> Attendance</a></li>
             <li class="nav-item"><a href="admin-settings.html"><i class="ph-fill ph-gear"></i> System Settings</a></li>
             <li class="nav-item" style="margin-top:auto;"><a onclick="window.logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
         </ul>
@@ -177,10 +178,22 @@
             <div id="act-bulk" class="tab-content">
                 <div class="upload-zone" onclick="window.simulateUpload()">
                     <i class="ph-fill ph-microsoft-excel-logo upload-icon"></i>
-                    <div class="upload-text"><h4>Click Here to Upload Excel File (.xlsx)</h4><p>Upload a spreadsheet containing the activity details and the students' scores simultaneously.</p></div>
+                    <div class="upload-text"><h4>Click Here to Upload Excel File (.xlsx)</h4><p>Upload one Excel file containing <strong>multiple activities</strong> and all student scores. Each row = one student score for one activity.</p></div>
                 </div>
                 <div class="progress-container" id="progressBarContainer"><div class="progress-bar" id="progressBar"></div></div>
-                <button class="btn btn-outline" style="margin-top:20px;" onclick="window.downloadTemplate()"><i class="ph-bold ph-download-simple"></i> Download Excel Template</button>
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
+                    <button class="btn btn-outline" onclick="window.downloadTemplate()"><i class="ph-bold ph-download-simple"></i> Download Multi-Activity Template</button>
+                </div>
+                <div style="margin-top:20px; padding:20px; background:var(--accent-light); border-radius:16px; border:1px solid rgba(0,61,165,0.15);">
+                    <p style="font-size:14px; font-weight:700; color:var(--accent-primary); margin-bottom:8px;"><i class="ph-bold ph-info"></i> Multi-Activity Excel Guide</p>
+                    <p style="font-size:13px; color:var(--text-muted); line-height:1.8;">
+                        Required columns: <strong>Subject_Code, Section, Term, Category, Activity_Title, Date, Perfect_Score, Student_No, Student_Score</strong><br>
+                        • You can put as many different activities as you want in one file.<br>
+                        • Group by Subject+Section+Term+Category+Title to define one activity.<br>
+                        • Each row represents one student's score for one activity.<br>
+                        • <strong>Term:</strong> midterm or final &nbsp;|&nbsp; <strong>Category:</strong> written, perf, or exam
+                    </p>
+                </div>
             </div>
 
             <!-- MANAGE / DELETE SUBMENU -->
@@ -449,12 +462,25 @@
 
         window.downloadTemplate = function() {
             const wb = XLSX.utils.book_new();
-            // Added Section Column
-            const ws_data = [["Subject_Code", "Section", "Term", "Category", "Activity_Title", "Date", "Perfect_Score", "Student_No", "Student_Score"], ["IT312", "Block A", "midterm", "written", "Quiz 1", "2023-10-15", 50, "2021-00001", 45]];
+            const ws_data = [
+                ["Subject_Code", "Section", "Term", "Category", "Activity_Title", "Date", "Perfect_Score", "Student_No", "Student_Score"],
+                // Activity 1 - Quiz 1
+                ["IT312", "Block A", "midterm", "written", "Quiz 1: Data Structures", "2024-10-15", 50, "2021-00001", 45],
+                ["IT312", "Block A", "midterm", "written", "Quiz 1: Data Structures", "2024-10-15", 50, "2021-00002", 38],
+                ["IT312", "Block A", "midterm", "written", "Quiz 1: Data Structures", "2024-10-15", 50, "2021-00003", 47],
+                // Activity 2 - Lab Exercise
+                ["IT312", "Block A", "midterm", "perf", "Lab Exercise 1: Sorting Algorithms", "2024-10-20", 100, "2021-00001", 90],
+                ["IT312", "Block A", "midterm", "perf", "Lab Exercise 1: Sorting Algorithms", "2024-10-20", 100, "2021-00002", 85],
+                ["IT312", "Block A", "midterm", "perf", "Lab Exercise 1: Sorting Algorithms", "2024-10-20", 100, "2021-00003", 92],
+                // Activity 3 - Different subject, Final term
+                ["IT313", "Block A", "final", "exam", "Final Exam", "2024-11-30", 200, "2021-00001", 175],
+                ["IT313", "Block A", "final", "exam", "Final Exam", "2024-11-30", 200, "2021-00002", 160],
+            ];
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Template");
-            XLSX.writeFile(wb, "Activity_Score_Template.xlsx");
-            window.showToast("Template Downloaded!");
+            ws['!cols'] = [{wch:14},{wch:12},{wch:10},{wch:10},{wch:35},{wch:14},{wch:14},{wch:14},{wch:14}];
+            XLSX.utils.book_append_sheet(wb, ws, "Activities_Template");
+            XLSX.writeFile(wb, "MultiActivity_Score_Template.xlsx");
+            window.showToast("Multi-Activity Template Downloaded!");
         }
 
         // 4. Manage/Delete Logic
@@ -612,6 +638,8 @@
             <li><a href="admin-sections.html"><i class="ph-fill ph-users-three"></i>Sections</a></li>
             <li><a href="admin-accounts.html"><i class="ph-fill ph-users"></i>Accounts</a></li>
             <li><a href="admin-activities.html" class="active"><i class="ph-fill ph-clipboard-text"></i>Activities</a></li>
+            <li><a href="admin-grades.html"><i class="ph-fill ph-exam"></i>Grades</a></li>
+            <li><a href="admin-attendance.html"><i class="ph-fill ph-calendar-check"></i>Attendance</a></li>
             <li><a href="#" onclick="window.logout()"><i class="ph ph-sign-out"></i>Logout</a></li>
         </ul>
     </nav>

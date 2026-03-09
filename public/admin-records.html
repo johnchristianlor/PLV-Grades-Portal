@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
     <style>
         /* CORE VARIABLES */
@@ -196,6 +197,7 @@
             <li class="nav-item"><a href="admin-accounts.html"><i class="ph-fill ph-users"></i> Student Accounts</a></li>
             <li class="nav-item"><a href="admin-activities.html"><i class="ph-fill ph-clipboard-text"></i> Activities Setup</a></li>
             <li class="nav-item"><a href="admin-grades.html"><i class="ph-fill ph-exam"></i> Input Grades</a></li>
+            <li class="nav-item"><a href="admin-attendance.html"><i class="ph-fill ph-calendar-check"></i> Attendance</a></li>
             <li class="nav-item"><a href="admin-settings.html"><i class="ph-fill ph-gear"></i> System Settings</a></li>
             <li class="nav-item" style="margin-top:auto;"><a onclick="window.logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
         </ul>
@@ -228,8 +230,8 @@
                     <option value="gwa_low">Lowest Average First</option>
                 </select>
 
-                <button class="btn-export" onclick="window.exportToCSV()">
-                    <i class="ph-bold ph-download-simple"></i> Export CSV
+                <button class="btn-export" onclick="window.openExportModal()">
+                    <i class="ph-bold ph-download-simple"></i> Export
                 </button>
             </div>
 
@@ -628,16 +630,57 @@
             }
         }
 
-        window.exportToCSV = function() {
-            if(allRecords.length === 0) { window.showToast("No data to export", "error"); return; }
-            const csvData = allRecords.map(rec => ({ "Student No": rec.studentNo, "Name": rec.studentName, "Section": rec.section, "Subject": rec.subjectCode, "Midterm": rec.midterm || "", "Final": rec.final || "", "Average": rec.average || "", "Status": rec.status }));
-            const csv = Papa.unparse(csvData);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `Master_Records_${new Date().toISOString().slice(0,10)}.csv`;
-            link.click();
+        window.openExportModal = function() {
+            // Populate section dropdown from current data
+            const expSel = document.getElementById('exportSectionSelect');
+            const uniqueSecs = [...new Set(allRecords.map(r => r.section).filter(Boolean))].sort();
+            expSel.innerHTML = '<option value="">All Sections</option>';
+            uniqueSecs.forEach(s => expSel.innerHTML += `<option value="${s}">${s}</option>`);
+            document.getElementById('exportModal').classList.add('open');
         }
+
+        window.closeExportModal = function() {
+            document.getElementById('exportModal').classList.remove('open');
+        }
+
+        window.doExport = function(format) {
+            const selectedSection = document.getElementById('exportSectionSelect').value;
+            let dataToExport = selectedSection ? allRecords.filter(r => r.section === selectedSection) : allRecords;
+            if(dataToExport.length === 0) { window.showToast("No data to export.", "error"); return; }
+
+            const rows = dataToExport.map(rec => ({
+                "Student No.": rec.studentNo,
+                "Full Name": rec.studentName,
+                "Section": rec.section,
+                "Subject": rec.subjectCode,
+                "Midterm Grade": rec.midterm ? rec.midterm.toFixed(2) : "",
+                "Final Grade": rec.final ? rec.final.toFixed(2) : "",
+                "Average": rec.average ? rec.average.toFixed(2) : "",
+                "Status": rec.status
+            }));
+
+            const filename = `Records_${selectedSection || 'AllSections'}_${new Date().toISOString().slice(0,10)}`;
+
+            if(format === 'xlsx') {
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(rows);
+                ws['!cols'] = [{wch:14},{wch:30},{wch:12},{wch:10},{wch:14},{wch:12},{wch:10},{wch:10}];
+                XLSX.utils.book_append_sheet(wb, ws, selectedSection || "All Records");
+                XLSX.writeFile(wb, `${filename}.xlsx`);
+                window.showToast("Exported as Excel!");
+            } else {
+                const csv = Papa.unparse(rows);
+                const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `${filename}.csv`;
+                link.click();
+                window.showToast("Exported as CSV!");
+            }
+            window.closeExportModal();
+        }
+
+        window.exportToCSV = window.doExport;
 
         // Init
         fetchRecords();
@@ -646,6 +689,38 @@
         if (localStorage.getItem('theme') === 'dark') { body.classList.add('dark-theme'); themeIcon.className = 'ph-fill ph-moon'; } else { themeIcon.className = 'ph-fill ph-sun'; }
         themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); const isDark = body.classList.contains('dark-theme'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeIcon.style.transform = 'rotate(360deg)'; setTimeout(() => { themeIcon.className = isDark ? 'ph-fill ph-moon' : 'ph-fill ph-sun'; themeIcon.style.transform = 'rotate(0deg)'; }, 150); });
     </script>
+    <!-- EXPORT MODAL -->
+    <div id="exportModal" class="modal-overlay">
+        <div class="modal-box" style="max-width:480px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h3>Export Records</h3>
+                    <p>Choose section and format to download.</p>
+                </div>
+                <button class="modal-close" onclick="window.closeExportModal()"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <div>
+                    <label style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:8px;">Section</label>
+                    <select id="exportSectionSelect" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text-main);font-size:15px;font-weight:600;outline:none;">
+                        <option value="">All Sections</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:8px;">Format</label>
+                    <div style="display:flex; gap:12px;">
+                        <button class="btn-save" onclick="window.doExport('xlsx')" style="flex:1; padding:14px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:14px;">
+                            <i class="ph-bold ph-microsoft-excel-logo"></i> Excel (.xlsx)
+                        </button>
+                        <button class="btn-cancel" onclick="window.doExport('csv')" style="flex:1; padding:14px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:14px; border:1px solid var(--accent-primary); color:var(--accent-primary);">
+                            <i class="ph-bold ph-file-csv"></i> CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MOBILE BOTTOM NAV -->
     <nav class="mobile-nav-bar">
         <ul>
@@ -656,6 +731,7 @@
             <li><a href="admin-accounts.html" id="mnav-acc"><i class="ph-fill ph-users"></i>Accounts</a></li>
             <li><a href="admin-activities.html" id="mnav-act"><i class="ph-fill ph-clipboard-text"></i>Activities</a></li>
             <li><a href="admin-grades.html" id="mnav-grd"><i class="ph-fill ph-exam"></i>Grades</a></li>
+            <li><a href="admin-attendance.html" id="mnav-att"><i class="ph-fill ph-calendar-check"></i>Attendance</a></li>
             <li><a href="admin-settings.html" id="mnav-set"><i class="ph-fill ph-gear"></i>Settings</a></li>
             <li><a href="#" onclick="window.logout()" id="mnav-out"><i class="ph ph-sign-out"></i>Logout</a></li>
         </ul>
