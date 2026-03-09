@@ -7,957 +7,1149 @@
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/dfdlqf6ng/image/upload/v1772078917/PamantasanNgLungsodNgValenzuelaLogo_t53djy.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
     <style>
-        /* CORE VARIABLES & RESET */
-        :root { --bg-body: #f0f4f8; --text-main: #0f172a; --text-muted: #64748b; --glass-bg: rgba(255, 255, 255, 0.75); --glass-border: rgba(255, 255, 255, 0.9); --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.9); --glass-shadow: 0 24px 48px -12px rgba(0, 35, 102, 0.08); --accent-primary: #003DA5; --accent-hover: #00287A; --accent-light: rgba(0, 61, 165, 0.08); --accent-gold: #D4AF37; --input-bg: rgba(255, 255, 255, 0.9); --input-border: rgba(0, 35, 102, 0.1); --blob-1: #cce0ff; --blob-2: #ffeb99; --blob-3: #e0ebff; --success: #10b981; --danger: #e11d48; }
-        .dark-theme { --bg-body: #040914; --text-main: #f8fafc; --text-muted: #94a3b8; --glass-bg: rgba(10, 15, 30, 0.6); --glass-border: rgba(255, 255, 255, 0.06); --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.04); --glass-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.8); --accent-primary: #3b82f6; --accent-hover: #60a5fa; --accent-light: rgba(59, 130, 246, 0.15); --accent-gold: #FCD34D; --input-bg: rgba(0, 0, 0, 0.4); --input-border: rgba(255, 255, 255, 0.1); --blob-1: #001f5c; --blob-2: #422b00; --blob-3: #001233; --success: #34d399; --danger: #fb7185; }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.4s ease; }
-        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; position: relative; }
-        
-        .ambient-mesh { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; z-index: -1; pointer-events: none; } 
-        .blob { position: absolute; filter: blur(120px); opacity: 0.6; border-radius: 50%; animation: float 18s infinite alternate ease-in-out; } 
-        .blob-1 { width: 600px; height: 600px; background: var(--blob-1); top: -10%; left: -10%; } 
-        .blob-2 { width: 700px; height: 700px; background: var(--blob-2); bottom: -20%; right: -10%; animation-delay: -5s; } 
-        .blob-3 { width: 500px; height: 500px; background: var(--blob-3); top: 40%; left: 40%; animation-delay: -10s; } 
+        :root{--bg-body:#f0f4f8;--text-main:#0f172a;--text-muted:#64748b;--glass-bg:rgba(255,255,255,0.75);--glass-border:rgba(255,255,255,0.9);--glass-highlight:inset 0 1px 0 0 rgba(255,255,255,0.9);--glass-shadow:0 24px 48px -12px rgba(0,35,102,0.08);--accent-primary:#003DA5;--accent-hover:#00287A;--accent-light:rgba(0,61,165,0.08);--accent-gold:#D4AF37;--input-bg:rgba(255,255,255,0.92);--input-border:rgba(0,35,102,0.12);--blob-1:#cce0ff;--blob-2:#ffeb99;--blob-3:#e0ebff;--success:#10b981;--success-bg:rgba(16,185,129,0.1);--danger:#e11d48;--danger-bg:rgba(225,29,72,0.1);--warn:#f59e0b;--warn-bg:rgba(245,158,11,0.1);}
+        .dark-theme{--bg-body:#040914;--text-main:#f8fafc;--text-muted:#94a3b8;--glass-bg:rgba(10,15,30,0.65);--glass-border:rgba(255,255,255,0.07);--glass-highlight:inset 0 1px 0 0 rgba(255,255,255,0.04);--glass-shadow:0 24px 48px -12px rgba(0,0,0,0.8);--accent-primary:#3b82f6;--accent-hover:#60a5fa;--accent-light:rgba(59,130,246,0.15);--accent-gold:#FCD34D;--input-bg:rgba(255,255,255,0.05);--input-border:rgba(255,255,255,0.1);--blob-1:#001f5c;--blob-2:#422b00;--blob-3:#001233;--success:#34d399;--success-bg:rgba(52,211,153,0.12);--danger:#fb7185;--danger-bg:rgba(251,113,133,0.12);--warn:#fbbf24;--warn-bg:rgba(251,191,36,0.12);}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Plus Jakarta Sans',sans-serif;}
+        body{background:var(--bg-body);color:var(--text-main);min-height:100vh;display:flex;overflow-x:hidden;}
+        .ambient-mesh{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
+        .blob{position:absolute;filter:blur(120px);opacity:.55;border-radius:50%;animation:float 18s infinite alternate ease-in-out;}
+        .blob-1{width:600px;height:600px;background:var(--blob-1);top:-10%;left:-10%;}
+        .blob-2{width:700px;height:700px;background:var(--blob-2);bottom:-20%;right:-10%;animation-delay:-5s;}
+        .blob-3{width:500px;height:500px;background:var(--blob-3);top:40%;left:40%;animation-delay:-10s;}
+        @keyframes float{0%{transform:translate(0,0) scale(1);}100%{transform:translate(60px,40px) scale(1.08);}}
+        .glass{background:var(--glass-bg);backdrop-filter:blur(32px);border:1px solid var(--glass-border);box-shadow:var(--glass-highlight),var(--glass-shadow);border-radius:28px;}
+        .sidebar{width:300px;height:100vh;padding:40px 24px;display:flex;flex-direction:column;position:sticky;top:0;z-index:20;border-right:1px solid var(--glass-border);backdrop-filter:blur(24px);}
+        .logo-container{display:flex;align-items:center;gap:14px;margin-bottom:48px;padding:0 12px;}
+        .logo-img{width:52px;height:52px;border-radius:50%;box-shadow:0 8px 16px rgba(0,0,0,.1);}
+        .logo-text h2{font-size:22px;font-weight:800;line-height:1.1;}
+        .logo-text p{font-size:11px;font-weight:800;color:var(--accent-primary);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+        .nav-menu{list-style:none;flex:1;display:flex;flex-direction:column;gap:8px;}
+        .nav-item a{text-decoration:none;color:var(--text-muted);font-weight:600;font-size:15px;display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:18px;cursor:pointer;transition:all .25s;}
+        .nav-item a i{font-size:22px;}
+        .nav-item a:hover{background:var(--accent-light);color:var(--accent-primary);}
+        .nav-item a.active{background:var(--accent-primary);color:#fff;box-shadow:0 10px 24px -8px var(--accent-primary);}
+        .main-wrapper{flex:1;padding:40px 48px;display:flex;flex-direction:column;gap:28px;min-width:0;overflow:hidden;}
+        .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+        .header h1{font-size:28px;font-weight:800;letter-spacing:-1px;}
+        .header p{color:var(--text-muted);font-weight:600;font-size:15px;}
+        .header-actions{display:flex;align-items:center;gap:12px;}
+        .icon-btn{width:48px;height:48px;border-radius:50%;display:flex;justify-content:center;align-items:center;background:var(--glass-bg);border:1px solid var(--glass-border);font-size:20px;color:var(--text-muted);cursor:pointer;transition:all .3s;}
+        .theme-toggle{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.6));border-color:rgba(255,255,255,.8);color:#d97706;}
+        .theme-toggle:hover{transform:translateY(-3px) scale(1.05);}
+        .dark-theme .theme-toggle{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.9));border-color:rgba(255,255,255,.1);color:#93c5fd;}
+        .card{padding:28px 32px;display:flex;flex-direction:column;position:relative;}
 
-        .glass { background: var(--glass-bg); backdrop-filter: blur(32px); border: 1px solid var(--glass-border); box-shadow: var(--glass-highlight), var(--glass-shadow); border-radius: 28px; }
-        .sidebar { width: 300px; height: 100vh; padding: 40px 24px; display: flex; flex-direction: column; position: sticky; top: 0; z-index: 10; border-right: 1px solid var(--glass-border); background: rgba(var(--bg-body), 0.3); backdrop-filter: blur(24px); } 
-        .logo-container { display: flex; align-items: center; gap: 14px; margin-bottom: 48px; padding: 0 12px; } .logo-img { width: 52px; height: 52px; border-radius: 50%; box-shadow: 0 8px 16px rgba(0,0,0,0.1); } .logo-text h2 { font-size: 22px; font-weight: 800; color: var(--text-main); line-height: 1.1; } .logo-text p { font-size: 11px; font-weight: 800; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
-        .nav-menu { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 8px; } .nav-item a { text-decoration: none; color: var(--text-muted); font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 16px; padding: 14px 18px; border-radius: 18px; cursor: pointer;} .nav-item a i { font-size: 22px; transition: transform 0.3s ease; } .nav-item a:hover { background: var(--accent-light); color: var(--accent-primary); } .nav-item a.active { background: var(--accent-primary); color: #fff; box-shadow: 0 10px 24px -8px var(--accent-primary); }
+        /* TABS */
+        .tab-controls{display:flex;background:rgba(0,0,0,.05);padding:5px;border-radius:14px;margin-bottom:24px;width:fit-content;gap:3px;}
+        .dark-theme .tab-controls{background:rgba(255,255,255,.05);}
+        .tab-btn{background:transparent;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;color:var(--text-muted);cursor:pointer;transition:all .25s;font-family:'Plus Jakarta Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;}
+        .tab-btn.active{background:var(--glass-bg);color:var(--accent-primary);box-shadow:0 4px 12px rgba(0,0,0,.06);}
+        .tab-content{display:none;}
+        .tab-content.active{display:block;animation:fadeIn .3s ease;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-        .main-wrapper { flex: 1; padding: 40px 48px; display: flex; flex-direction: column; gap: 32px; max-width: 1600px; margin: 0 auto; width: 100%; } 
-        .header { display: flex; justify-content: space-between; align-items: center; } .header h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; } .header p { color: var(--text-muted); font-weight: 600; font-size: 15px; } .header-actions { display: flex; align-items: center; gap: 16px; }
-        .icon-btn { width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: var(--glass-highlight), 0 4px 12px rgba(0,0,0,0.02); font-size: 20px; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease; } .theme-toggle { background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6)); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255,255,255,0.8); color: #d97706; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; } .theme-toggle:hover { transform: translateY(-3px) scale(1.05); } .dark-theme .theme-toggle { background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255,255,255,0.05); color: #93c5fd; }
+        /* TOOLBAR */
+        .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+        .search-box{position:relative;flex:1;min-width:180px;}
+        .search-box i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:17px;pointer-events:none;}
+        .search-input{width:100%;padding:11px 14px 11px 42px;border-radius:12px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text-main);font-size:14px;font-weight:500;outline:none;transition:.25s;font-family:'Plus Jakarta Sans',sans-serif;}
+        .search-input:focus{border-color:var(--accent-primary);box-shadow:0 0 0 3px var(--accent-light);}
+        .sel{padding:11px 14px;border-radius:12px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text-main);font-size:14px;font-weight:600;outline:none;transition:.25s;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+        .sel:focus{border-color:var(--accent-primary);box-shadow:0 0 0 3px var(--accent-light);}
 
-        .card { padding: 32px; display: flex; flex-direction: column; position: relative; overflow: hidden; margin-bottom: 24px;}
-        .tab-controls { display: flex; background: rgba(0,0,0,0.05); padding: 6px; border-radius: 14px; margin-bottom: 24px; width: fit-content; } .dark-theme .tab-controls { background: rgba(255,255,255,0.05); } .tab-btn { background: transparent; border: none; padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.3s; } .tab-btn.active { background: var(--glass-bg); color: var(--accent-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); } .tab-content { display: none; } .tab-content.active { display: block; animation: fadeIn 0.3s ease; } @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .form-section-title { grid-column: span 2; font-size: 15px; font-weight: 800; color: var(--accent-primary); border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; margin-top: 16px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;} 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } .form-group { display: flex; flex-direction: column; gap: 8px; } .form-group.full { grid-column: span 2; } .form-label { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; } 
-        .form-control { background: var(--input-bg); border: 1px solid var(--input-border); padding: 14px 16px; border-radius: 12px; font-size: 15px; color: var(--text-main); font-weight: 500; outline: none; transition: all 0.3s; } .form-control:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 4px var(--accent-light); }
-        .form-control:read-only { background: rgba(0,0,0,0.03); color: var(--text-muted); border-color: transparent; cursor: not-allowed; }
+        /* CHIPS */
+        .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+        .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;font-size:12px;font-weight:700;}
+        .chip-blue{background:var(--accent-light);color:var(--accent-primary);}
+        .chip-green{background:var(--success-bg);color:var(--success);}
+        .chip-red{background:var(--danger-bg);color:var(--danger);}
+        .chip-muted{background:rgba(100,116,139,.08);color:var(--text-muted);}
+        .chip-warn{background:var(--warn-bg);color:var(--warn);}
 
-        select.form-control { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 256 256'%3E%3Cpath fill='%2364748b' d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 48px; }
-        
-        .btn { padding: 14px 24px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; } .btn-primary { background: var(--accent-primary); color: #fff; box-shadow: 0 8px 16px var(--accent-light); } .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); } .btn-outline { background: transparent; border: 1px solid var(--accent-primary); color: var(--accent-primary); } .btn-outline:hover { background: var(--accent-light); }
-        
-        .upload-zone { border: 2px dashed var(--accent-primary); background: var(--accent-light); border-radius: 20px; padding: 48px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; cursor: pointer; transition: all 0.3s; margin-bottom: 24px;} .upload-zone:hover { background: rgba(0, 61, 165, 0.15); border-color: var(--accent-hover); } .dark-theme .upload-zone:hover { background: rgba(59, 130, 246, 0.2); } .upload-icon { font-size: 48px; color: var(--accent-primary); } .upload-text h4 { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;} .upload-text p { font-size: 13px; color: var(--text-muted); font-weight: 500;}
-        
-        /* Table Actions & Search */
-        .table-controls-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
-        .search-wrapper { position: relative; width: 300px; }
-        .search-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 18px; }
-        .search-input { width: 100%; padding: 12px 16px 12px 48px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main); font-size: 14px; font-weight: 500; outline: none; }
-        .search-input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-light); }
-        
-        .table-container { width: 100%; overflow-x: auto; } .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; text-align: left; } .modern-table th { padding: 0 16px 8px; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--glass-border); } .modern-table td { padding: 16px; background: var(--input-bg); border-top: 1px solid var(--input-border); border-bottom: 1px solid var(--input-border); font-size: 14px; font-weight: 600; vertical-align: middle; } .modern-table td:first-child { border-left: 1px solid var(--input-border); border-radius: 12px 0 0 12px; } .modern-table td:last-child { border-right: 1px solid var(--input-border); border-radius: 0 12px 12px 0; }
-        
-        .check-col { width: 40px; text-align: center; }
-        .custom-checkbox { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--text-muted); appearance: none; cursor: pointer; position: relative; transition: all 0.2s; }
-        .custom-checkbox:checked { background: var(--accent-primary); border-color: var(--accent-primary); }
-        .custom-checkbox:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 12px; font-weight: bold; }
+        /* GRID TABLE */
+        .grid-scroll{width:100%;overflow-x:auto;border-radius:16px;border:1px solid var(--glass-border);}
+        .grid-scroll::-webkit-scrollbar{height:6px;}
+        .grid-scroll::-webkit-scrollbar-thumb{background:var(--accent-light);border-radius:4px;}
+        .grid-table{border-collapse:collapse;min-width:100%;width:100%;}
+        .grid-table thead th{padding:10px 14px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;background:var(--input-bg);border-bottom:2px solid var(--glass-border);cursor:pointer;user-select:none;transition:color .2s;position:sticky;top:0;z-index:3;}
+        .grid-table thead th:hover{color:var(--accent-primary);}
+        .grid-table thead th.sort-asc::after{content:' \2191';color:var(--accent-primary);}
+        .grid-table thead th.sort-desc::after{content:' \2193';color:var(--accent-primary);}
+        .grid-table thead th.no-sort{cursor:default;}
+        .grid-table thead th.no-sort:hover{color:var(--text-muted);}
+        .grid-table tbody tr{transition:background .12s;}
+        .grid-table tbody tr:hover td{background:var(--accent-light)!important;}
+        .grid-table tbody td{padding:11px 14px;font-size:13px;font-weight:600;border-bottom:1px solid var(--glass-border);background:var(--input-bg);vertical-align:middle;white-space:nowrap;}
+        .grid-table tbody tr:nth-child(even) td{background:rgba(0,61,165,.025);}
+        .dark-theme .grid-table tbody tr:nth-child(even) td{background:rgba(59,130,246,.04);}
+        .check-col{width:40px;text-align:center;}
+        .custom-checkbox{width:17px;height:17px;border-radius:4px;border:2px solid var(--text-muted);appearance:none;cursor:pointer;position:relative;transition:all .2s;}
+        .custom-checkbox:checked{background:var(--accent-primary);border-color:var(--accent-primary);}
+        .custom-checkbox:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:11px;font-weight:800;}
+        .status-badge{padding:4px 10px;border-radius:8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;}
+        .status-active{background:var(--success-bg);color:var(--success);}
+        .status-inactive{background:var(--danger-bg);color:var(--danger);}
+        .action-btn{padding:6px 10px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:4px;margin-right:3px;}
+        .btn-edit-row{background:rgba(212,175,55,.12);color:#b45309;}
+        .btn-edit-row:hover{background:var(--accent-gold);color:#fff;transform:translateY(-1px);}
+        .btn-toggle-row{background:var(--accent-light);color:var(--accent-primary);}
+        .btn-toggle-row:hover{background:var(--accent-primary);color:#fff;transform:translateY(-1px);}
+        .btn-delete-row{background:var(--danger-bg);color:var(--danger);}
+        .btn-delete-row:hover{background:var(--danger);color:#fff;transform:translateY(-1px);}
+        .table-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px;}
+        .table-footer span{font-size:12px;color:var(--text-muted);font-weight:600;}
+        .empty-msg td,.loading-msg td{text-align:center;padding:60px 20px!important;color:var(--text-muted);font-size:14px;font-weight:600;background:transparent!important;}
+        .spin{display:inline-block;width:18px;height:18px;border:2px solid var(--accent-light);border-top-color:var(--accent-primary);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px;}
+        @keyframes spin{to{transform:rotate(360deg);}}
 
-        .status-badge { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; } .status-active { background: rgba(16, 185, 129, 0.15); color: var(--success); } .status-inactive { background: rgba(225, 29, 72, 0.15); color: var(--danger); }
-        .action-btn { padding: 8px 12px; border-radius: 8px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-right: 6px; display: inline-flex; align-items: center; gap: 4px; } 
-        .btn-toggle { background: var(--accent-light); color: var(--accent-primary); } .btn-toggle:hover { background: var(--accent-primary); color: #fff; transform: translateY(-2px); } 
-        .btn-delete { background: rgba(225, 29, 72, 0.1); color: var(--danger); } .btn-delete:hover { background: var(--danger); color: #fff; transform: translateY(-2px); }
-        .btn-edit { background: rgba(212, 175, 55, 0.15); color: #b45309; } .btn-edit:hover { background: var(--accent-gold); color: #fff; transform: translateY(-2px); }
-        
-        .btn-bulk-delete { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); display: none; }
-        .btn-bulk-delete.visible { display: inline-flex; animation: fadeIn 0.3s ease; }
+        /* BUTTONS */
+        .btn{padding:11px 20px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap;}
+        .btn-primary{background:var(--accent-primary);color:#fff;box-shadow:0 4px 12px var(--accent-light);}
+        .btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px);}
+        .btn-danger{background:var(--danger);color:#fff;}
+        .btn-danger:hover{opacity:.88;transform:translateY(-1px);}
+        .btn-outline{background:transparent;border:1.5px solid var(--accent-primary);color:var(--accent-primary);}
+        .btn-outline:hover{background:var(--accent-light);}
+        .btn-bulk{display:none;}
+        .btn-bulk.visible{display:inline-flex;}
 
-        /* MODAL STYLES */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-        .modal-overlay.open { display: flex; opacity: 1; }
-        .modal-box { background: var(--glass-bg); padding: 36px 40px; border-radius: 28px; max-width: 500px; width: 90%; text-align: center; border: 1px solid var(--glass-border); box-shadow: 0 24px 60px rgba(0,0,0,0.3); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); max-height: 90vh; overflow-y: auto;}
-        .modal-overlay.open .modal-box { transform: scale(1); }
-        .modal-icon-wrapper { width: 72px; height: 72px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; margin: 0 auto 20px; }
-        .icon-danger { background: rgba(225, 29, 72, 0.1); color: var(--danger); animation: pulse-red 2s infinite; }
-        .icon-primary { background: var(--accent-light); color: var(--accent-primary); animation: pulse-blue 2s infinite; }
-        .icon-edit { background: rgba(212, 175, 55, 0.15); color: var(--accent-gold); }
+        /* FORM */
+        .form-section-title{grid-column:span 2;font-size:13px;font-weight:800;color:var(--accent-primary);border-bottom:1px solid var(--glass-border);padding-bottom:8px;margin-top:16px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px;}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+        .form-group{display:flex;flex-direction:column;gap:7px;}
+        .form-group.full{grid-column:span 2;}
+        .form-label{font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
+        .form-control{background:var(--input-bg);border:1px solid var(--input-border);padding:12px 14px;border-radius:12px;font-size:14px;color:var(--text-main);font-weight:500;outline:none;transition:all .25s;font-family:'Plus Jakarta Sans',sans-serif;width:100%;}
+        .form-control:focus{border-color:var(--accent-primary);box-shadow:0 0 0 3px var(--accent-light);}
+        .form-control[readonly]{background:rgba(0,0,0,.03);color:var(--text-muted);border-color:transparent;cursor:not-allowed;}
+        .dark-theme .form-control[readonly]{background:rgba(255,255,255,.03);}
+        select.form-control{cursor:pointer;}
+        .fetching-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--accent-primary);font-weight:700;margin-top:3px;}
+        .fetched-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:7px;font-size:11px;font-weight:700;background:var(--success-bg);color:var(--success);margin-left:8px;}
 
-        .modal-box h3 { font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; }
-        .modal-box p { font-size: 15px; color: var(--text-muted); font-weight: 500; margin-bottom: 32px; }
-        .modal-actions { display: flex; gap: 12px; justify-content: center; margin-top: 24px;}
-        .modal-btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; transition: 0.3s; flex: 1; }
-        .btn-cancel { background: transparent; border: 1px solid var(--input-border); color: var(--text-muted); }
-        .btn-confirm-delete { background: var(--danger); color: white; }
-        .btn-confirm-toggle { background: var(--accent-primary); color: white; }
-        .btn-confirm-save { background: var(--accent-primary); color: white; }
+        /* UPLOAD */
+        .upload-zone{border:2px dashed var(--accent-primary);background:var(--accent-light);border-radius:20px;padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px;cursor:pointer;transition:all .3s;margin-bottom:20px;}
+        .upload-zone:hover{background:rgba(0,61,165,.15);}
+        .upload-icon{font-size:48px;color:var(--accent-primary);}
+        .upload-text h4{font-size:18px;font-weight:700;margin-bottom:4px;}
+        .upload-text p{font-size:13px;color:var(--text-muted);font-weight:500;}
 
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4); } 70% { box-shadow: 0 0 0 12px rgba(225, 29, 72, 0); } 100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
-        @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(0, 61, 165, 0.4); } 70% { box-shadow: 0 0 0 12px rgba(0, 61, 165, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 61, 165, 0); } }
+        /* TEMPLATE INFO */
+        .template-info{background:var(--accent-light);border:1px solid rgba(0,61,165,.15);border-radius:14px;padding:16px 20px;margin-bottom:20px;}
+        .dark-theme .template-info{border-color:rgba(59,130,246,.2);}
+        .template-info h4{font-size:14px;font-weight:800;color:var(--accent-primary);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+        .template-info p{font-size:13px;color:var(--text-muted);font-weight:500;line-height:1.6;}
+        .template-info ul{margin:8px 0 0 18px;font-size:13px;color:var(--text-muted);font-weight:500;line-height:1.9;}
+        .col-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+        .col-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;}
+        .col-req{background:var(--accent-light);color:var(--accent-primary);border:1px solid rgba(0,61,165,.2);}
+        .col-auto{background:var(--success-bg);color:var(--success);border:1px solid rgba(16,185,129,.2);}
 
-        .toast { position: fixed; bottom: 32px; right: 32px; background: var(--success); color: #fff; padding: 16px 24px; border-radius: 12px; font-weight: 600; box-shadow: 0 12px 24px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 12px; transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;} .toast.show { transform: translateX(0); } .toast.error { background: var(--danger); }
+        /* PREVIEW TABLE */
+        .preview-wrap{border-radius:14px;border:1px solid var(--glass-border);overflow:auto;max-height:380px;}
+        .preview-wrap table{width:100%;border-collapse:collapse;}
+        .preview-wrap th{padding:8px 12px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;background:var(--input-bg);border-bottom:1px solid var(--glass-border);position:sticky;top:0;}
+        .preview-wrap td{padding:9px 12px;font-size:12px;font-weight:600;border-bottom:1px solid var(--glass-border);}
+        .preview-wrap tr:last-child td{border-bottom:none;}
 
-        @media (max-width: 1024px) { body { flex-direction: column; } .sidebar { width: 100%; height: auto; flex-direction: row; padding: 20px; justify-content: space-between; align-items: center; z-index: 100; border-right: none; border-bottom: 1px solid var(--glass-border);} .nav-menu { display: none; } .form-grid { grid-template-columns: 1fr; } .form-section-title, .form-group.full { grid-column: span 1; } }
-    
-        /* ===== MOBILE NAVIGATION ===== */
-        .mobile-nav-bar {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--glass-bg);
-            backdrop-filter: blur(32px);
-            -webkit-backdrop-filter: blur(32px);
-            border-top: 1px solid var(--glass-border);
-            box-shadow: 0 -8px 32px rgba(0,0,0,0.1);
-            z-index: 200;
-            padding: 6px 0 max(6px, env(safe-area-inset-bottom));
-        }
-        .mobile-nav-bar ul {
-            display: flex;
-            list-style: none;
-            align-items: center;
-            padding: 0 12px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            gap: 4px;
-        }
-        .mobile-nav-bar ul::-webkit-scrollbar { display: none; }
-        .mobile-nav-bar ul li {
-            flex: 0 0 auto;
-            scroll-snap-align: start;
-        }
-        .mobile-nav-bar ul li a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            padding: 8px 14px;
-            border-radius: 14px;
-            transition: all 0.3s;
-            cursor: pointer;
-            min-width: 60px;
-            white-space: nowrap;
-        }
-        .mobile-nav-bar ul li a i { font-size: 22px; }
-        .mobile-nav-bar ul li a:hover,
-        .mobile-nav-bar ul li a.active {
-            color: var(--accent-primary);
-            background: var(--accent-light);
-        }
-        @media (max-width: 1024px) {
-            .mobile-nav-bar { display: block; }
-            .main-wrapper { padding: 24px 20px; padding-bottom: 90px !important; }
-            .sidebar { position: sticky; top: 0; }
-            .logo-container { margin-bottom: 0 !important; }
-        }
-        @media (max-width: 768px) {
-            .main-wrapper { padding: 16px 12px; padding-bottom: 90px !important; }
-            .header h1 { font-size: 22px; }
-            .header { gap: 8px; }
-            .card { padding: 20px 16px; }
-            .bento-grid { gap: 16px; }
-            .tab-controls { width: 100%; }
-            .tab-btn { flex: 1; padding: 10px 12px; font-size: 12px; }
-            .table-controls-wrapper { flex-direction: column; align-items: stretch; }
-            .search-wrapper { width: 100% !important; }
-            .form-grid { grid-template-columns: 1fr !important; gap: 14px; }
-            .form-section-title, .form-group.full { grid-column: span 1 !important; }
-            .modern-table { font-size: 13px; }
-            .modern-table th, .modern-table td { padding: 10px 8px; }
-            .action-btn { padding: 6px 8px; font-size: 12px; }
-            .btn { padding: 12px 16px; font-size: 14px; }
-            .modal-box { padding: 24px 20px !important; width: 95% !important; }
-        }
+        /* MODAL */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;justify-content:center;align-items:center;opacity:0;transition:opacity .3s;backdrop-filter:blur(6px);}
+        .modal-overlay.open{display:flex;opacity:1;}
+        .modal-box{background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:0 32px 64px rgba(0,0,0,.3);border-radius:24px;width:95%;padding:32px;transform:scale(.92);transition:transform .3s cubic-bezier(.34,1.56,.64,1);max-height:92vh;overflow-y:auto;}
+        .modal-overlay.open .modal-box{transform:scale(1);}
+        .modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--glass-border);}
+        .modal-head h3{font-size:20px;font-weight:800;}
+        .modal-head p{font-size:13px;color:var(--text-muted);margin-top:3px;}
+        .modal-close-btn{background:none;border:none;font-size:22px;color:var(--text-muted);cursor:pointer;padding:4px;line-height:1;}
+        .modal-icon-wrapper{width:68px;height:68px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:32px;margin:0 auto 16px;}
+        .icon-danger{background:var(--danger-bg);color:var(--danger);}
+        .icon-primary{background:var(--accent-light);color:var(--accent-primary);}
+        .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:16px;border-top:1px solid var(--glass-border);}
+        .modal-btn{padding:10px 22px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+        .btn-cancel{background:transparent;border:1px solid var(--input-border);color:var(--text-muted);}
+        .btn-confirm-delete{background:var(--danger);color:#fff;}
+        .btn-confirm-toggle{background:var(--accent-primary);color:#fff;}
+        .btn-confirm-save{background:var(--accent-primary);color:#fff;}
+        .confirm-box{max-width:420px;text-align:center;}
+        .confirm-box .modal-actions{justify-content:center;}
+        .edit-box{max-width:660px;}
 
-        </style>
+        /* TOAST */
+        .toast{position:fixed;bottom:32px;right:32px;color:#fff;padding:14px 22px;border-radius:14px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:10px;transform:translateX(160%);transition:transform .4s cubic-bezier(.4,0,.2,1);z-index:9000;}
+        .toast.show{transform:translateX(0);}
+        .toast-ok{background:var(--success);box-shadow:0 12px 24px rgba(16,185,129,.3);}
+        .toast-err{background:var(--danger);box-shadow:0 12px 24px rgba(225,29,72,.3);}
+
+        /* MOBILE NAV */
+        .mobile-nav-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--glass-bg);backdrop-filter:blur(32px);border-top:1px solid var(--glass-border);z-index:200;padding:6px 0 max(6px,env(safe-area-inset-bottom));}
+        .mobile-nav-bar ul{display:flex;list-style:none;padding:0 12px;overflow-x:auto;gap:4px;scrollbar-width:none;}
+        .mobile-nav-bar ul::-webkit-scrollbar{display:none;}
+        .mobile-nav-bar ul li a{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--text-muted);font-size:9px;font-weight:700;text-transform:uppercase;padding:8px 12px;border-radius:12px;min-width:54px;white-space:nowrap;transition:all .2s;}
+        .mobile-nav-bar ul li a i{font-size:22px;}
+        .mobile-nav-bar ul li a.active{color:var(--accent-primary);background:var(--accent-light);}
+
+        @media(max-width:1024px){body{flex-direction:column;}.sidebar{width:100%;height:auto;padding:18px 20px;border-right:none;border-bottom:1px solid var(--glass-border);position:sticky;top:0;}.nav-menu{display:none;}.logo-container{margin-bottom:0!important;}.mobile-nav-bar{display:block;}.main-wrapper{padding:20px 16px;padding-bottom:90px!important;}}
+        @media(max-width:768px){.main-wrapper{padding:14px 10px;padding-bottom:90px!important;}.header h1{font-size:22px;}.card{padding:18px 14px;}.form-grid{grid-template-columns:1fr;}.form-section-title,.form-group.full{grid-column:span 1;}.toolbar{flex-direction:column;}.btn{padding:9px 14px;font-size:13px;}}
+    </style>
 </head>
 <body>
+<div class="ambient-mesh"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
 
-    <div class="ambient-mesh"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="logo-container">
-            <img src="https://res.cloudinary.com/dfdlqf6ng/image/upload/v1772078917/PamantasanNgLungsodNgValenzuelaLogo_t53djy.png" alt="PLV Logo" class="logo-img">
-            <div class="logo-text"><h2>PLV Admin</h2><p>System Management</p></div>
-        </div>
-        <ul class="nav-menu">
-            <li class="nav-item"><a href="admin-dashboard.html"><i class="ph-fill ph-squares-four"></i> Dashboard Overview</a></li>
-            <li class="nav-item"><a href="admin-records.html"><i class="ph ph-pen"></i> Student Records</a></li>
-            <li class="nav-item"><a href="admin-sections.html"><i class="ph-fill ph-users-three"></i> Manage Sections</a></li>
-            <li class="nav-item"><a href="admin-subjects.html"><i class="ph ph-notebook"></i> Manage Subjects</a></li>
-            <li class="nav-item"><a href="admin-schedule.html"><i class="ph-fill ph-clock"></i> Manage Schedules</a></li>
-            <li class="nav-item"><a href="admin-accounts.html" class="active"><i class="ph-fill ph-users"></i> Student Accounts</a></li>
-            <li class="nav-item"><a href="admin-activities.html"><i class="ph-fill ph-clipboard-text"></i> Activities Setup</a></li>
-            <li class="nav-item"><a href="admin-grades.html"><i class="ph-fill ph-exam"></i> Input Grades</a></li>
-            <li class="nav-item"><a href="admin-attendance.html"><i class="ph-fill ph-calendar-check"></i> Attendance</a></li>
-            <li class="nav-item"><a href="admin-settings.html"><i class="ph-fill ph-gear"></i> System Settings</a></li>
-            <li class="nav-item" style="margin-top:auto;"><a onclick="window.logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
-        </ul>
-    </aside>
-
-    <main class="main-wrapper">
-        <header class="header">
-            <div><h1>Account Management</h1><p>Create students and assign their subjects securely.</p></div>
-            <div class="header-actions"><div class="icon-btn theme-toggle" id="themeToggle"><i class="ph-fill ph-sun" id="themeIcon"></i></div></div>
-        </header>
-
-        <div class="card glass">
-            <!-- 3 Tabs Navigation -->
-            <div class="tab-controls">
-                <button class="tab-btn active" onclick="window.toggleTab('acc-manage', this)">Manage Accounts</button>
-                <button class="tab-btn" onclick="window.toggleTab('acc-manual', this)">Create New</button>
-                <button class="tab-btn" onclick="window.toggleTab('acc-bulk', this)">Bulk Upload</button>
-            </div>
-
-            <!-- TAB 1: MANAGE ACCOUNTS (DEFAULT) -->
-            <div id="acc-manage" class="tab-content active">
-                <div class="table-controls-wrapper">
-                    <div class="search-wrapper">
-                        <i class="ph-bold ph-magnifying-glass"></i>
-                        <input type="text" class="search-input" id="tableSearch" placeholder="Search by name or number..." onkeyup="window.handleSearch()">
-                    </div>
-                    <button class="btn btn-bulk-delete" id="bulkDeleteBtn" onclick="window.confirmBulkDelete()">
-                        <i class="ph-bold ph-trash"></i> Delete Selected (<span id="selectCount">0</span>)
-                    </button>
-                </div>
-    
-                <div class="table-container">
-                    <table class="modern-table">
-                        <thead>
-                            <tr>
-                                <th class="check-col"><input type="checkbox" class="custom-checkbox" id="selectAll" onclick="window.toggleSelectAll()"></th>
-                                <th>Student No.</th>
-                                <th>Name</th>
-                                <th>Course/Sec</th>
-                                <th>Subject</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="accountsTableBody"><tr><td colspan="7">Loading data...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TAB 2: MANUAL ENTRY FORM -->
-            <div id="acc-manual" class="tab-content">
-                <form id="createAccountForm">
-                    <div class="form-grid">
-                        <div class="form-section-title"><i class="ph-bold ph-identification-card"></i> Student Information</div>
-                        <div class="form-group"><label class="form-label">Student Number</label><input type="text" id="sNo" class="form-control" placeholder="e.g. 2021-00123" required></div>
-                        <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="sName" class="form-control" placeholder="Last Name, First Name" required></div>
-                        <div class="form-group"><label class="form-label">Email Address</label><input type="email" id="sEmail" class="form-control" placeholder="student@plv.edu.ph" required></div>
-                        <div class="form-group"><label class="form-label">Password</label><input type="text" id="sPass" class="form-control" placeholder="Password" required></div>
-                        <div class="form-group"><label class="form-label">Course & Year</label><input type="text" id="sCourse" class="form-control" placeholder="e.g. BSIT 3rd Year" required></div>
-                        <div class="form-group"><label class="form-label">Section</label>
-                            <select id="sSec" class="form-control" required><option value="">Loading Sections...</option></select>
-                        </div>
-                        
-                        <div class="form-section-title"><i class="ph-bold ph-book-bookmark"></i> Subject Assignment</div>
-                        
-                        <!-- NEW SUBJECT SELECTION -->
-                        <div class="form-group full">
-                            <label class="form-label">Select Subject</label>
-                            <select id="subjectSelect" class="form-control" onchange="window.fillSubjectDetails()">
-                                <option value="">-- Choose from existing subjects --</option>
-                            </select>
-                        </div>
-
-                        <!-- AUTO FILLED FIELDS -->
-                        <div class="form-group"><label class="form-label">Subject Code</label><input type="text" id="subCode" class="form-control" readonly></div>
-                        <div class="form-group"><label class="form-label">Subject Name</label><input type="text" id="subName" class="form-control" readonly></div>
-                        <div class="form-group"><label class="form-label">Professor Name</label><input type="text" id="subProf" class="form-control" readonly></div>
-                        <!-- REMOVED READONLY HERE -->
-                        <div class="form-group"><label class="form-label">Schedule</label><input type="text" id="subSched" class="form-control" placeholder="e.g. TTH 1:00 PM - 3:00 PM" required></div>
-                        
-                        <div class="form-group full" style="margin-top: 20px;"><button type="submit" id="saveBtn" class="btn btn-primary"><i class="ph-bold ph-plus"></i> Create Account & Enroll Subject</button></div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- TAB 3: BULK UPLOAD -->
-            <div id="acc-bulk" class="tab-content">
-                <div class="upload-zone" onclick="window.simulateUpload()">
-                    <i class="ph-fill ph-file-csv upload-icon"></i>
-                    <div class="upload-text"><h4>Click Here to Upload CSV File</h4><p>Upload the unified Masterlist (Students + Assigned Subjects)</p></div>
-                </div>
-                <button class="btn btn-outline" onclick="window.downloadTemplate('student_subjects_template.csv', 'Student_No,Full_Name,Email,Course_Year,Section,Password,Subject_Code,Subject_Name,Prof_Name,Schedule')"><i class="ph-bold ph-download-simple"></i> Download CSV Template</button>
-            </div>
-        </div>
-    </main>
-
-    <!-- Global Toast Notification -->
-    <div id="toast" class="toast"><i id="toast-icon" class="ph-fill ph-check-circle" style="font-size: 24px;"></i><span id="toast-msg">Action Successful!</span></div>
-
-    <!-- GENERAL CONFIRMATION MODAL -->
-    <div id="customModal" class="modal-overlay">
-        <div class="modal-box glass">
-            <div id="modalIcon" class="modal-icon-wrapper"><i class="ph-fill ph-warning-circle"></i></div>
-            <h3 id="modalTitle">Confirm Action</h3>
-            <p id="modalDesc">Are you sure you want to proceed with this action?</p>
-            <div class="modal-actions">
-                <button class="modal-btn btn-cancel" onclick="window.closeModal()">Cancel</button>
-                <button id="modalConfirmBtn" class="modal-btn btn-confirm-delete" onclick="window.confirmAction()">Confirm</button>
-            </div>
-        </div>
+<aside class="sidebar">
+    <div class="logo-container">
+        <img src="https://res.cloudinary.com/dfdlqf6ng/image/upload/v1772078917/PamantasanNgLungsodNgValenzuelaLogo_t53djy.png" alt="PLV" class="logo-img">
+        <div class="logo-text"><h2>PLV Admin</h2><p>System Management</p></div>
     </div>
+    <ul class="nav-menu">
+        <li class="nav-item"><a href="admin-dashboard.html"><i class="ph-fill ph-squares-four"></i> Dashboard Overview</a></li>
+        <li class="nav-item"><a href="admin-records.html"><i class="ph ph-pen"></i> Student Records</a></li>
+        <li class="nav-item"><a href="admin-sections.html"><i class="ph-fill ph-users-three"></i> Manage Sections</a></li>
+        <li class="nav-item"><a href="admin-subjects.html"><i class="ph ph-notebook"></i> Manage Subjects</a></li>
+        <li class="nav-item"><a href="admin-schedule.html"><i class="ph-fill ph-clock"></i> Manage Schedules</a></li>
+        <li class="nav-item"><a href="admin-accounts.html" class="active"><i class="ph-fill ph-users"></i> Student Accounts</a></li>
+        <li class="nav-item"><a href="admin-activities.html"><i class="ph-fill ph-clipboard-text"></i> Activities Setup</a></li>
+        <li class="nav-item"><a href="admin-grades.html"><i class="ph-fill ph-exam"></i> Input Grades</a></li>
+        <li class="nav-item"><a href="admin-attendance.html"><i class="ph-fill ph-calendar-check"></i> Attendance</a></li>
+        <li class="nav-item"><a href="admin-settings.html"><i class="ph-fill ph-gear"></i> System Settings</a></li>
+        <li class="nav-item" style="margin-top:auto;"><a onclick="window.logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
+    </ul>
+</aside>
 
-    <!-- EDIT ACCOUNT MODAL (NEW) -->
-    <div id="editAccountModal" class="modal-overlay">
-        <div class="modal-box glass" style="max-width: 600px; text-align: left;">
-            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="margin:0;">Edit Account Details</h3>
-                <button class="btn-cancel" style="border:none; width:30px; height:30px; padding:0; display:flex; justify-content:center; align-items:center;" onclick="window.closeEditModal()"><i class="ph-bold ph-x" style="font-size:18px;"></i></button>
+<main class="main-wrapper">
+    <header class="header">
+        <div><h1>Account Management</h1><p>Create students, manage accounts, and assign subjects from one place.</p></div>
+        <div class="header-actions">
+            <div class="icon-btn theme-toggle" id="themeToggle"><i class="ph-fill ph-sun" id="themeIcon"></i></div>
+        </div>
+    </header>
+
+    <div class="card glass">
+        <div class="tab-controls">
+            <button class="tab-btn active" onclick="window.toggleTab('acc-manage',this)"><i class="ph-bold ph-users" style="font-size:13px;"></i> Manage Accounts</button>
+            <button class="tab-btn" onclick="window.toggleTab('acc-manual',this)"><i class="ph-bold ph-user-plus" style="font-size:13px;"></i> Create New</button>
+            <button class="tab-btn" onclick="window.toggleTab('acc-bulk',this)"><i class="ph-bold ph-upload-simple" style="font-size:13px;"></i> Bulk Upload</button>
+        </div>
+
+        <!-- TAB 1: MANAGE ACCOUNTS -->
+        <div id="acc-manage" class="tab-content active">
+            <div class="toolbar">
+                <div class="search-box">
+                    <i class="ph-bold ph-magnifying-glass"></i>
+                    <input type="text" class="search-input" id="tableSearch" placeholder="Search name or student no..." oninput="window.applyFilters()">
+                </div>
+                <select class="sel" id="filterSection" onchange="window.applyFilters()">
+                    <option value="">All Sections</option>
+                </select>
+                <select class="sel" id="filterSubject" onchange="window.applyFilters()">
+                    <option value="">All Subjects</option>
+                </select>
+                <select class="sel" id="filterStatus" onchange="window.applyFilters()">
+                    <option value="">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <button class="btn btn-danger btn-bulk" id="bulkDeleteBtn" onclick="window.confirmBulkDelete()">
+                    <i class="ph-bold ph-trash"></i> Delete (<span id="selectCount">0</span>)
+                </button>
             </div>
-            
-            <form id="editForm">
-                <input type="hidden" id="editOriginalSno">
-                <input type="hidden" id="editOriginalEnrollId">
-                <input type="hidden" id="editOriginalSubCode">
+            <div class="chips">
+                <div class="chip chip-blue"><i class="ph-bold ph-student"></i>&nbsp;Total: <b id="cTotal">0</b></div>
+                <div class="chip chip-green"><i class="ph-bold ph-check-circle"></i>&nbsp;Active: <b id="cActive">0</b></div>
+                <div class="chip chip-red"><i class="ph-bold ph-x-circle"></i>&nbsp;Inactive: <b id="cInactive">0</b></div>
+                <div class="chip chip-muted"><i class="ph-bold ph-funnel"></i>&nbsp;Section: <b id="cSection">All</b></div>
+            </div>
+            <div class="grid-scroll">
+                <table class="grid-table" id="accountsTable">
+                    <thead id="accountsHead">
+                        <tr>
+                            <th class="check-col no-sort"><input type="checkbox" class="custom-checkbox" id="selectAll" onclick="window.toggleSelectAll()"></th>
+                            <th data-col="studentNo">Student No.</th>
+                            <th data-col="studentName">Full Name</th>
+                            <th data-col="section">Section</th>
+                            <th data-col="courseYear">Course &amp; Year</th>
+                            <th data-col="subjectCode">Subject</th>
+                            <th class="no-sort" style="text-align:center;">Status</th>
+                            <th class="no-sort" style="text-align:center;min-width:170px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountsTableBody">
+                        <tr class="loading-msg"><td colspan="8"><span class="spin"></span> Loading accounts...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span id="footLabel">0 students</span>
+                <span id="footRight"></span>
+            </div>
+        </div>
 
+        <!-- TAB 2: CREATE NEW -->
+        <div id="acc-manual" class="tab-content">
+            <form id="createAccountForm">
                 <div class="form-grid">
-                    <div class="form-section-title"><i class="ph-bold ph-user-gear"></i> Personal Details</div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Student No. (ID)</label>
-                        <input type="text" id="editSno" class="form-control" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" id="editName" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Course & Year</label>
-                        <input type="text" id="editCourse" class="form-control" required>
-                    </div>
-
+                    <div class="form-section-title"><i class="ph-bold ph-identification-card"></i> Student Information</div>
+                    <div class="form-group"><label class="form-label">Student Number</label><input type="text" id="sNo" class="form-control" placeholder="e.g. 2021-00123" required></div>
+                    <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="sName" class="form-control" placeholder="DELA CRUZ, JUAN A." required></div>
+                    <div class="form-group"><label class="form-label">Email Address</label><input type="email" id="sEmail" class="form-control" placeholder="student@plv.edu.ph" required></div>
+                    <div class="form-group"><label class="form-label">Password</label><input type="text" id="sPass" class="form-control" placeholder="Initial password" required></div>
+                    <div class="form-group"><label class="form-label">Course &amp; Year</label><input type="text" id="sCourse" class="form-control" placeholder="e.g. BSIT 3rd Year" required></div>
                     <div class="form-group">
                         <label class="form-label">Section</label>
-                        <select id="editSec" class="form-control" required><option value="">Loading Sections...</option></select>
+                        <select id="sSec" class="form-control" required onchange="window.onCreateSectionChange()"><option value="">Loading sections...</option></select>
+                        <span class="fetching-tag" id="secYearTag" style="display:none;"><i class="ph-bold ph-graduation-cap"></i> <span id="secYearVal"></span></span>
                     </div>
 
+                    <div class="form-section-title"><i class="ph-bold ph-book-bookmark"></i> Subject Assignment</div>
                     <div class="form-group full">
-                         <label class="form-label">Password</label>
-                         <input type="text" id="editPass" class="form-control" placeholder="Leave blank to keep current">
+                        <label class="form-label">Select Subject</label>
+                        <select id="subjectSelect" class="form-control" onchange="window.onSubjectChange()"><option value="">-- Choose from existing subjects --</option></select>
                     </div>
-
-                    <div class="form-section-title"><i class="ph-bold ph-notebook"></i> Academic Details</div>
-
-                    <div class="form-group full">
-                        <label class="form-label">Assigned Subject</label>
-                        <select id="editSubjectSelect" class="form-control" required>
-                            <!-- Populated dynamically -->
-                        </select>
+                    <div class="form-group"><label class="form-label">Subject Code</label><input type="text" id="subCode" class="form-control" readonly placeholder="Auto-filled"></div>
+                    <div class="form-group"><label class="form-label">Subject Name / Description</label><input type="text" id="subName" class="form-control" readonly placeholder="Auto-filled from subjects"></div>
+                    <div class="form-group"><label class="form-label">Professor</label><input type="text" id="subProf" class="form-control" readonly placeholder="Auto-filled from subjects"></div>
+                    <div class="form-group">
+                        <label class="form-label">Schedule <span id="schedFetchBadge" class="fetched-badge" style="display:none;"><i class="ph-bold ph-check-circle"></i> Auto-fetched</span></label>
+                        <input type="text" id="subSched" class="form-control" placeholder="Auto-fetched from schedules">
+                        <span id="schedInfoRow" class="fetching-tag" style="display:none;"><i class="ph-bold ph-clock"></i>&nbsp;<span id="schedTimeVal"></span>&nbsp;&bull;&nbsp;<i class="ph-bold ph-door"></i>&nbsp;<span id="schedRoomVal"></span></span>
                     </div>
-
-                    <!-- NEW SCHEDULE INPUT -->
-                    <div class="form-group full">
-                        <label class="form-label">Schedule</label>
-                        <input type="text" id="editSched" class="form-control" placeholder="e.g. MWF 10:00 AM - 1:00 PM">
+                    <div class="form-group full" style="margin-top:8px;">
+                        <button type="submit" id="saveBtn" class="btn btn-primary"><i class="ph-bold ph-user-plus"></i> Create Account &amp; Enroll Subject</button>
                     </div>
-                </div>
-
-                <div class="modal-actions" style="margin-top: 30px;">
-                    <button type="button" class="modal-btn btn-cancel" onclick="window.closeEditModal()">Cancel</button>
-                    <button type="submit" id="saveEditBtn" class="modal-btn btn-confirm-save">Save Changes</button>
                 </div>
             </form>
         </div>
+
+        <!-- TAB 3: BULK UPLOAD -->
+        <div id="acc-bulk" class="tab-content">
+            <div class="template-info">
+                <h4><i class="ph-bold ph-lightning" style="font-size:15px;"></i> Smart Auto-Fill Excel Template</h4>
+                <p>Only fill in the <strong>required</strong> columns. The template includes <strong>reference sheets</strong> with all valid Sections, Subjects, and Schedules from the database. When you upload, missing data is <strong>automatically fetched</strong> from the system:</p>
+                <ul>
+                    <li><strong>Subject Name &amp; Description</strong> — from Manage Subjects</li>
+                    <li><strong>Professor Name</strong> — from Manage Subjects</li>
+                    <li><strong>Schedule (Time &amp; Room)</strong> — from Manage Schedules (matched by Section + Subject)</li>
+                    <li><strong>Year Level</strong> — from Manage Sections</li>
+                </ul>
+                <div class="col-list">
+                    <span class="col-tag col-req"><i class="ph-bold ph-asterisk" style="font-size:9px;"></i> Student_No</span>
+                    <span class="col-tag col-req"><i class="ph-bold ph-asterisk" style="font-size:9px;"></i> Full_Name</span>
+                    <span class="col-tag col-req"><i class="ph-bold ph-asterisk" style="font-size:9px;"></i> Email</span>
+                    <span class="col-tag col-req"><i class="ph-bold ph-asterisk" style="font-size:9px;"></i> Course_Year</span>
+                    <span class="col-tag col-req"><i class="ph-bold ph-asterisk" style="font-size:9px;"></i> Section</span>
+                    <span class="col-tag col-req"><i class="ph-bold ph-asterisk" style="font-size:9px;"></i> Subject_Code</span>
+                    <span class="col-tag col-req"><i class="ph-bold ph-asterisk" style="font-size:9px;"></i> Password</span>
+                    <span class="col-tag col-auto"><i class="ph-bold ph-magic-wand" style="font-size:9px;"></i> Subject_Name (auto)</span>
+                    <span class="col-tag col-auto"><i class="ph-bold ph-magic-wand" style="font-size:9px;"></i> Prof_Name (auto)</span>
+                    <span class="col-tag col-auto"><i class="ph-bold ph-magic-wand" style="font-size:9px;"></i> Schedule (auto)</span>
+                    <span class="col-tag col-auto"><i class="ph-bold ph-magic-wand" style="font-size:9px;"></i> Year_Level (auto)</span>
+                </div>
+            </div>
+
+            <div class="upload-zone" onclick="window.triggerUpload()">
+                <i class="ph-fill ph-file-xls upload-icon"></i>
+                <div class="upload-text"><h4>Click to Upload Excel (.xlsx) or CSV</h4><p>Data is validated and auto-enriched from the database before saving</p></div>
+            </div>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+                <button class="btn btn-outline" onclick="window.downloadSmartTemplate()"><i class="ph-bold ph-download-simple"></i> Download Smart Excel Template</button>
+                <button class="btn btn-primary" id="btnCommitUpload" style="display:none;" onclick="window.commitUpload()"><i class="ph-bold ph-cloud-arrow-up"></i> Upload <span id="commitCount">0</span> Students to Database</button>
+                <button class="btn" id="btnClearPreview" style="display:none;background:rgba(100,116,139,.1);color:var(--text-muted);" onclick="window.clearPreview()"><i class="ph-bold ph-x"></i> Clear Preview</button>
+            </div>
+            <div id="previewContainer"></div>
+        </div>
     </div>
+</main>
 
-    <!-- FIREBASE INTEGRATION & LOGIC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<!-- TOAST -->
+<div id="toast" class="toast toast-ok"><i id="toastIcon" class="ph-fill ph-check-circle" style="font-size:20px;"></i><span id="toastMsg">Done!</span></div>
 
-        // Route Protection
-        const user = JSON.parse(localStorage.getItem('loggedInUser'));
-        if (!user || user.role !== 'admin') window.location.href = 'index.html';
-        window.logout = function() { localStorage.removeItem('loggedInUser'); window.location.href = 'index.html'; }
+<!-- CONFIRM MODAL -->
+<div id="confirmModal" class="modal-overlay">
+    <div class="modal-box confirm-box glass">
+        <div id="confirmIcon" class="modal-icon-wrapper icon-danger"><i class="ph-fill ph-warning-circle"></i></div>
+        <h3 id="confirmTitle" style="font-size:20px;font-weight:800;margin-bottom:10px;">Confirm Action</h3>
+        <p id="confirmDesc" style="font-size:14px;color:var(--text-muted);margin-bottom:0;"></p>
+        <div class="modal-actions" style="justify-content:center;">
+            <button class="modal-btn btn-cancel" onclick="window.closeConfirmModal()">Cancel</button>
+            <button id="confirmBtn" class="modal-btn btn-confirm-delete" onclick="window.runPendingAction()">Confirm</button>
+        </div>
+    </div>
+</div>
 
-        const app = initializeApp({ apiKey: "AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI", authDomain: "plv-grades-portal.firebaseapp.com", projectId: "plv-grades-portal", storageBucket: "plv-grades-portal.firebasestorage.app", messagingSenderId: "951401194726", appId: "1:951401194726:web:28ea9972358d0e30fb4727", measurementId: "G-TKG574DYYB" });
-        const db = getFirestore(app);
+<!-- EDIT MODAL -->
+<div id="editModal" class="modal-overlay">
+    <div class="modal-box edit-box glass">
+        <div class="modal-head">
+            <div><h3>Edit Account</h3><p id="editSubLabel">Loading...</p></div>
+            <button class="modal-close-btn" onclick="window.closeEditModal()"><i class="ph-bold ph-x"></i></button>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="editOriginalSno">
+            <input type="hidden" id="editOriginalEnrollId">
+            <input type="hidden" id="editOriginalSubCode">
+            <div class="form-grid">
+                <div class="form-section-title"><i class="ph-bold ph-user-gear"></i> Personal Details</div>
+                <div class="form-group"><label class="form-label">Student No.</label><input type="text" id="editSno" class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="editName" class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Course &amp; Year</label><input type="text" id="editCourse" class="form-control" required></div>
+                <div class="form-group">
+                    <label class="form-label">Section</label>
+                    <select id="editSec" class="form-control" required onchange="window.onEditSectionChange()"><option value="">Loading...</option></select>
+                    <span class="fetching-tag" id="editSecYearTag" style="display:none;"><i class="ph-bold ph-graduation-cap"></i> <span id="editSecYearVal"></span></span>
+                </div>
+                <div class="form-group full">
+                    <label class="form-label">Password <span style="font-size:11px;font-weight:500;text-transform:none;letter-spacing:0;">(leave blank to keep current)</span></label>
+                    <input type="text" id="editPass" class="form-control" placeholder="New password (optional)">
+                </div>
+                <div class="form-section-title"><i class="ph-bold ph-notebook"></i> Academic Details</div>
+                <div class="form-group full">
+                    <label class="form-label">Assigned Subject</label>
+                    <select id="editSubjectSelect" class="form-control" required onchange="window.onEditSubjectChange()"><option value="">Loading...</option></select>
+                </div>
+                <div class="form-group"><label class="form-label">Subject Name</label><input type="text" id="editSubName" class="form-control" readonly placeholder="Auto-filled"></div>
+                <div class="form-group"><label class="form-label">Professor</label><input type="text" id="editSubProf" class="form-control" readonly placeholder="Auto-filled"></div>
+                <div class="form-group full">
+                    <label class="form-label">Schedule <span id="editSchedBadge" class="fetched-badge" style="display:none;"><i class="ph-bold ph-check-circle"></i> Auto-fetched from Schedules</span></label>
+                    <input type="text" id="editSched" class="form-control" placeholder="Auto-fetched when Section + Subject match">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn btn-cancel" onclick="window.closeEditModal()">Cancel</button>
+                <button type="submit" id="saveEditBtn" class="modal-btn btn-confirm-save"><i class="ph-bold ph-floppy-disk"></i> Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-        // --- FETCH SUBJECTS FOR DROPDOWN ---
-        let loadedSubjects = {};
+<nav class="mobile-nav-bar">
+    <ul>
+        <li><a href="admin-dashboard.html"><i class="ph-fill ph-squares-four"></i>Dashboard</a></li>
+        <li><a href="admin-sections.html"><i class="ph-fill ph-users-three"></i>Sections</a></li>
+        <li><a href="admin-subjects.html"><i class="ph ph-notebook"></i>Subjects</a></li>
+        <li><a href="admin-accounts.html" class="active"><i class="ph-fill ph-users"></i>Accounts</a></li>
+        <li><a href="admin-activities.html"><i class="ph-fill ph-clipboard-text"></i>Activities</a></li>
+        <li><a href="#" onclick="window.logout()"><i class="ph ph-sign-out"></i>Logout</a></li>
+    </ul>
+</nav>
 
-        async function populateSubjectDropdown() {
-            const select = document.getElementById('subjectSelect');
-            const editSelect = document.getElementById('editSubjectSelect');
-            
-            try {
-                const snap = await getDocs(collection(db, "subjects"));
-                let optionsHtml = '<option value="">-- Choose Subject --</option>';
-                
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    loadedSubjects[data.subjectCode] = data; // Store for quick lookup
-                    optionsHtml += `<option value="${data.subjectCode}">${data.subjectCode}: ${data.subjectName}</option>`;
-                });
-                
-                select.innerHTML = optionsHtml;
-                editSelect.innerHTML = optionsHtml;
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,doc,setDoc,getDocs,updateDoc,deleteDoc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-            } catch (e) { console.error("Error loading subjects", e); }
-        }
-        populateSubjectDropdown();
+const _u=JSON.parse(localStorage.getItem('loggedInUser'));
+if(!_u||_u.role!=='admin')location.href='index.html';
+window.logout=()=>{localStorage.removeItem('loggedInUser');location.href='index.html';};
 
-        // NEW FUNCTION TO LOAD SECTIONS
-        async function populateSectionDropdowns() {
-            const sSec = document.getElementById('sSec');
-            const editSec = document.getElementById('editSec');
-            
-            try {
-                const snap = await getDocs(collection(db, "sections"));
-                const sections = [];
-                snap.forEach(d => sections.push(d.data().sectionName));
-                sections.sort();
+const app=initializeApp({apiKey:"AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI",authDomain:"plv-grades-portal.firebaseapp.com",projectId:"plv-grades-portal",storageBucket:"plv-grades-portal.firebasestorage.app",messagingSenderId:"951401194726",appId:"1:951401194726:web:28ea9972358d0e30fb4727"});
+const db=getFirestore(app);
 
-                let optionsHtml = '<option value="">-- Choose Section --</option>';
-                sections.forEach(sec => optionsHtml += `<option value="${sec}">${sec}</option>`);
+// ===================== CACHE =====================
+let subjectsMap={};   // subjectCode -> {subjectCode, subjectName, profName, schedule?}
+let sectionsMap={};   // sectionName -> {sectionName, yearLevel}
+let schedulesMap={};  // "subCode_section" -> {time, room, subjectCode, section}
+let allAccountsData=[];
+let sortCol='studentName', sortDir='asc';
+let pendingAction=null;
+let pendingUploadRows=[];
 
-                sSec.innerHTML = optionsHtml;
-                editSec.innerHTML = optionsHtml;
-            } catch (e) { console.error("Error loading sections", e); }
-        }
-        populateSectionDropdowns(); 
+// ===================== TOAST =====================
+window.showToast=(msg,type='ok')=>{
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent=msg;
+    document.getElementById('toastIcon').className=type==='ok'?'ph-fill ph-check-circle':'ph-fill ph-warning-circle';
+    t.className='toast toast-'+(type==='ok'?'ok':'err');
+    t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);
+};
 
-        window.fillSubjectDetails = function() {
-            const selectedCode = document.getElementById('subjectSelect').value;
-            if(selectedCode && loadedSubjects[selectedCode]) {
-                const sub = loadedSubjects[selectedCode];
-                document.getElementById('subCode').value = sub.subjectCode;
-                document.getElementById('subName').value = sub.subjectName;
-                document.getElementById('subProf').value = sub.profName;
-            } else {
-                document.getElementById('subCode').value = "";
-                document.getElementById('subName').value = "";
-                document.getElementById('subProf').value = "";
+// ===================== LOAD REFERENCE DATA =====================
+async function loadReferenceData(){
+    const[subSnap,secSnap,schedSnap]=await Promise.all([
+        getDocs(collection(db,'subjects')),
+        getDocs(collection(db,'sections')),
+        getDocs(collection(db,'class_schedules'))
+    ]);
+    subjectsMap={};
+    subSnap.forEach(d=>{ const dat=d.data(); subjectsMap[dat.subjectCode||d.id]={...dat}; });
+    sectionsMap={};
+    secSnap.forEach(d=>{ const dat=d.data(); sectionsMap[dat.sectionName||d.id]={...dat}; });
+    schedulesMap={};
+    schedSnap.forEach(d=>{ schedulesMap[d.id]={...d.data()}; });
+}
+
+// ===================== HELPERS =====================
+function getSchedule(subCode,section){
+    const key=`${subCode}_${section}`;
+    const s=schedulesMap[key];
+    if(s&&(s.time||s.room)) return {time:s.time||'',room:s.room||'',full:`${s.time||''}${s.time&&s.room?' | ':''}${s.room||''}`};
+    return null;
+}
+
+function buildSubjectOptions(selected=''){
+    return'<option value="">-- Choose Subject --</option>'+
+        Object.values(subjectsMap).sort((a,b)=>(a.subjectCode||'').localeCompare(b.subjectCode||''))
+        .map(s=>`<option value="${s.subjectCode}"${s.subjectCode===selected?' selected':''}>${s.subjectCode}: ${s.subjectName||''}</option>`).join('');
+}
+
+function buildSectionOptions(selected=''){
+    return'<option value="">-- Choose Section --</option>'+
+        Object.values(sectionsMap).sort((a,b)=>(a.sectionName||'').localeCompare(b.sectionName||''))
+        .map(s=>`<option value="${s.sectionName}"${s.sectionName===selected?' selected':''}>${s.sectionName}</option>`).join('');
+}
+
+function buildFilterOptions(){
+    const fSec=document.getElementById('filterSection');
+    const curSec=fSec.value;
+    fSec.innerHTML='<option value="">All Sections</option>'+
+        Object.values(sectionsMap).sort((a,b)=>(a.sectionName||'').localeCompare(b.sectionName||''))
+        .map(s=>`<option value="${s.sectionName}">${s.sectionName}</option>`).join('');
+    if(curSec)fSec.value=curSec;
+
+    const fSub=document.getElementById('filterSubject');
+    const curSub=fSub.value;
+    fSub.innerHTML='<option value="">All Subjects</option>'+
+        Object.values(subjectsMap).sort((a,b)=>(a.subjectCode||'').localeCompare(b.subjectCode||''))
+        .map(s=>`<option value="${s.subjectCode}">${s.subjectCode}</option>`).join('');
+    if(curSub)fSub.value=curSub;
+}
+
+// ===================== INIT =====================
+async function init(){
+    try{
+        await loadReferenceData();
+        document.getElementById('subjectSelect').innerHTML=buildSubjectOptions();
+        document.getElementById('sSec').innerHTML=buildSectionOptions();
+        buildFilterOptions();
+        loadAccounts();
+    }catch(e){console.error('Init error:',e);}
+}
+init();
+
+// ===================== CREATE FORM HANDLERS =====================
+window.onCreateSectionChange=()=>{
+    const sec=document.getElementById('sSec').value;
+    const tag=document.getElementById('secYearTag');
+    if(sec&&sectionsMap[sec]){
+        document.getElementById('secYearVal').textContent='Year Level: '+sectionsMap[sec].yearLevel;
+        tag.style.display='inline-flex';
+    } else tag.style.display='none';
+    autoFillSchedule('create');
+};
+
+window.onSubjectChange=()=>{
+    const code=document.getElementById('subjectSelect').value;
+    if(code&&subjectsMap[code]){
+        const sub=subjectsMap[code];
+        document.getElementById('subCode').value=sub.subjectCode||code;
+        document.getElementById('subName').value=sub.subjectName||'';
+        document.getElementById('subProf').value=sub.profName||'';
+    } else {
+        document.getElementById('subCode').value='';
+        document.getElementById('subName').value='';
+        document.getElementById('subProf').value='';
+    }
+    autoFillSchedule('create');
+};
+
+function autoFillSchedule(mode){
+    const codeEl=mode==='create'?'subjectSelect':'editSubjectSelect';
+    const secEl=mode==='create'?'sSec':'editSec';
+    const schedEl=mode==='create'?'subSched':'editSched';
+    const badgeEl=mode==='create'?'schedFetchBadge':'editSchedBadge';
+    const code=document.getElementById(codeEl).value;
+    const sec=document.getElementById(secEl).value;
+    const badge=document.getElementById(badgeEl);
+
+    if(code&&sec){
+        const sched=getSchedule(code,sec);
+        if(sched){
+            document.getElementById(schedEl).value=sched.full;
+            badge.style.display='inline-flex';
+            if(mode==='create'){
+                document.getElementById('schedTimeVal').textContent=sched.time;
+                document.getElementById('schedRoomVal').textContent=sched.room;
+                document.getElementById('schedInfoRow').style.display='inline-flex';
             }
+            return;
         }
+    }
+    // Fallback: subject default schedule
+    const sub=subjectsMap[document.getElementById(codeEl).value];
+    if(sub&&sub.schedule){
+        document.getElementById(schedEl).value=sub.schedule;
+    } else {
+        document.getElementById(schedEl).value='';
+    }
+    badge.style.display='none';
+    if(mode==='create') document.getElementById('schedInfoRow').style.display='none';
+}
 
-        // UI Utils - Updated Toggle Tab for 3 Tabs
-        window.toggleTab = function(showId, element) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            element.classList.add('active'); 
-            
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(showId).classList.add('active');
+// ===================== EDIT MODAL HANDLERS =====================
+window.onEditSectionChange=()=>{
+    const sec=document.getElementById('editSec').value;
+    const tag=document.getElementById('editSecYearTag');
+    if(sec&&sectionsMap[sec]){
+        document.getElementById('editSecYearVal').textContent='Year Level: '+sectionsMap[sec].yearLevel;
+        tag.style.display='inline-flex';
+    } else tag.style.display='none';
+    autoFillSchedule('edit');
+};
 
-            if(showId === 'acc-manage') window.loadAccounts();
-        }
+window.onEditSubjectChange=()=>{
+    const code=document.getElementById('editSubjectSelect').value;
+    if(code&&subjectsMap[code]){
+        document.getElementById('editSubName').value=subjectsMap[code].subjectName||'';
+        document.getElementById('editSubProf').value=subjectsMap[code].profName||'';
+    }
+    autoFillSchedule('edit');
+};
 
-        window.showToast = function(message, type='success') {
-            const toast = document.getElementById('toast');
-            const icon = document.getElementById('toast-icon');
-            document.getElementById('toast-msg').innerText = message;
-            toast.className = 'toast'; 
-            if(type === 'error') { toast.classList.add('error'); icon.className = 'ph-fill ph-warning-circle'; } else { icon.className = 'ph-fill ph-check-circle'; }
-            toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // --- MODERN MODAL LOGIC ---
-        let pendingAction = null; 
-
-        window.openDeleteModal = function(sNo, enrollId) {
-            document.getElementById('modalIcon').className = 'modal-icon-wrapper icon-danger';
-            document.getElementById('modalIcon').innerHTML = '<i class="ph-fill ph-trash"></i>';
-            document.getElementById('modalTitle').innerText = 'Delete Account?';
-            document.getElementById('modalDesc').innerHTML = `Are you sure you want to permanently delete <b>Student ${sNo}</b>?<br>This cannot be undone.`;
-            
-            const btn = document.getElementById('modalConfirmBtn');
-            btn.className = 'modal-btn btn-confirm-delete';
-            btn.innerText = 'Yes, Delete';
-            
-            pendingAction = async () => {
-                const originalText = btn.innerText; btn.innerText = "Deleting..."; btn.disabled = true;
-                try {
-                    await deleteDoc(doc(db, "users", sNo));
-                    await deleteDoc(doc(db, "enrollments", enrollId));
-                    window.showToast(`Account successfully removed!`);
-                    window.loadAccounts();
-                    window.closeModal();
-                } catch(e) { console.error(e); window.showToast("Failed to delete.", "error"); }
-                finally { btn.innerText = originalText; btn.disabled = false; }
-            };
-            document.getElementById('customModal').classList.add('open');
-        }
-
-        window.confirmBulkDelete = function() {
-            const selectedBoxes = document.querySelectorAll('.row-checkbox:checked');
-            if(selectedBoxes.length === 0) return;
-
-            document.getElementById('modalIcon').className = 'modal-icon-wrapper icon-danger';
-            document.getElementById('modalIcon').innerHTML = '<i class="ph-fill ph-trash"></i>';
-            document.getElementById('modalTitle').innerText = 'Delete Multiple Accounts?';
-            document.getElementById('modalDesc').innerHTML = `You are about to delete <b>${selectedBoxes.length} students</b>.<br>This cannot be undone.`;
-            
-            const btn = document.getElementById('modalConfirmBtn');
-            btn.className = 'modal-btn btn-confirm-delete';
-            btn.innerText = 'Delete All Selected';
-
-            pendingAction = async () => {
-                const originalText = btn.innerText; btn.innerText = "Deleting..."; btn.disabled = true;
-                try {
-                    const deletePromises = [];
-                    selectedBoxes.forEach(box => {
-                        const sNo = box.getAttribute('data-sno');
-                        const enrollId = box.getAttribute('data-enrollid');
-                        deletePromises.push(deleteDoc(doc(db, "users", sNo)));
-                        deletePromises.push(deleteDoc(doc(db, "enrollments", enrollId)));
-                    });
-
-                    await Promise.all(deletePromises);
-                    window.showToast(`Deleted ${selectedBoxes.length} records successfully!`);
-                    window.loadAccounts();
-                    window.closeModal();
-                    document.getElementById('selectAll').checked = false;
-                    document.getElementById('bulkDeleteBtn').classList.remove('visible');
-                } catch(e) { console.error(e); window.showToast("Bulk delete failed partially or fully.", "error"); }
-                finally { btn.innerText = originalText; btn.disabled = false; }
-            };
-            document.getElementById('customModal').classList.add('open');
-        }
-
-        window.openToggleModal = function(sNo, currentStatus) {
-            const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
-            document.getElementById('modalIcon').className = 'modal-icon-wrapper icon-primary';
-            document.getElementById('modalIcon').innerHTML = '<i class="ph-fill ph-arrows-left-right"></i>';
-            document.getElementById('modalTitle').innerText = `Set Status to ${newStatus}?`;
-            document.getElementById('modalDesc').innerHTML = `This will change <b>Student ${sNo}</b> status from <b>${currentStatus}</b> to <b>${newStatus}</b>.`;
-            
-            const btn = document.getElementById('modalConfirmBtn');
-            btn.className = 'modal-btn btn-confirm-toggle';
-            btn.innerText = `Confirm Change`;
-
-            pendingAction = async () => {
-                const originalText = btn.innerText; btn.innerText = "Updating..."; btn.disabled = true;
-                try {
-                    await updateDoc(doc(db, "users", sNo), { status: newStatus });
-                    window.showToast(`Student ${sNo} is now ${newStatus}`);
-                    window.loadAccounts();
-                    window.closeModal();
-                } catch(e) { console.error(e); window.showToast("Failed to update status.", "error"); }
-                finally { btn.innerText = originalText; btn.disabled = false; }
-            };
-            document.getElementById('customModal').classList.add('open');
-        }
-
-        window.confirmAction = function() { if(pendingAction) pendingAction(); }
-        window.closeModal = function() { document.getElementById('customModal').classList.remove('open'); pendingAction = null; }
-
-
-        // --- HELPER TO FETCH SCHEDULE ---
-        async function fetchClassSchedule(subCode, section) {
-            try {
-                // Query ID format: Subject_Section (e.g. IT312_Block A)
-                const docRef = doc(db, "class_schedules", `${subCode}_${section}`);
-                const snap = await getDoc(docRef);
-                if(snap.exists()) {
-                    const d = snap.data();
-                    // Return formatted string for input
-                    return `${d.time} | ${d.room}`;
-                }
-                return null;
-            } catch(e) { 
-                console.error("Sched Fetch Error:", e);
-                return null;
-            }
-        }
-
-        // --- AUTO-UPDATE LOGIC IN MODAL ---
-        window.autoUpdateEditSchedule = async function() {
-            const sub = document.getElementById('editSubjectSelect').value;
-            const sec = document.getElementById('editSec').value;
-            
-            if(sub && sec) {
-                const sched = await fetchClassSchedule(sub, sec);
-                if(sched) {
-                    document.getElementById('editSched').value = sched;
-                }
-                // Optional: Else leave it as is or clear it?
-                // For now, let's leave existing value if no match found to avoid wiping manual edits
-            }
-        }
-
-        // --- EDIT ACCOUNT LOGIC (UPDATED WITH SCHEDULE) ---
-        
-        window.openEditModal = async function(studentNo, enrollId, currentSubCode) {
-            const btn = document.querySelector(`button[onclick*="'${studentNo}'"]`);
-            if(btn) btn.disabled = true;
-
-            try {
-                // 1. Fetch User Data
-                const userDoc = await getDoc(doc(db, "users", studentNo));
-                if(!userDoc.exists()) throw new Error("User not found");
-                const userData = userDoc.data();
-
-                // 2. Fetch Enrollment Data
-                const enrollDoc = await getDoc(doc(db, "enrollments", enrollId));
-                const enrollData = enrollDoc.exists() ? enrollDoc.data() : {};
-
-                // 3. Fetch Subject Data (Fallback)
-                const subDoc = await getDoc(doc(db, "subjects", currentSubCode));
-                const subData = subDoc.exists() ? subDoc.data() : {};
-
-                // 4. Populate Form
-                document.getElementById('editOriginalSno').value = studentNo;
-                document.getElementById('editOriginalEnrollId').value = enrollId;
-                document.getElementById('editOriginalSubCode').value = currentSubCode;
-                
-                document.getElementById('editSno').value = userData.studentNo;
-                document.getElementById('editName').value = userData.fullName;
-                document.getElementById('editCourse').value = userData.courseYear;
-                document.getElementById('editSec').value = userData.section;
-                document.getElementById('editSubjectSelect').value = currentSubCode;
-                document.getElementById('editPass').value = ""; 
-
-                // --- SCHEDULE LOGIC ---
-                // Priority: 
-                // 1. Enrollment Schedule (if specifically set)
-                // 2. Class Schedule (fetched from admin-schedule based on Section)
-                // 3. Subject Default (from admin-subjects)
-                let initialSched = enrollData.schedule;
-                
-                if (!initialSched) {
-                    const classSched = await fetchClassSchedule(currentSubCode, userData.section);
-                    initialSched = classSched || subData.schedule || "";
-                }
-                document.getElementById('editSched').value = initialSched;
-
-                // 5. Show Modal
-                document.getElementById('editAccountModal').classList.add('open');
-            } catch(e) {
-                console.error(e);
-                window.showToast("Error loading user data", "error");
-            } finally {
-                if(btn) btn.disabled = false;
-            }
-        }
-
-        window.closeEditModal = function() {
-            document.getElementById('editAccountModal').classList.remove('open');
-        }
-
-        // Attach listeners for dynamic updates
-        document.getElementById('editSubjectSelect').addEventListener('change', window.autoUpdateEditSchedule);
-        document.getElementById('editSec').addEventListener('change', window.autoUpdateEditSchedule); // Listen for section changes too
-
-        document.getElementById('editForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const saveBtn = document.getElementById('saveEditBtn');
-            saveBtn.innerHTML = 'Saving...'; saveBtn.disabled = true;
-
-            // Get Form Data
-            const oldSno = document.getElementById('editOriginalSno').value;
-            const oldEnrollId = document.getElementById('editOriginalEnrollId').value;
-            const oldSubCode = document.getElementById('editOriginalSubCode').value;
-
-            const newSno = document.getElementById('editSno').value;
-            const newName = document.getElementById('editName').value;
-            const newCourse = document.getElementById('editCourse').value;
-            const newSec = document.getElementById('editSec').value;
-            const newPass = document.getElementById('editPass').value;
-            const newSubCode = document.getElementById('editSubjectSelect').value;
-            const newSched = document.getElementById('editSched').value; // Get the schedule
-
-            try {
-                // 1. Check if ID or Subject Changed (Requires Migration)
-                const isIdChanged = oldSno !== newSno;
-                const isSubChanged = oldSubCode !== newSubCode;
-
-                if (isIdChanged) {
-                    // ID Changed: Hardest scenario. Must Create New, Copy Data, Delete Old.
-                    
-                    // Get old user data to preserve other fields (like email/role)
-                    const oldUserSnap = await getDoc(doc(db, "users", oldSno));
-                    const oldUserData = oldUserSnap.data();
-
-                    // Create New User Doc
-                    await setDoc(doc(db, "users", newSno), {
-                        ...oldUserData,
-                        studentNo: newSno,
-                        fullName: newName,
-                        courseYear: newCourse,
-                        section: newSec,
-                        // If new password provided, set it AND flag first login to force reset
-                        password: newPass ? newPass : oldUserData.password,
-                        isFirstLogin: !!newPass // True if newPass exists, else false (or old state if preferred, but assuming ID change is fresh start)
-                    });
-
-                    // Create New Enrollment Doc
-                    const finalSubCode = isSubChanged ? newSubCode : oldSubCode;
-                    await setDoc(doc(db, "enrollments", `${newSno}_${finalSubCode}`), {
-                        studentNo: newSno,
-                        subjectCode: finalSubCode,
-                        studentName: newName,
-                        section: newSec,
-                        schedule: newSched, // Save Schedule
-                        midtermGrade: null, // Reset grades on ID change for safety
-                        finalTermGrade: null
-                    });
-
-                    // Delete Old Docs
-                    await deleteDoc(doc(db, "users", oldSno));
-                    await deleteDoc(doc(db, "enrollments", oldEnrollId));
-                    
-                    window.showToast("Student ID Changed & Data Migrated!");
-
-                } else {
-                    // ID NOT Changed: Simple Update
-                    const updateData = {
-                        fullName: newName,
-                        courseYear: newCourse,
-                        section: newSec
-                    };
-                    
-                    // If password changed, update it AND set isFirstLogin to true
-                    if(newPass) {
-                        updateData.password = newPass;
-                        updateData.isFirstLogin = true;
-                    }
-
-                    await updateDoc(doc(db, "users", oldSno), updateData);
-
-                    // Update Enrollment
-                    if(isSubChanged) {
-                        // Subject Changed: Must delete old enrollment, create new one
-                        await deleteDoc(doc(db, "enrollments", oldEnrollId));
-                        
-                        await setDoc(doc(db, "enrollments", `${oldSno}_${newSubCode}`), {
-                            studentNo: oldSno,
-                            subjectCode: newSubCode,
-                            studentName: newName,
-                            section: newSec,
-                            schedule: newSched, // Save Schedule
-                            midtermGrade: null,
-                            finalTermGrade: null
-                        });
-                        window.showToast("Details & Subject Updated!");
-                    } else {
-                        // Just details updated
-                        await updateDoc(doc(db, "enrollments", oldEnrollId), {
-                            studentName: newName,
-                            section: newSec,
-                            schedule: newSched // Update Schedule
-                        });
-                        window.showToast("Details Updated!");
-                    }
-                }
-
-                window.closeEditModal();
-                window.loadAccounts();
-
-            } catch(err) {
-                console.error(err);
-                window.showToast("Failed to save changes", "error");
-            } finally {
-                saveBtn.innerHTML = 'Save Changes'; saveBtn.disabled = false;
-            }
+// ===================== LOAD ACCOUNTS =====================
+window.loadAccounts=async()=>{
+    const tbody=document.getElementById('accountsTableBody');
+    tbody.innerHTML='<tr class="loading-msg"><td colspan="8"><span class="spin"></span> Loading accounts...</td></tr>';
+    try{
+        const[userSnap,enrollSnap]=await Promise.all([
+            getDocs(collection(db,'users')),
+            getDocs(collection(db,'enrollments'))
+        ]);
+        const userMap={};
+        userSnap.forEach(d=>{const ud=d.data();userMap[d.id]={status:ud.status||'Active',courseYear:ud.courseYear||''};});
+        let records=[];
+        enrollSnap.forEach(d=>{
+            const data=d.data();
+            const um=userMap[data.studentNo]||{status:'Active',courseYear:''};
+            records.push({...data,enrollId:d.id,status:um.status,courseYear:um.courseYear});
         });
+        allAccountsData=records;
+        buildFilterOptions();
+        applyFilters();
+    }catch(e){
+        console.error(e);
+        tbody.innerHTML='<tr class="empty-msg"><td colspan="8" style="color:var(--danger);">Failed to load accounts.</td></tr>';
+    }
+};
 
+// ===================== FILTERS + SORT =====================
+window.applyFilters=()=>{
+    const search=document.getElementById('tableSearch').value.toLowerCase().trim();
+    const sec=document.getElementById('filterSection').value;
+    const sub=document.getElementById('filterSubject').value;
+    const status=document.getElementById('filterStatus').value;
+    let data=allAccountsData.filter(r=>
+        (!sec||r.section===sec)&&
+        (!sub||r.subjectCode===sub)&&
+        (!status||r.status===status)&&
+        (!search||(r.studentName||'').toLowerCase().includes(search)||(r.studentNo||'').toLowerCase().includes(search))
+    );
+    data=[...data].sort((a,b)=>{
+        let av=a[sortCol]||'', bv=b[sortCol]||'';
+        if(typeof av==='string')av=av.toLowerCase();
+        if(typeof bv==='string')bv=bv.toLowerCase();
+        return sortDir==='asc'?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
+    });
+    renderTable(data);
+    // chips
+    document.getElementById('cTotal').textContent=data.length;
+    document.getElementById('cActive').textContent=data.filter(r=>r.status==='Active').length;
+    document.getElementById('cInactive').textContent=data.filter(r=>r.status!=='Active').length;
+    document.getElementById('cSection').textContent=sec||'All';
+    // Update sort header indicators
+    document.querySelectorAll('#accountsHead th[data-col]').forEach(th=>{
+        th.classList.remove('sort-asc','sort-desc');
+        if(th.dataset.col===sortCol) th.classList.add(sortDir==='asc'?'sort-asc':'sort-desc');
+    });
+};
 
-        // --- FETCH & RENDER LOGIC ---
-        let allAccountsData = []; 
+// Sort click on headers
+document.getElementById('accountsHead').addEventListener('click',e=>{
+    const th=e.target.closest('th[data-col]');
+    if(!th)return;
+    const col=th.dataset.col;
+    if(sortCol===col)sortDir=sortDir==='asc'?'desc':'asc';
+    else{sortCol=col;sortDir='asc';}
+    applyFilters();
+});
 
-        window.loadAccounts = async function() {
-            const tbody = document.getElementById('accountsTableBody');
-            try {
-                const userSnap = await getDocs(collection(db, "users"));
-                const userMap = {}; userSnap.forEach(doc => { userMap[doc.id] = doc.data().status || 'Active'; });
+// ===================== RENDER TABLE =====================
+function renderTable(data){
+    const tbody=document.getElementById('accountsTableBody');
+    if(!data.length){
+        tbody.innerHTML='<tr class="empty-msg"><td colspan="8">No records match your filters.</td></tr>';
+        document.getElementById('footLabel').textContent='0 students';
+        return;
+    }
+    tbody.innerHTML=data.map(r=>{
+        const statusCls=r.status==='Active'?'status-active':'status-inactive';
+        const subInfo=subjectsMap[r.subjectCode];
+        const subTitle=subInfo?subInfo.subjectName||'':'';
+        const subDisplay=`<span style="color:var(--accent-primary);font-weight:800;" title="${subTitle}">${r.subjectCode}</span>`;
+        // Safe attribute encoding
+        const safeEnrollId=r.enrollId;
+        const safeSno=r.studentNo;
+        const safeSub=r.subjectCode;
+        return`<tr>
+            <td class="check-col"><input type="checkbox" class="custom-checkbox row-checkbox" data-sno="${safeSno}" data-enrollid="${safeEnrollId}" onclick="window.updateBulkBtn()"></td>
+            <td style="font-family:monospace;font-size:12px;color:var(--text-muted);">${r.studentNo}</td>
+            <td style="font-weight:700;">${r.studentName}</td>
+            <td>${r.section}</td>
+            <td style="font-size:12px;color:var(--text-muted);">${r.courseYear||'—'}</td>
+            <td>${subDisplay}</td>
+            <td style="text-align:center;"><span class="status-badge ${statusCls}">${r.status}</span></td>
+            <td style="text-align:center;">
+                <button class="action-btn btn-edit-row" onclick="window.openEditModal(${JSON.stringify(safeSno)},${JSON.stringify(safeEnrollId)},${JSON.stringify(safeSub)})"><i class="ph-bold ph-pencil-simple"></i> Edit</button>
+                <button class="action-btn btn-toggle-row" title="Toggle Status" onclick="window.openToggleModal(${JSON.stringify(safeSno)},${JSON.stringify(r.status)})"><i class="ph-bold ph-arrows-left-right"></i></button>
+                <button class="action-btn btn-delete-row" title="Delete" onclick="window.openDeleteModal(${JSON.stringify(safeSno)},${JSON.stringify(safeEnrollId)})"><i class="ph-bold ph-trash"></i></button>
+            </td>
+        </tr>`;
+    }).join('');
+    document.getElementById('footLabel').textContent=`${data.length} student${data.length!==1?'s':''}`;
+    window.updateBulkBtn();
+}
 
-                const snap = await getDocs(collection(db, "enrollments"));
-                if(snap.empty) { tbody.innerHTML = '<tr><td colspan="7">No students enrolled yet.</td></tr>'; allAccountsData=[]; return; }
-                
-                let records = [];
-                snap.forEach(doc => { let data = doc.data(); data.enrollId = doc.id; data.status = userMap[data.studentNo] || 'Active'; records.push(data); });
-                
-                records.sort((a, b) => a.studentName.localeCompare(b.studentName));
-                allAccountsData = records; 
-                
-                window.renderTable(records);
+// ===================== BULK SELECT =====================
+window.toggleSelectAll=()=>{
+    const master=document.getElementById('selectAll');
+    document.querySelectorAll('.row-checkbox').forEach(cb=>cb.checked=master.checked);
+    window.updateBulkBtn();
+};
+window.updateBulkBtn=()=>{
+    const all=document.querySelectorAll('.row-checkbox');
+    const checked=document.querySelectorAll('.row-checkbox:checked');
+    document.getElementById('selectAll').checked=all.length>0&&checked.length===all.length;
+    const btn=document.getElementById('bulkDeleteBtn');
+    if(checked.length>0){btn.classList.add('visible');document.getElementById('selectCount').textContent=checked.length;}
+    else btn.classList.remove('visible');
+};
 
-            } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="7">Failed to load data.</td></tr>'; }
+// ===================== TAB SWITCH =====================
+window.toggleTab=(id,el)=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(id==='acc-manage')window.loadAccounts();
+};
+
+// ===================== CONFIRM MODAL =====================
+window.closeConfirmModal=()=>{document.getElementById('confirmModal').classList.remove('open');pendingAction=null;};
+window.runPendingAction=()=>{if(pendingAction)pendingAction();};
+
+function openConfirmModal(iconClass,title,desc,btnLabel,btnClass,action){
+    const iconEl=document.getElementById('confirmIcon');
+    iconEl.className='modal-icon-wrapper '+iconClass;
+    iconEl.innerHTML=iconClass.includes('danger')?'<i class="ph-fill ph-trash"></i>':'<i class="ph-fill ph-arrows-left-right"></i>';
+    document.getElementById('confirmTitle').textContent=title;
+    document.getElementById('confirmDesc').innerHTML=desc;
+    const btn=document.getElementById('confirmBtn');
+    btn.textContent=btnLabel;btn.className='modal-btn '+btnClass;btn.disabled=false;
+    pendingAction=action;
+    document.getElementById('confirmModal').classList.add('open');
+}
+
+window.openDeleteModal=(sNo,enrollId)=>openConfirmModal(
+    'icon-danger','Delete Account?',
+    `Permanently delete <b>Student ${sNo}</b>? This cannot be undone.`,
+    'Yes, Delete','btn-confirm-delete',
+    async()=>{
+        const btn=document.getElementById('confirmBtn');
+        btn.textContent='Deleting...';btn.disabled=true;
+        try{
+            await Promise.all([deleteDoc(doc(db,'users',sNo)),deleteDoc(doc(db,'enrollments',enrollId))]);
+            window.showToast('Account deleted.');window.loadAccounts();window.closeConfirmModal();
+        }catch(e){console.error(e);window.showToast('Delete failed.','err');btn.textContent='Yes, Delete';btn.disabled=false;}
+    }
+);
+
+window.confirmBulkDelete=()=>{
+    const checked=[...document.querySelectorAll('.row-checkbox:checked')];
+    if(!checked.length)return;
+    openConfirmModal(
+        'icon-danger','Delete Multiple Accounts?',
+        `You are about to delete <b>${checked.length} students</b>. This cannot be undone.`,
+        'Delete All','btn-confirm-delete',
+        async()=>{
+            const btn=document.getElementById('confirmBtn');
+            btn.textContent='Deleting...';btn.disabled=true;
+            try{
+                await Promise.all(checked.flatMap(cb=>[
+                    deleteDoc(doc(db,'users',cb.dataset.sno)),
+                    deleteDoc(doc(db,'enrollments',cb.dataset.enrollid))
+                ]));
+                window.showToast(`Deleted ${checked.length} records.`);
+                window.loadAccounts();window.closeConfirmModal();
+            }catch(e){console.error(e);window.showToast('Bulk delete failed.','err');btn.textContent='Delete All';btn.disabled=false;}
+        }
+    );
+};
+
+window.openToggleModal=(sNo,currentStatus)=>{
+    const newStatus=currentStatus==='Active'?'Inactive':'Active';
+    openConfirmModal(
+        'icon-primary',`Set to ${newStatus}?`,
+        `Change <b>${sNo}</b> from <b>${currentStatus}</b> to <b>${newStatus}</b>.`,
+        'Confirm','btn-confirm-toggle',
+        async()=>{
+            const btn=document.getElementById('confirmBtn');
+            btn.textContent='Updating...';btn.disabled=true;
+            try{
+                await updateDoc(doc(db,'users',sNo),{status:newStatus});
+                window.showToast(`${sNo} is now ${newStatus}.`);window.loadAccounts();window.closeConfirmModal();
+            }catch(e){console.error(e);window.showToast('Update failed.','err');btn.textContent='Confirm';btn.disabled=false;}
+        }
+    );
+};
+
+// ===================== EDIT MODAL =====================
+window.openEditModal=async(studentNo,enrollId,currentSubCode)=>{
+    document.getElementById('editSubLabel').textContent=studentNo+' — '+currentSubCode;
+    document.getElementById('editOriginalSno').value=studentNo;
+    document.getElementById('editOriginalEnrollId').value=enrollId;
+    document.getElementById('editOriginalSubCode').value=currentSubCode;
+    // Reset fields
+    ['editSno','editName','editCourse','editSched','editSubName','editSubProf','editPass'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('editSchedBadge').style.display='none';
+    document.getElementById('editSecYearTag').style.display='none';
+    document.getElementById('editModal').classList.add('open');
+
+    try{
+        const[userDoc,enrollDoc]=await Promise.all([
+            getDoc(doc(db,'users',studentNo)),
+            getDoc(doc(db,'enrollments',enrollId))
+        ]);
+        if(!userDoc.exists())throw new Error('User not found');
+        const ud=userDoc.data();
+        const ed=enrollDoc.exists()?enrollDoc.data():{};
+
+        document.getElementById('editSno').value=ud.studentNo||studentNo;
+        document.getElementById('editName').value=ud.fullName||'';
+        document.getElementById('editCourse').value=ud.courseYear||'';
+
+        // Populate selects with current values
+        document.getElementById('editSubjectSelect').innerHTML=buildSubjectOptions(currentSubCode);
+        document.getElementById('editSec').innerHTML=buildSectionOptions(ud.section||'');
+
+        // Show year level
+        const sec=ud.section||'';
+        if(sec&&sectionsMap[sec]){
+            document.getElementById('editSecYearVal').textContent='Year Level: '+sectionsMap[sec].yearLevel;
+            document.getElementById('editSecYearTag').style.display='inline-flex';
         }
 
-        window.renderTable = function(data) {
-            const tbody = document.getElementById('accountsTableBody');
-            tbody.innerHTML = '';
-            
-            if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">No matching records found.</td></tr>';
-                return;
-            }
+        // Fill subject details
+        if(subjectsMap[currentSubCode]){
+            document.getElementById('editSubName').value=subjectsMap[currentSubCode].subjectName||'';
+            document.getElementById('editSubProf').value=subjectsMap[currentSubCode].profName||'';
+        }
 
-            data.forEach(data => {
-                const statusClass = data.status === 'Active' ? 'status-active' : 'status-inactive';
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="check-col"><input type="checkbox" class="custom-checkbox row-checkbox" data-sno="${data.studentNo}" data-enrollid="${data.enrollId}" onclick="window.updateBulkBtn()"></td>
-                        <td>${data.studentNo}</td>
-                        <td>${data.studentName}</td>
-                        <td>${data.section}</td>
-                        <td>${data.subjectCode}</td>
-                        <td><span class="status-badge ${statusClass}">${data.status}</span></td>
-                        <td>
-                            <button class="action-btn btn-edit" title="Edit Details" onclick="window.openEditModal('${data.studentNo}', '${data.enrollId}', '${data.subjectCode}')"><i class="ph-bold ph-pencil-simple"></i> Edit</button>
-                            <button class="action-btn btn-toggle" title="Toggle Status" onclick="window.openToggleModal('${data.studentNo}', '${data.status}')"><i class="ph-bold ph-arrows-left-right"></i></button>
-                            <button class="action-btn btn-delete" title="Delete" onclick="window.openDeleteModal('${data.studentNo}', '${data.enrollId}')"><i class="ph-bold ph-trash"></i></button>
-                        </td>
-                    </tr>`;
+        // Schedule: class_schedules > enrollment > subject default
+        const sched=getSchedule(currentSubCode,sec);
+        const badge=document.getElementById('editSchedBadge');
+        if(sched){
+            document.getElementById('editSched').value=sched.full;
+            badge.style.display='inline-flex';
+        } else {
+            const fallback=ed.schedule||subjectsMap[currentSubCode]?.schedule||'';
+            document.getElementById('editSched').value=fallback;
+            badge.style.display='none';
+        }
+    }catch(e){
+        console.error(e);window.showToast('Error loading account data.','err');window.closeEditModal();
+    }
+};
+window.closeEditModal=()=>document.getElementById('editModal').classList.remove('open');
+
+document.getElementById('editForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const btn=document.getElementById('saveEditBtn');
+    btn.innerHTML='<span class="spin" style="width:14px;height:14px;"></span> Saving...';btn.disabled=true;
+
+    const oldSno=document.getElementById('editOriginalSno').value;
+    const oldEnrollId=document.getElementById('editOriginalEnrollId').value;
+    const oldSubCode=document.getElementById('editOriginalSubCode').value;
+    const newSno=document.getElementById('editSno').value.trim();
+    const newName=document.getElementById('editName').value.trim();
+    const newCourse=document.getElementById('editCourse').value.trim();
+    const newSec=document.getElementById('editSec').value;
+    const newPass=document.getElementById('editPass').value.trim();
+    const newSubCode=document.getElementById('editSubjectSelect').value;
+    // Prefer auto-fetched schedule
+    const schedInfo=getSchedule(newSubCode,newSec);
+    const finalSched=schedInfo?schedInfo.full:document.getElementById('editSched').value.trim();
+
+    try{
+        const isIdChanged=oldSno!==newSno;
+        const isSubChanged=oldSubCode!==newSubCode;
+
+        if(isIdChanged){
+            const oldUserSnap=await getDoc(doc(db,'users',oldSno));
+            if(!oldUserSnap.exists())throw new Error('Original user not found');
+            const oldUD=oldUserSnap.data();
+            await setDoc(doc(db,'users',newSno),{
+                ...oldUD,studentNo:newSno,fullName:newName,courseYear:newCourse,section:newSec,
+                password:newPass||oldUD.password,isFirstLogin:!!newPass
             });
-            window.updateBulkBtn(); 
-        }
-
-        window.handleSearch = function() {
-            const query = document.getElementById('tableSearch').value.toLowerCase();
-            const filtered = allAccountsData.filter(item => 
-                item.studentName.toLowerCase().includes(query) || 
-                item.studentNo.toLowerCase().includes(query)
-            );
-            window.renderTable(filtered);
-        }
-
-        window.toggleSelectAll = function() {
-            const masterCheck = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(cb => cb.checked = masterCheck.checked);
-            window.updateBulkBtn();
-        }
-
-        window.updateBulkBtn = function() {
-            const checkboxes = document.querySelectorAll('.row-checkbox');
-            const checked = document.querySelectorAll('.row-checkbox:checked');
-            const btn = document.getElementById('bulkDeleteBtn');
-            const masterCheck = document.getElementById('selectAll');
-            
-            if(checked.length === checkboxes.length && checkboxes.length > 0) masterCheck.checked = true;
-            else masterCheck.checked = false;
-
-            if(checked.length > 0) {
-                btn.classList.add('visible');
-                document.getElementById('selectCount').innerText = checked.length;
+            await setDoc(doc(db,'enrollments',`${newSno}_${newSubCode}`),{
+                studentNo:newSno,subjectCode:newSubCode,studentName:newName,
+                section:newSec,schedule:finalSched,midtermGrade:null,finalTermGrade:null
+            });
+            await Promise.all([deleteDoc(doc(db,'users',oldSno)),deleteDoc(doc(db,'enrollments',oldEnrollId))]);
+            window.showToast('Student ID changed & data migrated!');
+        } else {
+            const udUpdate={fullName:newName,courseYear:newCourse,section:newSec};
+            if(newPass){udUpdate.password=newPass;udUpdate.isFirstLogin=true;}
+            await updateDoc(doc(db,'users',oldSno),udUpdate);
+            if(isSubChanged){
+                await deleteDoc(doc(db,'enrollments',oldEnrollId));
+                await setDoc(doc(db,'enrollments',`${oldSno}_${newSubCode}`),{
+                    studentNo:oldSno,subjectCode:newSubCode,studentName:newName,
+                    section:newSec,schedule:finalSched,midtermGrade:null,finalTermGrade:null
+                });
+                window.showToast('Details & subject updated!');
             } else {
-                btn.classList.remove('visible');
+                await updateDoc(doc(db,'enrollments',oldEnrollId),{
+                    studentName:newName,section:newSec,schedule:finalSched
+                });
+                window.showToast('Details updated!');
             }
         }
+        window.closeEditModal();window.loadAccounts();
+    }catch(err){
+        console.error(err);window.showToast('Failed to save changes.','err');
+    }finally{
+        btn.innerHTML='<i class="ph-bold ph-floppy-disk"></i> Save Changes';btn.disabled=false;
+    }
+});
 
-        window.loadAccounts();
-
-        // Submit Manual Form
-        document.getElementById('createAccountForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); 
-            
-            // Check if Subject is Selected
-            const subCode = document.getElementById('subCode').value;
-            if(!subCode) {
-                window.showToast("Please select a subject first", "error");
-                return;
-            }
-
-            const btn = document.getElementById('saveBtn'); 
-            btn.innerHTML = 'Saving...'; btn.disabled = true;
-            
-            try {
-                const sNo = document.getElementById('sNo').value; 
-                const sSched = document.getElementById('subSched').value;
-
-                await setDoc(doc(db, "users", sNo), { 
-                    studentNo: sNo, 
-                    fullName: document.getElementById('sName').value, 
-                    email: document.getElementById('sEmail').value, 
-                    password: document.getElementById('sPass').value, 
-                    courseYear: document.getElementById('sCourse').value, 
-                    section: document.getElementById('sSec').value, 
-                    role: 'student', 
-                    status: 'Active',
-                    isFirstLogin: true 
-                });
-                
-                await setDoc(doc(db, "enrollments", `${sNo}_${subCode}`), { 
-                    studentNo: sNo, 
-                    subjectCode: subCode, 
-                    studentName: document.getElementById('sName').value, 
-                    section: document.getElementById('sSec').value, 
-                    schedule: sSched, // Save schedule here too
-                    midtermGrade: null, 
-                    finalTermGrade: null 
-                });
-                
-                window.showToast("Student Created & Enrolled!"); 
-                e.target.reset(); 
-                document.getElementById('subCode').value = ""; 
-                document.getElementById('subName').value = "";
-                document.getElementById('subProf').value = "";
-                document.getElementById('subSched').value = "";
-                
-                window.loadAccounts();
-            } catch (error) { 
-                console.error(error); 
-                window.showToast("Database Error", "error"); 
-            }
-            btn.innerHTML = '<i class="ph-bold ph-plus"></i> Create Account & Enroll Subject'; btn.disabled = false;
+// ===================== CREATE ACCOUNT FORM =====================
+document.getElementById('createAccountForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const subCode=document.getElementById('subCode').value;
+    if(!subCode){window.showToast('Please select a subject first.','err');return;}
+    const btn=document.getElementById('saveBtn');
+    btn.innerHTML='<span class="spin" style="width:14px;height:14px;"></span> Saving...';btn.disabled=true;
+    try{
+        const sNo=document.getElementById('sNo').value.trim();
+        const sec=document.getElementById('sSec').value;
+        const schedInfo=getSchedule(subCode,sec);
+        const sched=schedInfo?schedInfo.full:(document.getElementById('subSched').value.trim());
+        await setDoc(doc(db,'users',sNo),{
+            studentNo:sNo,
+            fullName:document.getElementById('sName').value.trim(),
+            email:document.getElementById('sEmail').value.trim(),
+            password:document.getElementById('sPass').value.trim(),
+            courseYear:document.getElementById('sCourse').value.trim(),
+            section:sec,role:'student',status:'Active',isFirstLogin:true
         });
+        await setDoc(doc(db,'enrollments',`${sNo}_${subCode}`),{
+            studentNo:sNo,subjectCode:subCode,
+            studentName:document.getElementById('sName').value.trim(),
+            section:sec,schedule:sched,midtermGrade:null,finalTermGrade:null
+        });
+        window.showToast('Student created & enrolled!');
+        e.target.reset();
+        ['subCode','subName','subProf','subSched'].forEach(id=>document.getElementById(id).value='');
+        ['schedFetchBadge','schedInfoRow','secYearTag'].forEach(id=>document.getElementById(id).style.display='none');
+        window.loadAccounts();
+    }catch(err){
+        console.error(err);window.showToast('Database error.','err');
+    }finally{
+        btn.innerHTML='<i class="ph-bold ph-user-plus"></i> Create Account & Enroll Subject';btn.disabled=false;
+    }
+});
 
-        // Bulk CSV Upload
-        window.simulateUpload = function() {
-            const input = document.createElement('input'); input.type = 'file'; input.accept = '.csv';
-            input.onchange = e => { const file = e.target.files[0]; if(!file) return; window.showToast(`Processing ${file.name}...`); Papa.parse(file, { header: true, skipEmptyLines: true, complete: async function(results) { try { for(let row of results.data) { const sNo = row.Student_No; const subCode = row.Subject_Code; if(!sNo || !subCode) continue; 
-            
-            // Extract Schedule info from CSV if present
-            const schedule = row.Schedule || "";
-            const prof = row.Prof_Name || "";
-            const subName = row.Subject_Name || "";
+// ===================== SMART EXCEL TEMPLATE =====================
+window.downloadSmartTemplate=()=>{
+    const wb=XLSX.utils.book_new();
 
-            // Create User
-            await setDoc(doc(db, "users", sNo), { studentNo: sNo, fullName: row.Full_Name, email: row.Email, password: row.Password || "PLV12345", courseYear: row.Course_Year, section: row.Section, role: 'student', status: 'Active', isFirstLogin: true }); 
-            
-            // Create Enrollment
-            await setDoc(doc(db, "enrollments", `${sNo}_${subCode}`), { studentNo: sNo, subjectCode: subCode, studentName: row.Full_Name, section: row.Section, schedule: schedule, midtermGrade: null, finalTermGrade: null }); 
+    // Sheet 1: Data Entry
+    const headers=['Student_No','Full_Name','Email','Course_Year','Section','Subject_Code','Password',
+        'Subject_Name (auto-filled)','Prof_Name (auto-filled)','Schedule (auto-filled)','Year_Level (auto-filled)'];
+    const sample=['2021-00001','DELA CRUZ, JUAN A.','juan@plv.edu.ph','BSIT 3rd Year','BLOCK A','IT312','PLV12345','','','',''];
+    const wsData=[headers,sample];
+    const ws=XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols']=[{wch:14},{wch:28},{wch:24},{wch:16},{wch:14},{wch:14},{wch:12},{wch:28},{wch:22},{wch:26},{wch:14}];
+    ws['!freeze']={xSplit:0,ySplit:1};
+    XLSX.utils.book_append_sheet(wb,ws,'Students (Fill Here)');
 
-            // Create/Update Subject Doc (CRUCIAL FIX)
-            if(subCode && subName) {
-                await setDoc(doc(db, "subjects", subCode), {
-                    subjectCode: subCode,
-                    subjectName: subName,
-                    profName: prof || "TBA",
-                    schedule: schedule || "TBA"
-                }, { merge: true });
+    // Sheet 2: Ref - Sections
+    const secData=[['Section_Name','Year_Level'],...Object.values(sectionsMap)
+        .sort((a,b)=>(a.sectionName||'').localeCompare(b.sectionName||''))
+        .map(s=>[s.sectionName,s.yearLevel||''])];
+    const wsS=XLSX.utils.aoa_to_sheet(secData);
+    wsS['!cols']=[{wch:18},{wch:14}];
+    XLSX.utils.book_append_sheet(wb,wsS,'Ref - Sections');
+
+    // Sheet 3: Ref - Subjects
+    const subData=[['Subject_Code','Subject_Name','Prof_Name'],...Object.values(subjectsMap)
+        .sort((a,b)=>(a.subjectCode||'').localeCompare(b.subjectCode||''))
+        .map(s=>[s.subjectCode,s.subjectName||'',s.profName||''])];
+    const wsSub=XLSX.utils.aoa_to_sheet(subData);
+    wsSub['!cols']=[{wch:14},{wch:34},{wch:24}];
+    XLSX.utils.book_append_sheet(wb,wsSub,'Ref - Subjects');
+
+    // Sheet 4: Ref - Schedules
+    const schedData=[['Subject_Code','Section','Time','Room','Full_Schedule'],...Object.values(schedulesMap)
+        .sort((a,b)=>(a.subjectCode||'').localeCompare(b.subjectCode||''))
+        .map(s=>[s.subjectCode,s.section,s.time||'',s.room||'',`${s.time||''}${s.time&&s.room?' | ':''}${s.room||''}`])];
+    const wsSched=XLSX.utils.aoa_to_sheet(schedData);
+    wsSched['!cols']=[{wch:14},{wch:14},{wch:22},{wch:14},{wch:30}];
+    XLSX.utils.book_append_sheet(wb,wsSched,'Ref - Schedules');
+
+    XLSX.writeFile(wb,'PLV_SmartTemplate_'+new Date().toISOString().slice(0,10)+'.xlsx');
+    window.showToast('Smart template downloaded! Use the Reference sheets to find valid values.');
+};
+
+// ===================== BULK UPLOAD: parse =====================
+window.triggerUpload=()=>{
+    const input=document.createElement('input');
+    input.type='file';input.accept='.xlsx,.xls,.csv';
+    input.onchange=async e=>{
+        const file=e.target.files[0];if(!file)return;
+        window.showToast('Reading file...');
+        try{
+            let rows=[];
+            if(file.name.match(/\.csv$/i)){
+                await new Promise(resolve=>Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>{rows=r.data;resolve();}}));
+            } else {
+                const buf=await file.arrayBuffer();
+                const wb=XLSX.read(buf);
+                rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
             }
+            processUploadData(rows);
+        }catch(err){console.error(err);window.showToast('Error reading file.','err');}
+    };
+    input.click();
+};
 
-            } window.showToast("Bulk Upload Successful!"); window.loadAccounts(); } catch(err) { console.error(err); window.showToast("Error during upload", "error"); } } }); }
-            input.click();
-        }
+function normalizeKey(k){return k.toString().trim().toLowerCase().replace(/\s*\(.*?\)/g,'').replace(/[^a-z_]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');}
 
-        window.downloadTemplate = function(filename, headers) {
-            const link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + headers + "\n")); link.setAttribute("download", filename);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link); window.showToast("Template Downloaded!");
-        }
+function processUploadData(rawRows){
+    if(!rawRows.length){window.showToast('File is empty.','err');return;}
+    const mapped=rawRows.map(row=>{
+        const r={};
+        Object.keys(row).forEach(k=>{r[normalizeKey(k)]=row[k];});
+        return{
+            Student_No:(r.student_no||r.studentno||'').toString().trim(),
+            Full_Name:(r.full_name||r.fullname||'').toString().trim(),
+            Email:(r.email||'').toString().trim(),
+            Course_Year:(r.course_year||r.courseyear||'').toString().trim(),
+            Section:(r.section||'').toString().trim(),
+            Subject_Code:(r.subject_code||r.subjectcode||'').toString().trim(),
+            Password:(r.password||'PLV12345').toString().trim(),
+        };
+    }).filter(r=>r.Student_No&&r.Subject_Code);
 
-        const themeToggleBtn = document.getElementById('themeToggle'); const themeIcon = document.getElementById('themeIcon'); const body = document.body;
-        if (localStorage.getItem('theme') === 'dark') { body.classList.add('dark-theme'); themeIcon.className = 'ph-fill ph-moon'; } else { themeIcon.className = 'ph-fill ph-sun'; }
-        themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); const isDark = body.classList.contains('dark-theme'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeIcon.style.transform = 'rotate(360deg)'; setTimeout(() => { themeIcon.className = isDark ? 'ph-fill ph-moon' : 'ph-fill ph-sun'; themeIcon.style.transform = 'rotate(0deg)'; }, 150); });
-    </script>
-    <!-- MOBILE BOTTOM NAV -->
-    <nav class="mobile-nav-bar">
-        <ul>
-            <li><a href="admin-dashboard.html"><i class="ph-fill ph-squares-four"></i>Dashboard</a></li>
-            <li><a href="admin-sections.html"><i class="ph-fill ph-users-three"></i>Sections</a></li>
-            <li><a href="admin-subjects.html"><i class="ph ph-notebook"></i>Subjects</a></li>
-            <li><a href="admin-accounts.html" class="active"><i class="ph-fill ph-users"></i>Accounts</a></li>
-            <li><a href="admin-activities.html"><i class="ph-fill ph-clipboard-text"></i>Activities</a></li>
-            <li><a href="#" onclick="window.logout()"><i class="ph ph-sign-out"></i>Logout</a></li>
-        </ul>
-    </nav>
+    if(!mapped.length){window.showToast('No valid rows found. Ensure Student_No and Subject_Code columns exist.','err');return;}
+
+    // Auto-enrich from DB cache
+    const enriched=mapped.map(r=>{
+        const subInfo=subjectsMap[r.Subject_Code]||null;
+        const secInfo=sectionsMap[r.Section]||null;
+        const sched=getSchedule(r.Subject_Code,r.Section);
+        const warns=[];
+        if(!subInfo)warns.push('Unknown subject');
+        if(!secInfo)warns.push('Unknown section');
+        if(!sched)warns.push('No schedule');
+        return{
+            ...r,
+            Subject_Name:subInfo?.subjectName||'',
+            Prof_Name:subInfo?.profName||'',
+            Schedule:sched?.full||subInfo?.schedule||'TBA',
+            Year_Level:secInfo?.yearLevel||'',
+            _subOk:!!subInfo,_secOk:!!secInfo,_schedOk:!!sched,
+            _warns:warns,
+            _ok:!!subInfo&&!!secInfo
+        };
+    });
+    pendingUploadRows=enriched;
+    renderUploadPreview(enriched);
+}
+
+function renderUploadPreview(rows){
+    const okCount=rows.filter(r=>r._ok).length;
+    const warnCount=rows.length-okCount;
+    document.getElementById('commitCount').textContent=rows.length;
+    document.getElementById('btnCommitUpload').style.display='inline-flex';
+    document.getElementById('btnClearPreview').style.display='inline-flex';
+
+    const previewRows=rows.slice(0,30).map(r=>{
+        const rowCls=r._ok?'':'style="background:var(--warn-bg);"';
+        const check=(ok)=>ok?'<span style="color:var(--success);font-weight:800;">✓</span>':'<span style="color:var(--warn);font-weight:800;">⚠</span>';
+        const statusHtml=r._warns.length?`<span style="color:var(--warn);font-size:11px;">${r._warns.join(', ')}</span>`:'<span style="color:var(--success);font-size:11px;font-weight:800;">✓ Ready</span>';
+        return`<tr ${rowCls}>
+            <td style="font-family:monospace;font-size:11px;">${r.Student_No}</td>
+            <td>${r.Full_Name}</td>
+            <td>${r.Section} ${check(r._secOk)}</td>
+            <td>${r.Subject_Code} ${check(r._subOk)}</td>
+            <td style="font-size:11px;color:var(--text-muted);">${r.Subject_Name||'—'}</td>
+            <td style="font-size:11px;color:var(--text-muted);">${r.Prof_Name||'—'}</td>
+            <td style="font-size:11px;">${r.Schedule} ${check(r._schedOk)}</td>
+            <td style="font-size:11px;color:var(--text-muted);">${r.Year_Level||'—'}</td>
+            <td>${statusHtml}</td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('previewContainer').innerHTML=`
+        <div class="chips" style="margin-bottom:12px;">
+            <div class="chip chip-blue"><i class="ph-bold ph-rows"></i>&nbsp;${rows.length} rows parsed</div>
+            <div class="chip chip-green"><i class="ph-bold ph-check-circle"></i>&nbsp;Ready: ${okCount}</div>
+            ${warnCount?`<div class="chip chip-warn"><i class="ph-bold ph-warning"></i>&nbsp;Warnings: ${warnCount}</div>`:''}
+            ${rows.length>30?`<div class="chip chip-muted">Showing first 30 of ${rows.length}</div>`:''}
+        </div>
+        <div class="preview-wrap">
+            <table>
+                <thead><tr><th>Student No.</th><th>Name</th><th>Section</th><th>Subject</th><th>Subject Name</th><th>Professor</th><th>Schedule</th><th>Year Level</th><th>Status</th></tr></thead>
+                <tbody>${previewRows}</tbody>
+            </table>
+        </div>`;
+}
+
+window.clearPreview=()=>{
+    pendingUploadRows=[];
+    document.getElementById('previewContainer').innerHTML='';
+    document.getElementById('btnCommitUpload').style.display='none';
+    document.getElementById('btnClearPreview').style.display='none';
+};
+
+// ===================== COMMIT UPLOAD =====================
+window.commitUpload=async()=>{
+    if(!pendingUploadRows.length)return;
+    const btn=document.getElementById('btnCommitUpload');
+    btn.innerHTML='<span class="spin" style="width:14px;height:14px;"></span> Uploading...';btn.disabled=true;
+    let ok=0,errs=0;
+    for(const r of pendingUploadRows){
+        try{
+            await setDoc(doc(db,'users',r.Student_No),{
+                studentNo:r.Student_No,fullName:r.Full_Name,email:r.Email,
+                password:r.Password||'PLV12345',courseYear:r.Course_Year,
+                section:r.Section,role:'student',status:'Active',isFirstLogin:true
+            },{merge:true});
+            await setDoc(doc(db,'enrollments',`${r.Student_No}_${r.Subject_Code}`),{
+                studentNo:r.Student_No,subjectCode:r.Subject_Code,studentName:r.Full_Name,
+                section:r.Section,schedule:r.Schedule,midtermGrade:null,finalTermGrade:null
+            },{merge:true});
+            ok++;
+        }catch(err){console.error('Row error',r.Student_No,err);errs++;}
+    }
+    window.showToast(`Uploaded ${ok} students${errs?`. ${errs} errors — check console.`:'!'}`);
+    window.clearPreview();
+    window.loadAccounts();
+    btn.innerHTML='<i class="ph-bold ph-cloud-arrow-up"></i> Upload <span id="commitCount">0</span> Students to Database';
+    btn.disabled=false;
+};
+
+// ===================== THEME =====================
+const tBtn=document.getElementById('themeToggle');const tIco=document.getElementById('themeIcon');
+if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark-theme');tIco.className='ph-fill ph-moon';}else{tIco.className='ph-fill ph-sun';}
+tBtn.addEventListener('click',()=>{
+    document.body.classList.toggle('dark-theme');
+    const dk=document.body.classList.contains('dark-theme');
+    localStorage.setItem('theme',dk?'dark':'light');
+    tIco.className=dk?'ph-fill ph-moon':'ph-fill ph-sun';
+});
+</script>
 </body>
 </html>

@@ -351,11 +351,17 @@
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
                 <div>
                     <h3 style="font-size:17px;font-weight:800;color:var(--text-main);">Class Leaderboard</h3>
-                    <p style="font-size:13px;color:var(--text-muted);font-weight:600;margin-top:3px;">Ranked by total score u00f7 total max score (overall performance %)</p>
+                    <p style="font-size:13px;color:var(--text-muted);font-weight:600;margin-top:3px;">Ranked by total score &divide; total max score (overall performance %)</p>
                 </div>
-                <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);font-weight:600;">
-                    <i class="ph-bold ph-info" style="font-size:16px;"></i>
-                    <span><b id="rankTotalStudents">0</b> students &bull; <b id="rankTotalActivities">0</b> activities</span>
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);font-weight:600;">
+                        <i class="ph-bold ph-info" style="font-size:16px;"></i>
+                        <span><b id="rankTotalStudents">0</b> students &bull; <b id="rankTotalActivities">0</b> activities</span>
+                    </div>
+                    <button id="btnReleaseStanding" onclick="window.toggleStandingVisibility()" style="display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:10px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .25s;background:var(--success-bg);color:var(--success);">
+                        <i class="ph-bold ph-eye" id="releaseIcon"></i>
+                        <span id="releaseLabel">Loading...</span>
+                    </button>
                 </div>
             </div>
             <div class="ranking-view" id="rankingContainer">
@@ -448,7 +454,7 @@
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getFirestore,collection,getDocs,doc,updateDoc,addDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFirestore,collection,getDocs,doc,updateDoc,addDoc,getDoc,setDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const _u=JSON.parse(localStorage.getItem('loggedInUser'));
 if(!_u||_u.role!=='admin')location.href='index.html';
 window.logout=()=>{localStorage.removeItem('loggedInUser');location.href='index.html';};
@@ -459,6 +465,7 @@ let enrollments=[],activities=[],scores=[];
 let sortCol=null,sortDir='asc',currentView='grid',editCtx=null;
 // Cache for computed rows used by ranking
 let lastComputedRows=[], lastComputedActs=[];
+let showStanding=false; // mirrors settings/global.showStanding — controls student visibility
 
 // ========== TOAST ==========
 window.showToast=(msg,type='ok')=>{
@@ -473,20 +480,52 @@ window.showToast=(msg,type='ok')=>{
 async function loadAll(){
     document.getElementById('gridBody').innerHTML='<tr class="loading-msg"><td colspan="12"><span class="spin"></span> Loading all records...</td></tr>';
     try{
-        const[eSnap,aSnap,sSnap]=await Promise.all([
+        const[eSnap,aSnap,sSnap,settSnap]=await Promise.all([
             getDocs(collection(db,'enrollments')),
             getDocs(collection(db,'activities')),
-            getDocs(collection(db,'scores'))
+            getDocs(collection(db,'scores')),
+            getDoc(doc(db,'settings','global'))
         ]);
         enrollments=eSnap.docs.map(d=>({id:d.id,...d.data()}));
         activities=aSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
         scores=sSnap.docs.map(d=>({id:d.id,...d.data()}));
+        showStanding=settSnap.exists()?!!(settSnap.data().showStanding):false;
+        updateStandingBtn();
         buildDropdowns();applyFilters();
     }catch(e){
         console.error(e);
         document.getElementById('gridBody').innerHTML='<tr class="empty-msg"><td colspan="12" style="color:var(--danger)">Error loading data.</td></tr>';
     }
 }
+
+// ========== STANDING VISIBILITY TOGGLE ==========
+function updateStandingBtn(){
+    const btn=document.getElementById('btnReleaseStanding');
+    const ico=document.getElementById('releaseIcon');
+    const lbl=document.getElementById('releaseLabel');
+    if(!btn)return;
+    if(showStanding){
+        btn.style.background='var(--success-bg)';btn.style.color='var(--success)';
+        ico.className='ph-bold ph-eye';lbl.textContent='Standing: Visible to Students';
+    }else{
+        btn.style.background='var(--danger-bg)';btn.style.color='var(--danger)';
+        ico.className='ph-bold ph-eye-slash';lbl.textContent='Standing: Hidden from Students';
+    }
+}
+
+window.toggleStandingVisibility=async()=>{
+    showStanding=!showStanding;
+    updateStandingBtn();
+    try{
+        await setDoc(doc(db,'settings','global'),{showStanding},{ merge:true });
+        window.showToast(showStanding?'Class standing is now visible to students!':'Class standing hidden from students.');
+    }catch(err){
+        console.error(err);
+        showStanding=!showStanding; // revert
+        updateStandingBtn();
+        window.showToast('Failed to update setting.','err');
+    }
+};
 
 // ========== DROPDOWNS ==========
 function buildDropdowns(){
@@ -759,10 +798,19 @@ function renderRanking(rows, acts){
     document.getElementById('rankTotalStudents').textContent=rows.length;
     document.getElementById('rankTotalActivities').textContent=acts.length;
 
+    // Update standing button UI to reflect current state
+    updateStandingBtn();
+
     if(!rows.length){
         container.innerHTML='<p style="color:var(--text-muted);font-size:14px;text-align:center;padding:40px;">No records found.</p>';
         return;
     }
+
+    // Same ordinal function as student-dashboard
+    const getOrdinal=(n)=>{
+        const s=["th","st","nd","rd"],v=n%100;
+        return n+(s[(v-20)%10]||s[v]||s[0]);
+    };
 
     const trophyEmoji=(r)=>{
         if(r===1)return'\ud83e\udd47';
@@ -785,19 +833,33 @@ function renderRanking(rows, acts){
         return`<span class="rank-grade-badge" style="background:var(--danger-bg);color:var(--danger);">Needs Improvement</span>`;
     };
 
-    let html='';
+    // Standing visibility notice — matches what student-dashboard shows/hides
+    const visNote=showStanding
+        ?`<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--success-bg);border-radius:10px;margin-bottom:14px;font-size:12px;font-weight:700;color:var(--success);">
+            <i class="ph-bold ph-eye" style="font-size:15px;"></i>
+            Students can see their class standing on their dashboard.
+          </div>`
+        :`<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--danger-bg);border-radius:10px;margin-bottom:14px;font-size:12px;font-weight:700;color:var(--danger);">
+            <i class="ph-bold ph-eye-slash" style="font-size:15px;"></i>
+            Class standing is currently hidden from students. Toggle above to release.
+          </div>`;
+
+    let html=visNote;
     rows.forEach((row,idx)=>{
         const rank=row.rank||idx+1;
         const rankClass=rank<=3?`rank-card-${rank}`:'';
-        const pct=row.scorePercent;
+        const pct=row.scorePercent; // totalScore/totalMax*100 — same as student-dashboard
         const pctStr=row.totalMax>0?pct.toFixed(2)+'%':'N/A';
         const trophy=trophyEmoji(rank);
+        // Placement label — same ordinal style as student-dashboard's getOrdinal
+        const placement=getOrdinal(rank)+' Place';
         const avgStr=row.avg!==null?`Avg: ${row.avg.toFixed(2)}`:'Grade Pending';
+        // Score string: total / grandTotalPerfect — matching student-dashboard display
         const scoreStr=row.totalMax>0?`${row.totalScore} / ${row.totalMax}`:'No Activities';
 
         html+=`
         <div class="rank-card ${rankClass}">
-            <div class="rank-num-lg" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">${trophy?`<span style="font-size:26px;line-height:1;">${trophy}</span><span style="font-size:13px;font-weight:800;opacity:.7;">#${rank}</span>`:`<span>#${rank}</span>`}</div>
+            <div class="rank-num-lg" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">${trophy?`<span style="font-size:26px;line-height:1;">${trophy}</span><span style="font-size:13px;font-weight:800;opacity:.7;">${placement}</span>`:`<span style="font-size:13px;font-weight:800;">${placement}</span>`}</div>
             <div class="rank-info">
                 <div class="rank-name">${row.studentName}</div>
                 <div class="rank-meta">
