@@ -185,64 +185,92 @@ body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; heigh
 <!-- FIREBASE INTEGRATION -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, where, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const app = initializeApp({ apiKey: "AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI", authDomain: "plv-grades-portal.firebaseapp.com", projectId: "plv-grades-portal", storageBucket: "plv-grades-portal.firebasestorage.app", messagingSenderId: "951401194726", appId: "1:951401194726:web:28ea9972358d0e30fb4727", measurementId: "G-TKG574DYYB" });
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    // Temp storage for user attempting to login
-    let pendingUser = null; 
+    // Temp storage for first-login password change
+    let pendingUser = null;
+
+    const loginBtn = document.getElementById('loginBtn');
+    const resetLoginBtn = () => { loginBtn.innerHTML = 'Secure Login <i class="ph-bold ph-arrow-right"></i>'; loginBtn.disabled = false; };
 
     // --- LOGIN LOGIC ---
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const identifier = document.getElementById('userIdentifier').value.trim();
         const password = document.getElementById('passwordInput').value.trim();
-        const loginBtn = document.getElementById('loginBtn');
-        
-        if(identifier === 'admin' && password === 'admin@lor') {
-            localStorage.setItem('loggedInUser', JSON.stringify({ role: 'admin', fullName: 'System Admin', status: 'Active' }));
-            window.location.href = 'admin-dashboard.html'; return;
-        }
-
         loginBtn.innerHTML = 'Authenticating...'; loginBtn.disabled = true;
 
         try {
-            const usersRef = collection(db, "users");
-            let snapshot = await getDocs(query(usersRef, where("studentNo", "==", identifier), where("password", "==", password)));
-            if (snapshot.empty) snapshot = await getDocs(query(usersRef, where("email", "==", identifier), where("password", "==", password)));
+            // Build email: accept plain "admin" or a full email
+            const email = identifier.includes('@') ? identifier : `${identifier}@plv.edu.ph`;
+            const cred = await signInWithEmailAndPassword(auth, email, password);
+
+            // Look up admin profile in Firestore by their Firebase Auth UID
+            const adminDoc = await getDoc(doc(db, 'users', cred.user.uid));
+            if (adminDoc.exists() && adminDoc.data().role === 'admin' && adminDoc.data().status !== 'Inactive') {
+                localStorage.setItem('loggedInUser', JSON.stringify({ ...adminDoc.data(), uid: cred.user.uid }));
+                window.showToast('Login Successful!');
+                setTimeout(() => window.location.href = 'admin-dashboard.html', 1000);
+                return;
+            }
+
+            // Firebase Auth succeeded but not an admin — deny access
+            window.showToast('Access denied.', 'error');
+            resetLoginBtn();
+            return;
+
+        } catch (authErr) {
+            // Not a Firebase Auth user — continue to student login below
+            if (!['auth/user-not-found', 'auth/wrong-password', 'auth/invalid-credential', 'auth/invalid-email'].includes(authErr.code)) {
+                // Unexpected error (network, etc.)
+                window.showToast('Login error. Please try again.', 'error');
+                resetLoginBtn();
+                return;
+            }
+            // Falls through to student Firestore login
+        }
+
+        // ── STUDENTS: Firestore lookup (existing flow, unchanged) ──
+        try {
+            const usersRef = collection(db, 'users');
+            let snapshot = await getDocs(query(usersRef, where('studentNo', '==', identifier), where('password', '==', password)));
+            if (snapshot.empty) snapshot = await getDocs(query(usersRef, where('email', '==', identifier), where('password', '==', password)));
 
             if (!snapshot.empty) {
                 const userData = snapshot.docs[0].data();
-                
-                if(userData.status === 'Inactive') {
-                    window.showToast("Account is Inactive. Contact Admin.", "error");
-                    loginBtn.innerHTML = 'Secure Login <i class="ph-bold ph-arrow-right"></i>'; loginBtn.disabled = false;
-                    return;
+
+                if (userData.status === 'Inactive') {
+                    window.showToast('Account is Inactive. Contact Admin.', 'error');
+                    resetLoginBtn(); return;
                 }
 
-                // CHECK FIRST TIME LOGIN
-                if(userData.isFirstLogin === true) {
-                    pendingUser = { ...userData, id: userData.studentNo }; // Store for password update
+                // First login → force password change
+                if (userData.isFirstLogin === true) {
+                    pendingUser = { ...userData, id: userData.studentNo };
                     document.getElementById('changePassModal').classList.add('open');
-                    loginBtn.innerHTML = 'Secure Login <i class="ph-bold ph-arrow-right"></i>'; loginBtn.disabled = false;
-                    return; // STOP HERE
+                    resetLoginBtn(); return;
                 }
 
-                // Normal Login Flow - SET ONLINE STATUS
-                // IMPORTANT: This line makes the Admin Dashboard counter work
-                await updateDoc(doc(db, "users", userData.studentNo), { isOnline: true });
-
+                // Normal student login — set online status
+                await updateDoc(doc(db, 'users', userData.studentNo), { isOnline: true });
                 localStorage.setItem('loggedInUser', JSON.stringify(userData));
-                window.showToast("Login Successful!");
-                setTimeout(() => {
-                    window.location.href = userData.role === 'admin' ? 'admin-dashboard.html' : 'student-dashboard.html';
-                }, 1000);
+                window.showToast('Login Successful!');
+                setTimeout(() => window.location.href = 'student-dashboard.html', 1000);
+
             } else {
-                window.showToast("Invalid Credentials.", "error");
-                loginBtn.innerHTML = 'Secure Login <i class="ph-bold ph-arrow-right"></i>'; loginBtn.disabled = false;
+                window.showToast('Invalid Credentials.', 'error');
+                resetLoginBtn();
             }
-        } catch (error) { console.error(error); window.showToast("Connection Error.", "error"); loginBtn.disabled = false; }
+        } catch (error) {
+            console.error(error);
+            window.showToast('Connection Error.', 'error');
+            resetLoginBtn();
+        }
     });
 
     // --- PASSWORD VALIDATION LOGIC ---
@@ -252,73 +280,51 @@ body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; heigh
 
     function validatePassword() {
         const val = newPassInput.value;
-        const confirmVal = confirmPassInput.value;
-
-        // Rules
         const len = val.length >= 8;
         const num = /[0-9]/.test(val);
         const caseMix = /[a-z]/.test(val) && /[A-Z]/.test(val);
         const spec = /[!@#$%^&*(),.?":{}|<>]/.test(val);
-
-        // UI Updates
         updateRule('rule-len', len);
         updateRule('rule-num', num);
         updateRule('rule-case', caseMix);
         updateRule('rule-spec', spec);
-
-        const isValid = len && num && caseMix && spec && (val === confirmVal) && (val !== "");
-        
+        const isValid = len && num && caseMix && spec && val === confirmPassInput.value && val !== '';
         savePassBtn.disabled = !isValid;
-        savePassBtn.style.opacity = isValid ? "1" : "0.6";
-        savePassBtn.style.cursor = isValid ? "pointer" : "not-allowed";
+        savePassBtn.style.opacity = isValid ? '1' : '0.6';
+        savePassBtn.style.cursor = isValid ? 'pointer' : 'not-allowed';
     }
 
     function updateRule(id, valid) {
         const el = document.getElementById(id);
         const icon = el.querySelector('i');
-        if(valid) {
-            el.classList.add('valid');
-            icon.className = 'ph-fill ph-check-circle';
-        } else {
-            el.classList.remove('valid');
-            icon.className = 'ph-bold ph-circle';
-        }
+        el.classList.toggle('valid', valid);
+        icon.className = valid ? 'ph-fill ph-check-circle' : 'ph-bold ph-circle';
     }
 
     newPassInput.addEventListener('input', validatePassword);
     confirmPassInput.addEventListener('input', validatePassword);
 
-    // --- SAVE NEW PASSWORD LOGIC ---
+    // --- SAVE NEW PASSWORD (students only) ---
     document.getElementById('changePassForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        if(!pendingUser) return;
-
+        if (!pendingUser) return;
         const newPass = newPassInput.value;
         const btn = document.getElementById('savePassBtn');
         btn.innerHTML = 'Updating...'; btn.disabled = true;
-
         try {
-            const userRef = doc(db, "users", pendingUser.id);
-            await updateDoc(userRef, {
+            await updateDoc(doc(db, 'users', pendingUser.id), {
                 password: newPass,
-                isFirstLogin: false, // Disable the flag
-                isOnline: true // Set online status
+                isFirstLogin: false,
+                isOnline: true
             });
-
-            window.showToast("Password Changed! Redirecting...", "success");
-            
-            // Proceed to login
+            window.showToast('Password Changed! Redirecting...', 'success');
             pendingUser.password = newPass;
             pendingUser.isFirstLogin = false;
             localStorage.setItem('loggedInUser', JSON.stringify(pendingUser));
-            
-            setTimeout(() => {
-                window.location.href = pendingUser.role === 'admin' ? 'admin-dashboard.html' : 'student-dashboard.html';
-            }, 1500);
-
-        } catch(e) {
-            console.error(e);
-            window.showToast("Error updating password.", "error");
+            setTimeout(() => window.location.href = 'student-dashboard.html', 1500);
+        } catch (err) {
+            console.error(err);
+            window.showToast('Error updating password.', 'error');
             btn.innerHTML = 'Save New Password <i class="ph-bold ph-floppy-disk"></i>'; btn.disabled = false;
         }
     });
