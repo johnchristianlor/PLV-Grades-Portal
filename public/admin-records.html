@@ -40,8 +40,10 @@
         .theme-toggle:hover{transform:translateY(-3px) scale(1.05);}
         .dark-theme .theme-toggle{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.9));border-color:rgba(255,255,255,.1);color:#93c5fd;}
         .card{padding:28px 32px;display:flex;flex-direction:column;position:relative;}
+
+        /* ===== TOOLBAR ===== */
         .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;}
-        .search-box{position:relative;flex:1;min-width:200px;}
+        .search-box{position:relative;flex:1;min-width:160px;}
         .search-box i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:17px;pointer-events:none;}
         .search-input,.sel{padding:11px 14px;border-radius:12px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text-main);font-size:14px;font-weight:600;outline:none;transition:.25s;font-family:'Plus Jakarta Sans',sans-serif;}
         .search-input{width:100%;padding-left:42px;font-weight:500;}
@@ -54,6 +56,8 @@
         .dark-theme .view-toggle{background:rgba(255,255,255,.06);}
         .vt-btn{padding:7px 16px;border-radius:9px;border:none;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:5px;transition:all .2s;}
         .vt-btn.active{background:var(--glass-bg);color:var(--accent-primary);box-shadow:0 2px 8px rgba(0,0,0,.07);}
+
+        /* ===== CHIPS ===== */
         .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
         .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;font-size:12px;font-weight:700;}
         .chip-blue{background:var(--accent-light);color:var(--accent-primary);}
@@ -62,13 +66,18 @@
         .chip-gold{background:rgba(212,175,55,.12);color:var(--accent-gold);}
         .chip-muted{background:rgba(100,116,139,.08);color:var(--text-muted);}
         .hint-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:12px;color:var(--text-muted);font-weight:600;padding:10px 14px;background:var(--accent-light);border-radius:10px;}
+
+        /* ===== RESPONSIVE GRID SCROLL ===== */
         .grid-scroll{width:100%;overflow-x:auto;border-radius:16px;border:1px solid var(--glass-border);}
         .grid-scroll::-webkit-scrollbar{height:6px;}
         .grid-scroll::-webkit-scrollbar-thumb{background:var(--accent-light);border-radius:4px;}
         .grid-table{border-collapse:collapse;min-width:100%;}
+
+        /* Sticky columns */
         .col-rank{position:sticky;left:0;z-index:4;width:64px;min-width:64px;}
-        .col-sno{position:sticky;left:64px;z-index:4;min-width:136px;}
-        .col-name{position:sticky;left:200px;z-index:4;min-width:210px;}
+        .col-sno{position:sticky;left:64px;z-index:4;min-width:120px;}
+        .col-name{position:sticky;left:184px;z-index:4;min-width:180px;}
+
         .grid-table thead th{padding:10px 14px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;background:var(--input-bg);border-bottom:2px solid var(--glass-border);cursor:pointer;user-select:none;transition:color .2s;position:sticky;top:0;z-index:3;}
         .grid-table thead th:hover{color:var(--accent-primary);}
         .grid-table thead th.sort-asc::after{content:' \2191';color:var(--accent-primary);}
@@ -85,6 +94,18 @@
         .grid-table tbody td{padding:11px 14px;font-size:13px;font-weight:600;border-bottom:1px solid var(--glass-border);background:var(--input-bg);vertical-align:middle;white-space:nowrap;}
         .grid-table tbody tr:nth-child(even) td{background:rgba(0,61,165,.025);}
         .dark-theme .grid-table tbody tr:nth-child(even) td{background:rgba(59,130,246,.04);}
+
+        /* Sticky column backgrounds must match row bg for visual consistency */
+        .grid-table tbody tr:nth-child(even) td.col-rank,
+        .grid-table tbody tr:nth-child(even) td.col-sno,
+        .grid-table tbody tr:nth-child(even) td.col-name{background:rgba(0,61,165,.025);}
+        .dark-theme .grid-table tbody tr:nth-child(even) td.col-rank,
+        .dark-theme .grid-table tbody tr:nth-child(even) td.col-sno,
+        .dark-theme .grid-table tbody tr:nth-child(even) td.col-name{background:rgba(59,130,246,.04);}
+        .grid-table tbody tr:hover td.col-rank,
+        .grid-table tbody tr:hover td.col-sno,
+        .grid-table tbody tr:hover td.col-name{background:var(--accent-light) !important;}
+
         .rank-badge{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-size:12px;font-weight:800;}
         .rank-1{background:linear-gradient(135deg,#FFD700,#FFA500);color:#7a3c00;box-shadow:0 3px 10px rgba(255,165,0,.45);}
         .rank-2{background:linear-gradient(135deg,#C0C0C0,#9e9e9e);color:#1a1a2e;box-shadow:0 3px 10px rgba(192,192,192,.4);}
@@ -119,10 +140,34 @@
         @keyframes spin{to{transform:rotate(360deg);}}
         .table-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px;}
         .table-footer span{font-size:12px;color:var(--text-muted);font-weight:600;}
-        .toast{position:fixed;bottom:32px;right:32px;color:#fff;padding:14px 22px;border-radius:14px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:10px;transform:translateX(160%);transition:transform .4s cubic-bezier(.4,0,.2,1);z-index:9000;}
-        .toast.show{transform:translateX(0);}
-        .toast-ok{background:var(--success);box-shadow:0 12px 24px rgba(16,185,129,.3);}
-        .toast-err{background:var(--danger);box-shadow:0 12px 24px rgba(225,29,72,.3);}
+
+        /* ===== RANKING VIEW ===== */
+        .ranking-view{display:flex;flex-direction:column;gap:12px;}
+        .rank-card{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:16px;transition:all .2s;cursor:default;}
+        .rank-card:hover{background:var(--accent-light);border-color:rgba(0,61,165,.2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,35,102,.08);}
+        .rank-card.rank-card-1{background:linear-gradient(135deg,rgba(255,215,0,.12),rgba(255,165,0,.08));border-color:rgba(255,165,0,.35);box-shadow:0 4px 16px rgba(255,165,0,.15);}
+        .rank-card.rank-card-2{background:linear-gradient(135deg,rgba(192,192,192,.12),rgba(158,158,158,.06));border-color:rgba(192,192,192,.4);}
+        .rank-card.rank-card-3{background:linear-gradient(135deg,rgba(205,127,50,.12),rgba(160,82,45,.06));border-color:rgba(205,127,50,.4);}
+        .rank-num-lg{font-size:28px;font-weight:800;width:48px;text-align:center;flex-shrink:0;color:var(--text-muted);}
+        .rank-card-1 .rank-num-lg{color:#b45309;}
+        .rank-card-2 .rank-num-lg{color:#6b7280;}
+        .rank-card-3 .rank-num-lg{color:#92400e;}
+        .rank-trophy{font-size:32px;flex-shrink:0;width:40px;text-align:center;}
+        .rank-info{flex:1;min-width:0;}
+        .rank-name{font-size:16px;font-weight:800;color:var(--text-main);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .rank-meta{font-size:12px;color:var(--text-muted);font-weight:600;}
+        .rank-score-block{text-align:right;flex-shrink:0;}
+        .rank-score-main{font-size:22px;font-weight:800;color:var(--accent-primary);line-height:1;}
+        .rank-score-pct{font-size:12px;font-weight:700;color:var(--text-muted);margin-top:2px;}
+        .rank-bar-wrap{width:120px;height:6px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin-top:6px;margin-left:auto;}
+        .dark-theme .rank-bar-wrap{background:rgba(255,255,255,.1);}
+        .rank-bar-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+        .rank-grade-badge{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:800;margin-top:4px;display:inline-block;}
+
+        /* ===== RESPONSIVE ===== */
+        .scroll-hint{display:none;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-muted);padding:6px 12px;background:var(--accent-light);border-radius:8px;margin-bottom:10px;}
+
+        /* MODAL */
         .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;justify-content:center;align-items:center;opacity:0;transition:opacity .3s;backdrop-filter:blur(6px);}
         .modal-overlay.open{display:flex;opacity:1;}
         .modal-box{background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:0 32px 64px rgba(0,0,0,.3);border-radius:24px;width:95%;padding:32px;transform:scale(.92);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
@@ -159,14 +204,56 @@
         .btn-exp-xl:hover{opacity:.88;transform:translateY(-1px);}
         .btn-exp-csv{background:transparent;border:1.5px solid var(--accent-primary);color:var(--accent-primary);padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;flex:1;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;}
         .btn-exp-csv:hover{background:var(--accent-light);}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:32px;right:32px;color:#fff;padding:14px 22px;border-radius:14px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:10px;transform:translateX(160%);transition:transform .4s cubic-bezier(.4,0,.2,1);z-index:9000;}
+        .toast.show{transform:translateX(0);}
+        .toast-ok{background:var(--success);box-shadow:0 12px 24px rgba(16,185,129,.3);}
+        .toast-err{background:var(--danger);box-shadow:0 12px 24px rgba(225,29,72,.3);}
+
+        /* MOBILE NAV */
         .mobile-nav-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--glass-bg);backdrop-filter:blur(32px);border-top:1px solid var(--glass-border);z-index:200;padding:6px 0 max(6px,env(safe-area-inset-bottom));}
         .mobile-nav-bar ul{display:flex;list-style:none;padding:0 12px;overflow-x:auto;gap:4px;scrollbar-width:none;}
         .mobile-nav-bar ul::-webkit-scrollbar{display:none;}
         .mobile-nav-bar ul li a{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--text-muted);font-size:9px;font-weight:700;text-transform:uppercase;padding:8px 12px;border-radius:12px;min-width:54px;white-space:nowrap;transition:all .2s;}
         .mobile-nav-bar ul li a i{font-size:22px;}
         .mobile-nav-bar ul li a.active{color:var(--accent-primary);background:var(--accent-light);}
-        @media(max-width:1024px){body{flex-direction:column;}.sidebar{width:100%;height:auto;padding:18px 20px;border-right:none;border-bottom:1px solid var(--glass-border);position:sticky;top:0;}.nav-menu{display:none;}.logo-container{margin-bottom:0!important;}.mobile-nav-bar{display:block;}.main-wrapper{padding:20px 16px;padding-bottom:90px!important;}}
-        @media(max-width:768px){.main-wrapper{padding:14px 10px;padding-bottom:90px!important;}.header h1{font-size:22px;}.card{padding:18px 14px;}.toolbar{flex-direction:column;align-items:stretch;}.view-toggle{align-self:flex-start;}}
+
+        /* RESPONSIVE BREAKPOINTS */
+        @media(max-width:1024px){
+            body{flex-direction:column;}
+            .sidebar{width:100%;height:auto;padding:18px 20px;border-right:none;border-bottom:1px solid var(--glass-border);position:sticky;top:0;}
+            .nav-menu{display:none;}
+            .logo-container{margin-bottom:0!important;}
+            .mobile-nav-bar{display:block;}
+            .main-wrapper{padding:20px 16px;padding-bottom:90px!important;}
+            .scroll-hint{display:flex;}
+            .col-name{left:160px;min-width:150px;}
+            .col-sno{min-width:100px;}
+        }
+        @media(max-width:768px){
+            .main-wrapper{padding:14px 10px;padding-bottom:90px!important;}
+            .header h1{font-size:22px;}
+            .card{padding:18px 14px;}
+            .toolbar{gap:8px;}
+            .toolbar .sel{font-size:12px;padding:9px 10px;}
+            .btn{padding:9px 14px;font-size:13px;}
+            .vt-btn{padding:7px 10px;font-size:11px;}
+            /* On small screens, only rank and name sticky */
+            .col-sno{position:static;}
+            .col-name{left:64px;min-width:140px;}
+        }
+        @media(max-width:480px){
+            .toolbar{flex-direction:column;align-items:stretch;}
+            .search-box{width:100%;}
+            .view-toggle{align-self:flex-start;}
+            .chips{gap:6px;}
+            .chip{font-size:11px;padding:5px 10px;}
+            /* Very small: only rank sticky */
+            .col-name{position:static;}
+            .col-sno{position:static;}
+            .col-rank{width:48px;min-width:48px;}
+        }
     </style>
 </head>
 <body>
@@ -234,20 +321,46 @@
             <div class="chip chip-gold"><i class="ph-bold ph-trophy"></i>&nbsp;Top: <b id="cTop">&#8212;</b></div>
         </div>
 
-        <div class="hint-bar">
-            <i class="ph-bold ph-pencil-simple" style="color:var(--accent-primary);font-size:15px;"></i>
-            <span><b>Double-click</b> any score cell to edit it inline &nbsp;|&nbsp; Click the <b>pencil button</b> on the right to edit all scores + grades for a student at once</span>
+        <!-- Scroll hint (mobile only) -->
+        <div class="scroll-hint" id="scrollHint">
+            <i class="ph-bold ph-arrows-left-right"></i>
+            <span>Scroll left/right to see all columns</span>
         </div>
 
-        <div class="grid-scroll">
-            <table class="grid-table">
-                <thead id="gridHead"></thead>
-                <tbody id="gridBody"><tr class="loading-msg"><td colspan="12"><span class="spin"></span> Loading all records...</td></tr></tbody>
-            </table>
+        <div class="hint-bar" id="gridHintBar">
+            <i class="ph-bold ph-pencil-simple" style="color:var(--accent-primary);font-size:15px;"></i>
+            <span><b>Double-click</b> any score cell to edit it inline &nbsp;|&nbsp; Click the <b>pencil button</b> to edit all scores + grades for a student</span>
         </div>
-        <div class="table-footer">
-            <span id="footLeft">0 rows &bull; 0 activity columns</span>
-            <span>Scroll right to see all activities &rarr;</span>
+
+        <!-- GRID VIEW -->
+        <div id="gridViewWrapper">
+            <div class="grid-scroll">
+                <table class="grid-table">
+                    <thead id="gridHead"></thead>
+                    <tbody id="gridBody"><tr class="loading-msg"><td colspan="12"><span class="spin"></span> Loading all records...</td></tr></tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span id="footLeft">0 rows &bull; 0 activity columns</span>
+                <span id="footRight">Scroll right to see all activities &rarr;</span>
+            </div>
+        </div>
+
+        <!-- RANKING VIEW -->
+        <div id="rankViewWrapper" style="display:none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+                <div>
+                    <h3 style="font-size:17px;font-weight:800;color:var(--text-main);">Class Leaderboard</h3>
+                    <p style="font-size:13px;color:var(--text-muted);font-weight:600;margin-top:3px;">Ranked by total score u00f7 total max score (overall performance %)</p>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);font-weight:600;">
+                    <i class="ph-bold ph-info" style="font-size:16px;"></i>
+                    <span><b id="rankTotalStudents">0</b> students &bull; <b id="rankTotalActivities">0</b> activities</span>
+                </div>
+            </div>
+            <div class="ranking-view" id="rankingContainer">
+                <p style="color:var(--text-muted);font-size:14px;">Loading rankings...</p>
+            </div>
         </div>
     </div>
 </main>
@@ -301,10 +414,11 @@
             <div><label class="form-label">Subject</label><select id="expSubject" class="form-ctrl"><option value="">All Subjects</option></select></div>
             <div>
                 <label class="form-label">Include in Export</label>
-                <label class="chk-row"><input type="checkbox" id="expRanking" checked> Ranking column</label>
+                <label class="chk-row"><input type="checkbox" id="expRanking" checked> Ranking &amp; Placement column</label>
                 <label class="chk-row"><input type="checkbox" id="expActivities" checked> All activity scores (one column per activity)</label>
                 <label class="chk-row"><input type="checkbox" id="expGrades" checked> Term grades &amp; average</label>
                 <label class="chk-row"><input type="checkbox" id="expStatus" checked> Pass/Fail status</label>
+                <label class="chk-row"><input type="checkbox" id="expPercent" checked> Score percentage</label>
             </div>
             <div>
                 <label class="form-label">Format</label>
@@ -340,9 +454,13 @@ if(!_u||_u.role!=='admin')location.href='index.html';
 window.logout=()=>{localStorage.removeItem('loggedInUser');location.href='index.html';};
 const app=initializeApp({apiKey:"AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI",authDomain:"plv-grades-portal.firebaseapp.com",projectId:"plv-grades-portal",storageBucket:"plv-grades-portal.firebasestorage.app",messagingSenderId:"951401194726",appId:"1:951401194726:web:28ea9972358d0e30fb4727"});
 const db=getFirestore(app);
+
 let enrollments=[],activities=[],scores=[];
 let sortCol=null,sortDir='asc',currentView='grid',editCtx=null;
+// Cache for computed rows used by ranking
+let lastComputedRows=[], lastComputedActs=[];
 
+// ========== TOAST ==========
 window.showToast=(msg,type='ok')=>{
     const t=document.getElementById('toast');
     document.getElementById('toastMsg').textContent=msg;
@@ -351,17 +469,26 @@ window.showToast=(msg,type='ok')=>{
     t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);
 };
 
+// ========== LOAD ALL DATA ==========
 async function loadAll(){
     document.getElementById('gridBody').innerHTML='<tr class="loading-msg"><td colspan="12"><span class="spin"></span> Loading all records...</td></tr>';
     try{
-        const[eSnap,aSnap,sSnap]=await Promise.all([getDocs(collection(db,'enrollments')),getDocs(collection(db,'activities')),getDocs(collection(db,'scores'))]);
+        const[eSnap,aSnap,sSnap]=await Promise.all([
+            getDocs(collection(db,'enrollments')),
+            getDocs(collection(db,'activities')),
+            getDocs(collection(db,'scores'))
+        ]);
         enrollments=eSnap.docs.map(d=>({id:d.id,...d.data()}));
         activities=aSnap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
         scores=sSnap.docs.map(d=>({id:d.id,...d.data()}));
         buildDropdowns();applyFilters();
-    }catch(e){console.error(e);document.getElementById('gridBody').innerHTML='<tr class="empty-msg"><td colspan="12" style="color:var(--danger)">Error loading data.</td></tr>';}
+    }catch(e){
+        console.error(e);
+        document.getElementById('gridBody').innerHTML='<tr class="empty-msg"><td colspan="12" style="color:var(--danger)">Error loading data.</td></tr>';
+    }
 }
 
+// ========== DROPDOWNS ==========
 function buildDropdowns(){
     const secs=[...new Set(enrollments.map(e=>e.section).filter(Boolean))].sort();
     const subs=[...new Set(enrollments.map(e=>e.subjectCode).filter(Boolean))].sort();
@@ -375,15 +502,23 @@ function buildDropdowns(){
 
 window.onSectionChange=()=>{
     const sec=document.getElementById('filterSection').value;
-    const subs=sec?[...new Set(enrollments.filter(e=>e.section===sec).map(e=>e.subjectCode).filter(Boolean))].sort():[...new Set(enrollments.map(e=>e.subjectCode).filter(Boolean))].sort();
+    const subs=sec
+        ?[...new Set(enrollments.filter(e=>e.section===sec).map(e=>e.subjectCode).filter(Boolean))].sort()
+        :[...new Set(enrollments.map(e=>e.subjectCode).filter(Boolean))].sort();
     const fSu=document.getElementById('filterSubject');
     fSu.innerHTML='<option value="">All Subjects</option>';
     subs.forEach(s=>fSu.innerHTML+=`<option value="${s}">${s}</option>`);
     applyFilters();
 };
 
-function buildSMap(){const m={};scores.forEach(s=>{m[s.activityId+'||'+s.studentNo]=s;});return m;}
+// ========== SCORE MAP ==========
+function buildSMap(){
+    const m={};
+    scores.forEach(s=>{m[s.activityId+'||'+s.studentNo]=s;});
+    return m;
+}
 
+// ========== COMPUTE ROWS ==========
 function computeRows(enList,acList,sm){
     return enList.map(e=>{
         const sba={};
@@ -392,62 +527,130 @@ function computeRows(enList,acList,sm){
         const fin=(e.finalTermGrade!=null)?Number(e.finalTermGrade):null;
         const avg=(mid!==null&&fin!==null)?(mid+fin)/2:null;
         const status=avg===null?'Pending':avg<=3.0?'Passed':'Failed';
-        return{enrollId:e.id,studentNo:e.studentNo||'',studentName:e.studentName||'Unknown',section:e.section||'N/A',subjectCode:e.subjectCode||'N/A',midGrade:mid,finGrade:fin,avg,status,sba,rank:null};
+
+        // Compute total score and total max for ranking
+        let totalScore=0,totalMax=0;
+        acList.forEach(a=>{
+            const sc=sm[a.id+'||'+e.studentNo];
+            totalMax+=Number(a.perfectScore)||0;
+            if(sc)totalScore+=Number(sc.score)||0;
+        });
+        const scorePercent=totalMax>0?(totalScore/totalMax*100):0;
+
+        return{
+            enrollId:e.id,
+            studentNo:e.studentNo||'',
+            studentName:e.studentName||'Unknown',
+            section:e.section||'N/A',
+            subjectCode:e.subjectCode||'N/A',
+            midGrade:mid,finGrade:fin,avg,status,sba,
+            totalScore,totalMax,scorePercent,
+            rank:null
+        };
     });
 }
 
+// ========== ASSIGN RANKS (by score%) ==========
 function assignRanks(rows){
-    const w=rows.filter(r=>r.avg!==null).sort((a,b)=>a.avg-b.avg);
-    const n=rows.filter(r=>r.avg===null);
+    // Sort by scorePercent descending for ranking
+    const sorted=[...rows].sort((a,b)=>b.scorePercent-a.scorePercent);
     let r=1;
-    w.forEach((row,i)=>{if(i>0&&w[i-1].avg!==row.avg)r=i+1;row.rank=r;});
-    n.forEach(row=>row.rank=null);
-    return[...w,...n];
+    sorted.forEach((row,i)=>{
+        if(i>0&&Math.abs(sorted[i-1].scorePercent-row.scorePercent)>0.001)r=i+1;
+        // Find original row and set rank
+        const orig=rows.find(x=>x.enrollId===row.enrollId);
+        if(orig)orig.rank=r;
+    });
+    return rows;
 }
 
+// ========== SORT ==========
 function doSort(rows){
     if(!sortCol)return rows;
     return[...rows].sort((a,b)=>{
         let av=sortCol.startsWith('act_')?getAS(a,sortCol.slice(4)):a[sortCol];
         let bv=sortCol.startsWith('act_')?getAS(b,sortCol.slice(4)):b[sortCol];
-        if(av===null||av===undefined)return 1;if(bv===null||bv===undefined)return-1;
-        if(typeof av==='string')av=av.toLowerCase();if(typeof bv==='string')bv=bv.toLowerCase();
+        if(av===null||av===undefined)return 1;
+        if(bv===null||bv===undefined)return-1;
+        if(typeof av==='string')av=av.toLowerCase();
+        if(typeof bv==='string')bv=bv.toLowerCase();
         return sortDir==='asc'?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
     });
 }
 function getAS(row,actId){const sc=row.sba[actId];return sc?Number(sc.score):null;}
 
+// ========== APPLY FILTERS ==========
 window.applyFilters=()=>{
     const search=document.getElementById('searchInput').value.toLowerCase().trim();
     const sec=document.getElementById('filterSection').value;
     const sub=document.getElementById('filterSubject').value;
     const term=document.getElementById('filterTerm').value;
     const status=document.getElementById('filterStatus').value;
-    let fe=enrollments.filter(e=>(!sec||e.section===sec)&&(!sub||e.subjectCode===sub)&&(!search||(e.studentName||'').toLowerCase().includes(search)||(e.studentNo||'').toLowerCase().includes(search)));
-    let fa=activities.filter(a=>(!sec||a.section===sec)&&(!sub||a.subjectCode===sub)&&(!term||a.term===term));
+
+    let fe=enrollments.filter(e=>
+        (!sec||e.section===sec)&&
+        (!sub||e.subjectCode===sub)&&
+        (!search||(e.studentName||'').toLowerCase().includes(search)||(e.studentNo||'').toLowerCase().includes(search))
+    );
+    let fa=activities.filter(a=>
+        (!sec||a.section===sec)&&
+        (!sub||a.subjectCode===sub)&&
+        (!term||a.term===term)
+    );
     const sm=buildSMap();
     let rows=computeRows(fe,fa,sm);
     if(status)rows=rows.filter(r=>r.status===status);
     rows=assignRanks(rows);
-    if(currentView==='rank')rows=rows.slice().sort((a,b)=>(a.rank||9999)-(b.rank||9999));
-    else rows=doSort(rows);
-    renderGrid(rows,fa);updateChips(rows);
+
+    // Cache for ranking view
+    lastComputedRows=[...rows];
+    lastComputedActs=[...fa];
+
+    if(currentView==='rank'){
+        const ranked=[...rows].sort((a,b)=>(a.rank||9999)-(b.rank||9999)||(b.scorePercent-a.scorePercent));
+        renderRanking(ranked,fa);
+    } else {
+        rows=doSort(rows);
+        renderGrid(rows,fa);
+    }
+    updateChips(rows);
 };
 
+// ========== SORT BY COLUMN ==========
 window.sortBy=(col)=>{
     if(sortCol===col)sortDir=sortDir==='asc'?'desc':'asc';
     else{sortCol=col;sortDir='asc';}
     applyFilters();
 };
 
+// ========== SWITCH VIEW ==========
 window.switchView=(view,btn)=>{
     currentView=view;
     document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    if(view==='rank')sortCol=null;
+
+    const gridWrapper=document.getElementById('gridViewWrapper');
+    const rankWrapper=document.getElementById('rankViewWrapper');
+    const hintBar=document.getElementById('gridHintBar');
+    const scrollHint=document.getElementById('scrollHint');
+    const footRight=document.getElementById('footRight');
+
+    if(view==='rank'){
+        gridWrapper.style.display='none';
+        rankWrapper.style.display='block';
+        hintBar.style.display='none';
+        scrollHint.style.display='none';
+    } else {
+        gridWrapper.style.display='block';
+        rankWrapper.style.display='none';
+        hintBar.style.display='flex';
+        scrollHint.style.display='';
+        if(sortCol===null);
+    }
     applyFilters();
 };
 
+// ========== RENDER GRID ==========
 function renderGrid(rows,acts){
     const midActs=acts.filter(a=>a.term==='midterm');
     const finActs=acts.filter(a=>a.term==='final');
@@ -455,13 +658,21 @@ function renderGrid(rows,acts){
     const ct=c=>c==='written'?'<span class="cat-tag cat-w">WO</span>':c==='perf'?'<span class="cat-tag cat-p">PB</span>':'<span class="cat-tag cat-e">EX</span>';
     const sc=(col)=>sortCol===col?(sortDir==='asc'?'sort-asc':'sort-desc'):'';
 
-    let gh=`<tr class="group-header"><th class="col-rank gh-base"></th><th class="col-sno gh-base"></th><th class="col-name gh-base"></th><th class="gh-base"></th><th class="gh-base"></th>`;
-    if(midActs.length)gh+=`<th colspan="${midActs.length}" class="gh-mid" style="text-align:center;">&#9684; MIDTERM ACTIVITIES (${midActs.length})</th>`;
-    if(finActs.length)gh+=`<th colspan="${finActs.length}" class="gh-fin" style="text-align:center;">&#9685; FINAL TERM ACTIVITIES (${finActs.length})</th>`;
-    gh+=`<th colspan="3" class="gh-grade" style="text-align:center;">GRADES</th><th class="gh-base"></th><th class="gh-base"></th></tr>`;
+    let gh=`<tr class="group-header">
+        <th class="col-rank gh-base"></th>
+        <th class="col-sno gh-base"></th>
+        <th class="col-name gh-base"></th>
+        <th class="gh-base"></th>
+        <th class="gh-base"></th>`;
+    if(midActs.length)gh+=`<th colspan="${midActs.length}" class="gh-mid" style="text-align:center;">&#9684; MIDTERM (${midActs.length})</th>`;
+    if(finActs.length)gh+=`<th colspan="${finActs.length}" class="gh-fin" style="text-align:center;">&#9685; FINAL TERM (${finActs.length})</th>`;
+    gh+=`<th colspan="3" class="gh-grade" style="text-align:center;">GRADES</th>
+        <th class="gh-base" style="text-align:center;">SCORE%</th>
+        <th class="gh-base"></th>
+        <th class="gh-base"></th></tr>`;
 
     let sh=`<tr>
-        <th class="col-rank ${sc('rank')}" onclick="window.sortBy('rank')" style="text-align:center;"><i class="ph-bold ph-trophy" style="font-size:13px;"></i></th>
+        <th class="col-rank ${sc('rank')}" onclick="window.sortBy('rank')" style="text-align:center;" title="Sort by rank"><i class="ph-bold ph-trophy" style="font-size:13px;"></i></th>
         <th class="col-sno ${sc('studentNo')}" onclick="window.sortBy('studentNo')">Student No.</th>
         <th class="col-name ${sc('studentName')}" onclick="window.sortBy('studentName')">Full Name</th>
         <th class="${sc('section')}" onclick="window.sortBy('section')">Section</th>
@@ -469,13 +680,15 @@ function renderGrid(rows,acts){
     allActs.forEach(a=>{
         const s=sortCol===`act_${a.id}`;
         sh+=`<th class="sc-cell ${s?(sortDir==='asc'?'sort-asc':'sort-desc'):''}" onclick="window.sortBy('act_${a.id}')" style="text-align:center;min-width:96px;">
-            ${ct(a.category)}<div style="margin-top:2px;white-space:normal;line-height:1.3;font-size:10px;max-width:110px;">${a.title}</div>
+            ${ct(a.category)}
+            <div style="margin-top:2px;white-space:normal;line-height:1.3;font-size:10px;max-width:110px;">${a.title}</div>
             <div style="font-size:9px;color:var(--text-muted);margin-top:1px;">${a.date||''} &bull; /${a.perfectScore}</div>
         </th>`;
     });
     sh+=`<th class="gc ${sc('midGrade')}" onclick="window.sortBy('midGrade')" style="text-align:center;">Midterm<br>Grade</th>
         <th class="gc ${sc('finGrade')}" onclick="window.sortBy('finGrade')" style="text-align:center;">Final<br>Grade</th>
         <th class="gc ${sc('avg')}" onclick="window.sortBy('avg')" style="text-align:center;">Average</th>
+        <th class="${sc('scorePercent')}" onclick="window.sortBy('scorePercent')" style="text-align:center;min-width:80px;">Score %</th>
         <th style="text-align:center;">Status</th>
         <th style="text-align:center;min-width:50px;">Edit</th></tr>`;
     document.getElementById('gridHead').innerHTML=gh+sh;
@@ -492,7 +705,7 @@ function renderGrid(rows,acts){
         const medals=['#1','#2','#3'];
         const cls=['rank-1','rank-2','rank-3'];
         if(r<=3)return`<span class="rank-badge ${cls[r-1]}">${medals[r-1]}</span>`;
-        return`<span class="rank-badge rank-other">${r}</span>`;
+        return`<span class="rank-badge rank-other">#${r}</span>`;
     };
 
     let html='';
@@ -501,7 +714,9 @@ function renderGrid(rows,acts){
         const fS=row.finGrade!==null?`<span class="gv ${gCls(row.finGrade)}">${row.finGrade.toFixed(2)}</span>`:'<span class="g-na">&#8212;</span>';
         const aS=row.avg!==null?`<span class="gv ${gCls(row.avg)}">${row.avg.toFixed(2)}</span>`:'<span class="g-na">&#8212;</span>';
         const bCls=row.status==='Passed'?'badge-pass':row.status==='Failed'?'badge-fail':'badge-pend';
+        const pctStr=row.totalMax>0?`${row.scorePercent.toFixed(1)}%`:'&#8212;';
         const sName=row.studentName.replace(/'/g,"\'").replace(/"/g,'&quot;');
+        
         html+=`<tr>
             <td class="col-rank" style="text-align:center;">${rBadge(row.rank)}</td>
             <td class="col-sno" style="font-family:monospace;font-size:12px;color:var(--text-muted);">${row.studentNo}</td>
@@ -523,7 +738,10 @@ function renderGrid(rows,acts){
                 html+=`<td class="sc-cell" data-act="${a.id}" data-sno="${row.studentNo}" data-sid="" data-max="${mx}"><span class="sc-blank">&#8212;</span></td>`;
             }
         });
-        html+=`<td class="gc">${mS}</td><td class="gc">${fS}</td><td class="gc">${aS}</td>
+        html+=`<td class="gc">${mS}</td>
+            <td class="gc">${fS}</td>
+            <td class="gc">${aS}</td>
+            <td style="text-align:center;font-size:13px;font-weight:700;color:${row.scorePercent>=75?'var(--success)':row.scorePercent>=50?'var(--warn)':'var(--danger)'};">${pctStr}</td>
             <td style="text-align:center;"><span class="badge ${bCls}">${row.status}</span></td>
             <td style="text-align:center;">
                 <button class="btn-edit-row" title="Edit scores and grades" onclick="window.openEditModal('${row.enrollId}','${row.studentNo}','${sName}','${row.subjectCode}')">
@@ -535,7 +753,88 @@ function renderGrid(rows,acts){
     document.getElementById('footLeft').textContent=`${rows.length} rows \u2022 ${acts.length} activity columns`;
 }
 
-// Double-click inline edit
+// ========== RENDER RANKING VIEW ==========
+function renderRanking(rows, acts){
+    const container=document.getElementById('rankingContainer');
+    document.getElementById('rankTotalStudents').textContent=rows.length;
+    document.getElementById('rankTotalActivities').textContent=acts.length;
+
+    if(!rows.length){
+        container.innerHTML='<p style="color:var(--text-muted);font-size:14px;text-align:center;padding:40px;">No records found.</p>';
+        return;
+    }
+
+    const trophyEmoji=(r)=>{
+        if(r===1)return'ud83eudd47';
+        if(r===2)return'ud83eudd48';
+        if(r===3)return'ud83eudd49';
+        return'';
+    };
+
+    const barColor=(pct)=>{
+        if(pct>=80)return'var(--success)';
+        if(pct>=60)return'var(--warn)';
+        return'var(--danger)';
+    };
+
+    const gradeLabel=(avg)=>{
+        if(avg===null)return'';
+        if(avg<=1.5)return`<span class="rank-grade-badge" style="background:var(--success-bg);color:var(--success);">Excellent</span>`;
+        if(avg<=2.5)return`<span class="rank-grade-badge" style="background:var(--accent-light);color:var(--accent-primary);">Good</span>`;
+        if(avg<=3.0)return`<span class="rank-grade-badge" style="background:var(--warn-bg);color:var(--warn);">Satisfactory</span>`;
+        return`<span class="rank-grade-badge" style="background:var(--danger-bg);color:var(--danger);">Needs Improvement</span>`;
+    };
+
+    let html='';
+    rows.forEach((row,idx)=>{
+        const rank=row.rank||idx+1;
+        const rankClass=rank<=3?`rank-card-${rank}`:'';
+        const pct=row.scorePercent;
+        const pctStr=row.totalMax>0?pct.toFixed(2)+'%':'N/A';
+        const trophy=trophyEmoji(rank);
+        const avgStr=row.avg!==null?`Avg: ${row.avg.toFixed(2)}`:'Grade Pending';
+        const scoreStr=row.totalMax>0?`${row.totalScore} / ${row.totalMax}`:'No Activities';
+
+        html+=`
+        <div class="rank-card ${rankClass}">
+            <div class="rank-num-lg">${trophy||'#'+rank}</div>
+            <div class="rank-info">
+                <div class="rank-name">${row.studentName}</div>
+                <div class="rank-meta">
+                    <span style="color:var(--accent-primary);font-weight:700;">${row.studentNo}</span>
+                    &nbsp;&bull;&nbsp;${row.section}
+                    &nbsp;&bull;&nbsp;${row.subjectCode}
+                    &nbsp;&bull;&nbsp;${avgStr}
+                </div>
+                <div style="margin-top:6px;">${gradeLabel(row.avg)}</div>
+            </div>
+            <div class="rank-score-block">
+                <div class="rank-score-main" style="color:${barColor(pct)};">${pctStr}</div>
+                <div class="rank-score-pct">${scoreStr}</div>
+                <div class="rank-bar-wrap">
+                    <div class="rank-bar-fill" style="width:${Math.min(100,pct)}%;background:${barColor(pct)};"></div>
+                </div>
+            </div>
+            <div style="margin-left:8px;">
+                <button class="btn-edit-row" title="Edit" onclick="window.openEditModal('${row.enrollId}','${row.studentNo}','${row.studentName.replace(/'/g,"\\'")}','${row.subjectCode}')">
+                    <i class="ph-bold ph-pencil-simple"></i>
+                </button>
+            </div>
+        </div>`;
+    });
+    container.innerHTML=html;
+
+    // Animate bars after render
+    requestAnimationFrame(()=>{
+        document.querySelectorAll('.rank-bar-fill').forEach(el=>{
+            const w=el.style.width;
+            el.style.width='0%';
+            setTimeout(()=>el.style.width=w,50);
+        });
+    });
+}
+
+// ========== DOUBLE-CLICK INLINE EDIT ==========
 document.getElementById('gridBody').addEventListener('dblclick',async e=>{
     const cell=e.target.closest('td.sc-cell');if(!cell)return;
     const actId=cell.dataset.act,sno=cell.dataset.sno,sid=cell.dataset.sid,max=Number(cell.dataset.max)||100;
@@ -549,15 +848,26 @@ document.getElementById('gridBody').addEventListener('dblclick',async e=>{
         if(raw===''||isNaN(Number(raw))){cell.innerHTML=orig;return;}
         const val=Math.min(Math.max(0,Number(raw)),max);
         try{
-            if(existing){await updateDoc(doc(db,'scores',existing.id),{score:val});const i=scores.findIndex(s=>s.id===existing.id);if(i>=0)scores[i].score=val;}
-            else{const ref=await addDoc(collection(db,'scores'),{activityId:actId,studentNo:sno,score:val});scores.push({id:ref.id,activityId:actId,studentNo:sno,score:val});}
-            window.showToast(`Saved: ${val}/${max}`);applyFilters();
+            if(existing){
+                await updateDoc(doc(db,'scores',existing.id),{score:val});
+                const i=scores.findIndex(s=>s.id===existing.id);
+                if(i>=0)scores[i].score=val;
+            }else{
+                const ref=await addDoc(collection(db,'scores'),{activityId:actId,studentNo:sno,score:val});
+                scores.push({id:ref.id,activityId:actId,studentNo:sno,score:val});
+            }
+            window.showToast(`Saved: ${val}/${max}`);
+            applyFilters();
         }catch(err){console.error(err);window.showToast('Save failed.','err');cell.innerHTML=orig;}
     };
     inp.addEventListener('blur',save);
-    inp.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();inp.blur();}if(ev.key==='Escape'){inp.removeEventListener('blur',save);cell.innerHTML=orig;}});
+    inp.addEventListener('keydown',ev=>{
+        if(ev.key==='Enter'){ev.preventDefault();inp.blur();}
+        if(ev.key==='Escape'){inp.removeEventListener('blur',save);cell.innerHTML=orig;}
+    });
 });
 
+// ========== EDIT MODAL ==========
 window.openEditModal=async(enrollId,studentNo,studentName,subjectCode)=>{
     editCtx={enrollId,studentNo,studentName,subjectCode};
     document.getElementById('editTitle').textContent=studentName;
@@ -598,8 +908,12 @@ window.saveEditModal=async()=>{
         document.querySelectorAll('.modal-score-inp').forEach(inp=>{
             const v=inp.value.trim();if(v==='')return;
             const num=Number(v);const sid=inp.dataset.scoreId;const actId=inp.dataset.actId;const sno=inp.dataset.studentNo;
-            if(sid){ps.push(updateDoc(doc(db,'scores',sid),{score:num}));const i=scores.findIndex(s=>s.id===sid);if(i>=0)scores[i].score=num;}
-            else{ps.push(addDoc(collection(db,'scores'),{activityId:actId,studentNo:sno,score:num}).then(ref=>scores.push({id:ref.id,activityId:actId,studentNo:sno,score:num})));}
+            if(sid){
+                ps.push(updateDoc(doc(db,'scores',sid),{score:num}));
+                const i=scores.findIndex(s=>s.id===sid);if(i>=0)scores[i].score=num;
+            }else{
+                ps.push(addDoc(collection(db,'scores'),{activityId:actId,studentNo:sno,score:num}).then(ref=>scores.push({id:ref.id,activityId:actId,studentNo:sno,score:num})));
+            }
         });
         const mid=document.getElementById('editMidGrade').value.trim();
         const fin=document.getElementById('editFinGrade').value.trim();
@@ -611,11 +925,14 @@ window.saveEditModal=async()=>{
             const i=enrollments.findIndex(e=>e.id===editCtx.enrollId);if(i>=0)Object.assign(enrollments[i],upd);
         }
         await Promise.all(ps);
-        window.showToast('All changes saved!');window.closeEditModal();applyFilters();
+        window.showToast('All changes saved!');
+        window.closeEditModal();
+        applyFilters();
     }catch(err){console.error(err);window.showToast('Error saving.','err');}
     finally{btn.disabled=false;btn.innerHTML='<i class="ph-bold ph-floppy-disk"></i> Save All Changes';}
 };
 
+// Live update % in modal
 document.addEventListener('input',e=>{
     if(!e.target.classList.contains('modal-score-inp'))return;
     const inp=e.target;const max=Number(inp.max)||1;const val=Number(inp.value);
@@ -623,6 +940,7 @@ document.addEventListener('input',e=>{
     const td=inp.closest('tr')?.querySelector('td:last-child');if(td)td.innerHTML=pct;
 });
 
+// ========== CHIPS ==========
 function updateChips(rows){
     const p=rows.filter(r=>r.status==='Passed').length;
     const f=rows.filter(r=>r.status==='Failed').length;
@@ -635,6 +953,7 @@ function updateChips(rows){
     document.getElementById('cTop').textContent=top?top.studentName:'\u2014';
 }
 
+// ========== EXPORT MODAL ==========
 window.openExportModal=()=>{
     const secs=[...new Set(enrollments.map(e=>e.section).filter(Boolean))].sort();
     const subs=[...new Set(enrollments.map(e=>e.subjectCode).filter(Boolean))].sort();
@@ -654,6 +973,8 @@ window.doExport=(fmt)=>{
     const incA=document.getElementById('expActivities').checked;
     const incG=document.getElementById('expGrades').checked;
     const incS=document.getElementById('expStatus').checked;
+    const incP=document.getElementById('expPercent').checked;
+
     let fe=enrollments.filter(e=>(!expSec||e.section===expSec)&&(!expSub||e.subjectCode===expSub));
     let fa=activities.filter(a=>(!expSec||a.section===expSec)&&(!expSub||a.subjectCode===expSub));
     const midA=fa.filter(a=>a.term==='midterm');const finA=fa.filter(a=>a.term==='final');const allA=[...midA,...finA];
@@ -662,44 +983,75 @@ window.doExport=(fmt)=>{
     rows=assignRanks(rows);
     rows.sort((a,b)=>(a.rank||9999)-(b.rank||9999)||a.studentName.localeCompare(b.studentName));
     if(!rows.length){window.showToast('No data to export.','err');return;}
+
     if(fmt==='xlsx'){
         const wb=XLSX.utils.book_new();
         const bySub={};rows.forEach(r=>{if(!bySub[r.subjectCode])bySub[r.subjectCode]=[];bySub[r.subjectCode].push(r);});
         Object.entries(bySub).forEach(([sc,sRows])=>{
             const sA=allA.filter(a=>a.subjectCode===sc);
             const sMid=sA.filter(a=>a.term==='midterm');const sFin=sA.filter(a=>a.term==='final');
-            const hdr=[];if(incR)hdr.push('Rank');
+            const hdr=[];
+            if(incR){hdr.push('Rank');hdr.push('Placement');}
             hdr.push('Student No.','Student Name','Section','Subject');
             if(incA){sMid.forEach(a=>hdr.push('[MID] '+a.title+' (/'+a.perfectScore+')'));sFin.forEach(a=>hdr.push('[FIN] '+a.title+' (/'+a.perfectScore+')'));}
+            if(incP)hdr.push('Total Score','Total Max','Score %');
             if(incG)hdr.push('Midterm Grade','Final Grade','Average');
             if(incS)hdr.push('Status');
             const data=[hdr];
-            sRows.forEach(r=>{
-                const row=[];if(incR)row.push(r.rank||'');
+            sRows.forEach((r,idx)=>{
+                const row=[];
+                if(incR){
+                    row.push(r.rank||'');
+                    // Placement label
+                    const ord=(n)=>{const s=["th","st","nd","rd"],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);};
+                    row.push(r.rank?ord(r.rank)+' Place':'N/A');
+                }
                 row.push(r.studentNo,r.studentName,r.section,r.subjectCode);
                 if(incA)[...sMid,...sFin].forEach(a=>{const s=sm[a.id+'||'+r.studentNo];row.push(s!==undefined?s.score:'');});
+                if(incP){
+                    row.push(r.totalScore);
+                    row.push(r.totalMax);
+                    row.push(r.totalMax>0?r.scorePercent.toFixed(2)+'%':'N/A');
+                }
                 if(incG)row.push(r.midGrade!==null?r.midGrade.toFixed(2):'',r.finGrade!==null?r.finGrade.toFixed(2):'',r.avg!==null?r.avg.toFixed(2):'');
-                if(incS)row.push(r.status);data.push(row);
+                if(incS)row.push(r.status);
+                data.push(row);
             });
             const ws=XLSX.utils.aoa_to_sheet(data);
-            const cw=[];if(incR)cw.push({wch:6});cw.push({wch:14},{wch:28},{wch:12},{wch:10});
-            if(incA)sA.forEach(()=>cw.push({wch:24}));if(incG)[10,10,10].forEach(w=>cw.push({wch:w}));if(incS)cw.push({wch:10});
+            const cw=[];
+            if(incR){cw.push({wch:6});cw.push({wch:14});}
+            cw.push({wch:14},{wch:28},{wch:12},{wch:10});
+            if(incA)sA.forEach(()=>cw.push({wch:24}));
+            if(incP)[12,10,10].forEach(w=>cw.push({wch:w}));
+            if(incG)[12,12,12].forEach(w=>cw.push({wch:w}));
+            if(incS)cw.push({wch:10});
             ws['!cols']=cw;ws['!freeze']={xSplit:incR?4:3,ySplit:1};
             XLSX.utils.book_append_sheet(wb,ws,sc.substring(0,31));
         });
         XLSX.writeFile(wb,'MasterRecords_'+(expSec||'All')+'_'+(expSub||'AllSubs')+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
         window.showToast('Exported '+wb.SheetNames.length+' sheet(s)!');
     }else{
-        const hdr=[];if(incR)hdr.push('Rank');hdr.push('Student No.','Student Name','Section','Subject');
+        const hdr=[];
+        if(incR){hdr.push('Rank');hdr.push('Placement');}
+        hdr.push('Student No.','Student Name','Section','Subject');
         if(incA)allA.forEach(a=>hdr.push(a.title+' (/'+a.perfectScore+')'));
-        if(incG)hdr.push('Midterm Grade','Final Grade','Average');if(incS)hdr.push('Status');
+        if(incP)hdr.push('Total Score','Total Max','Score %');
+        if(incG)hdr.push('Midterm Grade','Final Grade','Average');
+        if(incS)hdr.push('Status');
         const lines=[hdr.join(',')];
         rows.forEach(r=>{
-            const row=[];if(incR)row.push(r.rank||'');
+            const row=[];
+            if(incR){
+                const ord=(n)=>{const s=["th","st","nd","rd"],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);};
+                row.push(r.rank||'');
+                row.push(r.rank?'"'+ord(r.rank)+' Place"':'N/A');
+            }
             row.push(r.studentNo,'"'+r.studentName+'"',r.section,r.subjectCode);
             if(incA)allA.forEach(a=>{const s=sm[a.id+'||'+r.studentNo];row.push(s!==undefined?s.score:'');});
+            if(incP){row.push(r.totalScore);row.push(r.totalMax);row.push(r.totalMax>0?r.scorePercent.toFixed(2)+'%':'N/A');}
             if(incG)row.push(r.midGrade?.toFixed(2)||'',r.finGrade?.toFixed(2)||'',r.avg?.toFixed(2)||'');
-            if(incS)row.push(r.status);lines.push(row.join(','));
+            if(incS)row.push(r.status);
+            lines.push(row.join(','));
         });
         const blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'});
         const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -709,10 +1061,17 @@ window.doExport=(fmt)=>{
     window.closeExportModal();
 };
 
+// ========== THEME ==========
 const tBtn=document.getElementById('themeToggle');const tIco=document.getElementById('themeIcon');
 if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark-theme');tIco.className='ph-fill ph-moon';}else{tIco.className='ph-fill ph-sun';}
-tBtn.addEventListener('click',()=>{document.body.classList.toggle('dark-theme');const dk=document.body.classList.contains('dark-theme');localStorage.setItem('theme',dk?'dark':'light');tIco.className=dk?'ph-fill ph-moon':'ph-fill ph-sun';});
+tBtn.addEventListener('click',()=>{
+    document.body.classList.toggle('dark-theme');
+    const dk=document.body.classList.contains('dark-theme');
+    localStorage.setItem('theme',dk?'dark':'light');
+    tIco.className=dk?'ph-fill ph-moon':'ph-fill ph-sun';
+});
 
+// Start
 loadAll();
 </script>
 </body>
