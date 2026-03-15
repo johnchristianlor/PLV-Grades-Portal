@@ -67,44 +67,164 @@
         .chip-muted{background:rgba(100,116,139,.08);color:var(--text-muted);}
         .hint-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:12px;color:var(--text-muted);font-weight:600;padding:10px 14px;background:var(--accent-light);border-radius:10px;}
 
-        /* ===== RESPONSIVE GRID SCROLL ===== */
-        .grid-scroll{width:100%;overflow-x:auto;border-radius:16px;border:1px solid var(--glass-border);}
-        .grid-scroll::-webkit-scrollbar{height:6px;}
-        .grid-scroll::-webkit-scrollbar-thumb{background:var(--accent-light);border-radius:4px;}
+        /* ===== RESPONSIVE GRID SCROLL — no scrollbars, drag + resize like Excel ===== */
+        .grid-scroll-wrapper{width:100%;display:flex;flex-direction:column;gap:0;}
+        .grid-scroll{
+            width:100%;
+            overflow:auto;
+            border-radius:16px;
+            border:1px solid var(--glass-border);
+            scrollbar-width:none;
+            -ms-overflow-style:none;
+        }
+        .grid-scroll::-webkit-scrollbar{display:none;}
+        .grid-scroll.is-dragging{cursor:grabbing !important;user-select:none;}
+        .grid-scroll:not(.is-dragging){cursor:grab;}
+        .col-resize-handle{
+            position:absolute;top:0;right:0;
+            width:5px;height:100%;
+            cursor:col-resize;
+            background:transparent;
+            z-index:10;
+            transition:background .15s;
+        }
+        .col-resize-handle:hover,.col-resize-handle.resizing{background:var(--accent-primary);opacity:.45;}
+        .grid-table thead th{position:relative !important;}
         .grid-table{border-collapse:collapse;min-width:100%;}
 
-        /* Sticky columns */
-        .col-rank{position:sticky;left:0;z-index:4;width:64px;min-width:64px;}
-        .col-sno{position:sticky;left:64px;z-index:4;min-width:120px;}
-        .col-name{position:sticky;left:184px;z-index:4;min-width:180px;}
+        /* ===== STICKY COLUMNS — clean freeze pane ===== */
+        /* Light-theme solid backgrounds */
+        :root {
+            --sticky-odd-bg: #f8fafd;
+            --sticky-even-bg: #eef3fb;
+            --sticky-hover-bg: #ddeaff;
+            --sticky-head-bg: #edf1f9;
+        }
+        .dark-theme {
+            --sticky-odd-bg: #080e1e;
+            --sticky-even-bg: #0c1427;
+            --sticky-hover-bg: rgba(59,130,246,.18);
+            --sticky-head-bg: #0a1120;
+        }
 
-        .grid-table thead th{padding:10px 14px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;background:var(--input-bg);border-bottom:2px solid var(--glass-border);cursor:pointer;user-select:none;transition:color .2s;position:sticky;top:0;z-index:3;}
-        .grid-table thead th:hover{color:var(--accent-primary);}
-        .grid-table thead th.sort-asc::after{content:' \2191';color:var(--accent-primary);}
-        .grid-table thead th.sort-desc::after{content:' \2193';color:var(--accent-primary);}
-        .grid-table thead .col-rank,.grid-table thead .col-sno,.grid-table thead .col-name{z-index:6;}
-        .group-header th{padding:5px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--glass-border);position:sticky;top:0;z-index:3;}
-        .group-header .col-rank,.group-header .col-sno,.group-header .col-name{z-index:6;}
-        .gh-base{background:var(--input-bg);}
-        .gh-mid{background:rgba(59,130,246,.07);color:#2563eb;}
-        .gh-fin{background:rgba(124,58,237,.07);color:#7c3aed;}
-        .gh-grade{background:rgba(16,185,129,.07);color:var(--success);}
-        .grid-table tbody tr{transition:background .12s;}
-        .grid-table tbody tr:hover td{background:var(--accent-light) !important;}
-        .grid-table tbody td{padding:11px 14px;font-size:13px;font-weight:600;border-bottom:1px solid var(--glass-border);background:var(--input-bg);vertical-align:middle;white-space:nowrap;}
-        .grid-table tbody tr:nth-child(even) td{background:rgba(0,61,165,.025);}
-        .dark-theme .grid-table tbody tr:nth-child(even) td{background:rgba(59,130,246,.04);}
+        .col-rank {
+            position: sticky; left: 0; z-index: 4;
+            width: 56px; min-width: 56px;
+        }
+        .col-sno {
+            position: sticky; left: 56px; z-index: 4;
+            min-width: 128px;
+        }
+        .col-name {
+            position: sticky; left: 184px; z-index: 4;
+            min-width: 190px;
+            /* right-edge separator that scrolls away from content */
+            box-shadow: 4px 0 12px -2px rgba(0,35,102,.10);
+        }
+        .dark-theme .col-name {
+            box-shadow: 4px 0 16px -2px rgba(0,0,0,.45);
+        }
+        /* After-name separator line */
+        .col-name::after {
+            content: '';
+            position: absolute; top: 0; right: 0;
+            width: 2px; height: 100%;
+            background: linear-gradient(to bottom, var(--accent-primary), transparent);
+            opacity: .18;
+            pointer-events: none;
+        }
 
-        /* Sticky column backgrounds must match row bg for visual consistency */
+        /* thead base */
+        .grid-table thead th {
+            padding: 10px 14px;
+            font-size: 11px; font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: .7px;
+            white-space: nowrap;
+            background: var(--sticky-head-bg);
+            border-bottom: 2px solid var(--glass-border);
+            cursor: pointer; user-select: none;
+            transition: color .2s;
+            position: sticky; top: 0; z-index: 3;
+        }
+        .grid-table thead th:hover { color: var(--accent-primary); }
+        .grid-table thead th.sort-asc::after  { content: ' \2191'; color: var(--accent-primary); }
+        .grid-table thead th.sort-desc::after { content: ' \2193'; color: var(--accent-primary); }
+        .grid-table thead .col-rank,
+        .grid-table thead .col-sno,
+        .grid-table thead .col-name { z-index: 6; background: var(--sticky-head-bg); }
+
+        /* group header row */
+        .group-header th {
+            padding: 5px 14px;
+            font-size: 10px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 3;
+        }
+        .group-header .col-rank,
+        .group-header .col-sno,
+        .group-header .col-name { z-index: 6; background: var(--sticky-head-bg); }
+        .gh-base  { background: var(--sticky-head-bg); }
+        .gh-mid   { background: rgba(59,130,246,.07); color:#2563eb; }
+        .gh-fin   { background: rgba(124,58,237,.07); color:#7c3aed; }
+        .gh-grade { background: rgba(16,185,129,.07); color:var(--success); }
+
+        /* tbody rows */
+        .grid-table tbody tr { transition: background .12s; }
+        .grid-table tbody td {
+            padding: 11px 14px;
+            font-size: 13px; font-weight: 600;
+            border-bottom: 1px solid var(--glass-border);
+            background: var(--sticky-odd-bg);
+            vertical-align: middle; white-space: nowrap;
+        }
+        .grid-table tbody tr:nth-child(even) td { background: var(--sticky-even-bg); }
+
+        /* Sticky cells — always use solid sticky bg so scrolling content doesn't bleed through */
+        .grid-table tbody td.col-rank,
+        .grid-table tbody td.col-sno,
+        .grid-table tbody td.col-name { background: var(--sticky-odd-bg); }
         .grid-table tbody tr:nth-child(even) td.col-rank,
         .grid-table tbody tr:nth-child(even) td.col-sno,
-        .grid-table tbody tr:nth-child(even) td.col-name{background:rgba(0,61,165,.025);}
-        .dark-theme .grid-table tbody tr:nth-child(even) td.col-rank,
-        .dark-theme .grid-table tbody tr:nth-child(even) td.col-sno,
-        .dark-theme .grid-table tbody tr:nth-child(even) td.col-name{background:rgba(59,130,246,.04);}
+        .grid-table tbody tr:nth-child(even) td.col-name { background: var(--sticky-even-bg); }
+
+        /* Hover — entire row */
+        .grid-table tbody tr:hover td { background: var(--sticky-hover-bg) !important; }
         .grid-table tbody tr:hover td.col-rank,
         .grid-table tbody tr:hover td.col-sno,
-        .grid-table tbody tr:hover td.col-name{background:var(--accent-light) !important;}
+        .grid-table tbody tr:hover td.col-name { background: var(--sticky-hover-bg) !important; }
+
+        /* Name cell: clean pill-like student name */
+        .student-name-cell {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .student-avatar {
+            flex-shrink: 0;
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--accent-primary);
+            color: #fff; font-size: 11px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            letter-spacing: -.5px;
+            opacity: .82;
+        }
+        .student-name-text {
+            font-weight: 700; font-size: 13px;
+            color: var(--text-main);
+            overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap; max-width: 140px;
+        }
+        /* Student No monospace pill */
+        .sno-pill {
+            display: inline-block;
+            font-family: 'SF Mono', 'Fira Mono', monospace;
+            font-size: 11px; font-weight: 700;
+            color: var(--text-muted);
+            background: rgba(100,116,139,.1);
+            border-radius: 6px; padding: 2px 7px;
+            letter-spacing: .3px;
+        }
+        .dark-theme .sno-pill { background: rgba(255,255,255,.07); }
 
         .rank-badge{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-size:12px;font-weight:800;}
         .rank-1{background:linear-gradient(135deg,#FFD700,#FFA500);color:#7a3c00;box-shadow:0 3px 10px rgba(255,165,0,.45);}
@@ -334,11 +454,13 @@
 
         <!-- GRID VIEW -->
         <div id="gridViewWrapper">
-            <div class="grid-scroll">
-                <table class="grid-table">
-                    <thead id="gridHead"></thead>
-                    <tbody id="gridBody"><tr class="loading-msg"><td colspan="12"><span class="spin"></span> Loading all records...</td></tr></tbody>
-                </table>
+            <div class="grid-scroll-wrapper">
+                <div class="grid-scroll" id="mainGridScroll">
+                    <table class="grid-table">
+                        <thead id="gridHead"></thead>
+                        <tbody id="gridBody"><tr class="loading-msg"><td colspan="12"><span class="spin"></span> Loading all records...</td></tr></tbody>
+                    </table>
+                </div>
             </div>
             <div class="table-footer">
                 <span id="footLeft">0 rows &bull; 0 activity columns</span>
@@ -756,10 +878,16 @@ function renderGrid(rows,acts){
         const pctStr=row.totalMax>0?`${row.scorePercent.toFixed(1)}%`:'&#8212;';
         const sName=row.studentName.replace(/'/g,"\'").replace(/"/g,'&quot;');
         
+        const initials = row.studentName.split(' ').filter(Boolean).map(w=>w[0].toUpperCase()).slice(0,2).join('');
         html+=`<tr>
             <td class="col-rank" style="text-align:center;">${rBadge(row.rank)}</td>
-            <td class="col-sno" style="font-family:monospace;font-size:12px;color:var(--text-muted);">${row.studentNo}</td>
-            <td class="col-name" style="font-weight:700;">${row.studentName}</td>
+            <td class="col-sno"><span class="sno-pill">${row.studentNo}</span></td>
+            <td class="col-name">
+                <div class="student-name-cell">
+                    <div class="student-avatar">${initials}</div>
+                    <span class="student-name-text" title="${row.studentName}">${row.studentName}</span>
+                </div>
+            </td>
             <td style="font-size:12px;">${row.section}</td>
             <td style="font-size:12px;font-weight:800;color:var(--accent-primary);">${row.subjectCode}</td>`;
         allActs.forEach(a=>{
@@ -1132,6 +1260,95 @@ tBtn.addEventListener('click',()=>{
     localStorage.setItem('theme',dk?'dark':'light');
     tIco.className=dk?'ph-fill ph-moon':'ph-fill ph-sun';
 });
+
+// ========== DRAG-TO-SCROLL + COLUMN RESIZE (Excel-like) ==========
+(function(){
+    const scroller = document.getElementById('mainGridScroll');
+
+    // ── Drag-to-scroll (pan the table) ──────────────────────────────
+    let dragging = false, dragStartX = 0, dragStartY = 0, scrollX = 0, scrollY = 0;
+
+    scroller.addEventListener('mousedown', e => {
+        if(e.target.classList.contains('col-resize-handle')) return;
+        if(e.target.closest('button,input,select,a')) return;
+        dragging = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        scrollX = scroller.scrollLeft;
+        scrollY = scroller.scrollTop;
+        scroller.classList.add('is-dragging');
+        e.preventDefault();
+    });
+    document.addEventListener('mousemove', e => {
+        if(!dragging) return;
+        scroller.scrollLeft = scrollX - (e.clientX - dragStartX);
+        scroller.scrollTop  = scrollY - (e.clientY - dragStartY);
+    });
+    document.addEventListener('mouseup', () => {
+        if(!dragging) return;
+        dragging = false;
+        scroller.classList.remove('is-dragging');
+    });
+
+    // Touch support (mobile/tablet pan)
+    let touchStartX = 0, touchStartY = 0, touchScrollX = 0, touchScrollY = 0;
+    scroller.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchScrollX = scroller.scrollLeft;
+        touchScrollY = scroller.scrollTop;
+    }, {passive:true});
+    scroller.addEventListener('touchmove', e => {
+        scroller.scrollLeft = touchScrollX - (e.touches[0].clientX - touchStartX);
+        scroller.scrollTop  = touchScrollY - (e.touches[0].clientY - touchStartY);
+    }, {passive:true});
+
+    // ── Column resize (Excel-like) ──────────────────────────────────
+    // Inject resize handles into every <th> after each render
+    function injectResizeHandles(){
+        const ths = scroller.querySelectorAll('thead th');
+        ths.forEach(th => {
+            if(th.querySelector('.col-resize-handle')) return; // already injected
+            const handle = document.createElement('div');
+            handle.className = 'col-resize-handle';
+            th.appendChild(handle);
+
+            let resizing = false, startX = 0, startW = 0;
+
+            handle.addEventListener('mousedown', e => {
+                e.stopPropagation(); // don't trigger drag-to-scroll
+                e.preventDefault();
+                resizing = true;
+                startX = e.clientX;
+                startW = th.offsetWidth;
+                handle.classList.add('resizing');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', e => {
+                if(!resizing) return;
+                const newW = Math.max(40, startW + (e.clientX - startX));
+                th.style.width = newW + 'px';
+                th.style.minWidth = newW + 'px';
+                th.style.maxWidth = newW + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                if(!resizing) return;
+                resizing = false;
+                handle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            });
+        });
+    }
+
+    // Re-inject handles whenever the table re-renders
+    const obs = new MutationObserver(() => { injectResizeHandles(); });
+    obs.observe(scroller, { childList: true, subtree: true });
+    injectResizeHandles();
+})();
 
 // Start
 loadAll();
