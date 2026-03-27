@@ -384,28 +384,38 @@
                 const settings = settingsSnap.exists() ? settingsSnap.data() : { showStanding: false };
 
                 if(settings.showStanding) {
+                    // Fetch activities for this subject
                     const actSnap = await getDocs(query(collection(db, "activities"), where("subjectCode", "==", currentSubjectCode)));
                     let grandTotalPerfect = 0;
-                    const activityIds = new Set();
+                    const activityIds = [];
                     actSnap.forEach(d => { 
                         grandTotalPerfect += Number(d.data().perfectScore);
-                        activityIds.add(d.id);
+                        activityIds.push(d.id);
                     });
 
+                    // Fetch classmates in the same section enrolled in the same subject
                     const classSnap = await getDocs(query(collection(db, "enrollments"), where("section", "==", currentSection)));
-                    const classmates = [];
-                    classSnap.forEach(d => classmates.push(d.data().studentNo));
+                    const classmates = new Set();
+                    classSnap.forEach(d => classmates.add(d.data().studentNo));
 
-                    const scoreSnap = await getDocs(collection(db, "scores"));
+                    // Initialize totals for classmates only
                     const studentTotals = {};
                     classmates.forEach(sNo => studentTotals[sNo] = 0);
 
-                    scoreSnap.forEach(d => {
-                        const s = d.data();
-                        if(activityIds.has(s.activityId) && studentTotals.hasOwnProperty(s.studentNo)) {
-                            studentTotals[s.studentNo] += Number(s.score);
+                    // Query scores ONLY for this subject's activities (batched by 10 for Firestore 'in' limit)
+                    if (activityIds.length > 0) {
+                        const chunks = [];
+                        for (let i = 0; i < activityIds.length; i += 10) chunks.push(activityIds.slice(i, i + 10));
+                        for (const chunk of chunks) {
+                            const scoreSnap = await getDocs(query(collection(db, "scores"), where("activityId", "in", chunk)));
+                            scoreSnap.forEach(d => {
+                                const s = d.data();
+                                if (studentTotals.hasOwnProperty(s.studentNo)) {
+                                    studentTotals[s.studentNo] += Number(s.score);
+                                }
+                            });
                         }
-                    });
+                    }
 
                     const leaderboard = Object.keys(studentTotals).map(sNo => ({
                         sNo,

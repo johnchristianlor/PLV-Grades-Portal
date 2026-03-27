@@ -23,12 +23,13 @@
         .summary-stats { display: flex; align-items: center; justify-content: space-between; width: 100%; position: relative; z-index: 1; flex-wrap: wrap; gap: 24px;} .stats-left { display: flex; align-items: center; gap: 40px; } .stat-divider { width: 1px; height: 48px; background: rgba(255,255,255,0.15); }
         .stat-box { display: flex; flex-direction: column; gap: 8px; } .stat-box span.label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1.5px; line-height: 1;} .stat-box span.value { font-size: 34px; font-weight: 800; line-height: 1; display: flex; align-items: baseline; gap: 6px; color: #fff;}
         .stat-final { background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05)); padding: 18px 32px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.4); box-shadow: 0 12px 32px rgba(0,0,0,0.2), inset 0 2px 0 rgba(255,255,255,0.1); align-items: center; justify-content: center; text-align: center; } .stat-final span.label { color: #FCD34D; font-weight: 800; letter-spacing: 2px; } .stat-final span.value { color: #fff; text-shadow: 0 2px 12px rgba(212, 175, 55, 0.3); font-size: 40px;}
+        .sub-transmuted { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.65); letter-spacing: 0.3px; margin-top: 4px; display: block; } .sub-transmuted strong { color: rgba(255,255,255,0.95); font-weight: 800; font-size: 13px; }
         .card-table-wrapper { grid-column: span 12; padding: 32px 40px;} .table-header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; } .table-header-area h3 { font-size: 20px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 12px;} .table-header-area i { font-size: 24px; color: var(--accent-primary); }
         .table-container { width: 100%; overflow-x: auto; padding-bottom: 12px;} .modern-table { width: 100%; min-width: 800px; border-collapse: separate; border-spacing: 0 16px; } .modern-table th { text-align: left; padding: 0 24px 12px; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--glass-border); white-space: nowrap; } .modern-table th.center { text-align: center; } .modern-table tbody tr { background: var(--item-bg); backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.4); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); } .modern-table td { padding: 24px; border-top: 1px solid var(--item-border); border-bottom: 1px solid var(--item-border); vertical-align: middle;} .modern-table td:first-child { border-left: 1px solid var(--item-border); border-radius: 20px 0 0 20px; } .modern-table td:last-child { border-right: 1px solid var(--item-border); border-radius: 0 20px 20px 0; } .modern-table tbody tr:hover { transform: translateY(-4px); background: var(--item-hover); box-shadow: 0 20px 40px -12px rgba(0, 35, 102, 0.12); border-color: var(--accent-light); } .dark-theme .modern-table tbody tr:hover { box-shadow: 0 20px 40px -12px rgba(0,0,0,0.8); }
         .row-final { background: var(--accent-light) !important; border-color: rgba(0, 61, 165, 0.2) !important; box-shadow: 0 12px 24px rgba(0, 61, 165, 0.08) !important; } .dark-theme .row-final { background: rgba(59, 130, 246, 0.1) !important; border-color: rgba(59, 130, 246, 0.2) !important; }
         .period-info { display: flex; align-items: center; gap: 16px; } .period-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 20px; background: rgba(0,0,0,0.04); color: var(--accent-primary); } .row-final .period-icon { background: var(--accent-primary); color: #fff; box-shadow: 0 8px 16px rgba(0, 61, 165, 0.2);} .dark-theme .period-icon { background: rgba(255,255,255,0.05); color: var(--accent-primary); } .dark-theme .row-final .period-icon { background: var(--accent-primary); color: #fff; }
         .period-text { display: flex; flex-direction: column; gap: 2px; } .period-title { font-size: 16px; font-weight: 800; color: var(--text-main); letter-spacing: -0.3px;} .period-sub { font-size: 12px; font-weight: 600; color: var(--text-muted); }
-        .score-cell { font-size: 16px; font-weight: 700; color: var(--text-muted); text-align: center;} .grade-cell { font-size: 18px; font-weight: 800; color: var(--text-main); text-align: center; } .row-final .grade-cell { font-size: 24px; color: var(--accent-primary); } .dark-theme .row-final .grade-cell { color: #fff; }
+        .score-cell { font-size: 18px; font-weight: 800; color: var(--text-main); text-align: center; } .score-cell .score-val { display: inline; } .score-cell .score-denom { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-left: 2px; } .grade-cell { font-size: 18px; font-weight: 800; color: var(--text-main); text-align: center; } .row-final .grade-cell { font-size: 24px; color: var(--accent-primary); } .dark-theme .row-final .grade-cell { color: #fff; }
         .badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 100px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; min-width: 100px; } .badge.passed { background: var(--success-bg); color: var(--success); } .badge.failed { background: var(--danger-bg); color: var(--danger); } .badge.excellent { background: var(--accent-gold-light); color: var(--accent-gold); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2); } .dark-theme .badge.excellent { background: rgba(252, 211, 77, 0.15); color: #FCD34D; }
         .card-legend { grid-column: span 5; justify-content: space-between;} .card-legend h3 { font-size: 16px; font-weight: 800; margin-bottom: 20px; color: var(--text-main); display: flex; align-items: center; gap: 10px;} .legend-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(5, 1fr); grid-auto-flow: column; gap: 12px; } .legend-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--item-bg); border-radius: 12px; border: 1px solid var(--item-border); font-size: 14px; font-weight: 600; } .legend-item.failed-item { border-color: rgba(225,29,72,0.3); background: var(--danger-bg); } .legend-val { color: var(--text-main); font-weight: 800; } .legend-desc { color: var(--text-muted); }
         .card-scholarship { grid-column: span 7; background: linear-gradient(135deg, var(--accent-primary) 0%, #001f5c 100%); color: #fff; flex-direction: row; align-items: center; justify-content: space-between; padding: 40px; border: none; } .card-scholarship::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='rgba(255,255,255,0.05)' fill-rule='evenodd'/%3E%3C/svg%3E"); pointer-events: none; } .schol-text h3 { font-size: 24px; font-weight: 800; margin-bottom: 8px; position: relative; z-index: 1;} .schol-text p { font-size: 15px; color: rgba(255,255,255,0.8); font-weight: 500; position: relative; z-index: 1;} .schol-icon { font-size: 72px; color: var(--accent-gold); position: relative; z-index: 1; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));}
@@ -124,10 +125,23 @@
                 <div class="summary-title"><h2>Academic Standing</h2><p>Official evaluation record for the current semester.</p></div>
                 <div class="summary-stats">
                     <div class="stats-left">
-                        <div class="stat-box"><span class="label">Midterm Rating</span><span class="value" id="midVal">--</span></div><div class="stat-divider"></div>
-                        <div class="stat-box"><span class="label">Final Term Rating</span><span class="value" id="finVal">--</span></div>
+                        <div class="stat-box">
+                            <span class="label">Midterm Rating</span>
+                            <span class="value" id="midVal">--</span>
+                            <span class="sub-transmuted">Transmuted: <strong id="midTransSub">--</strong></span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-box">
+                            <span class="label">Final Term Rating</span>
+                            <span class="value" id="finVal">--</span>
+                            <span class="sub-transmuted">Transmuted: <strong id="finTransSub">--</strong></span>
+                        </div>
                     </div>
-                    <div class="stat-box stat-final"><span class="label">OVERALL FINAL GRADE</span><span class="value" id="overallVal">--</span></div>
+                    <div class="stat-box stat-final">
+                        <span class="label">OVERALL FINAL GRADE</span>
+                        <span class="value" id="overallVal">--</span>
+                        <span class="sub-transmuted" style="color: rgba(255,255,255,0.8);">Transmuted: <strong id="overTransSub">--</strong></span>
+                    </div>
                 </div>
             </div>
 
@@ -135,21 +149,21 @@
                 <div class="table-header-area"><h3><i class="ph-fill ph-chart-line-up"></i> Term Breakdown</h3></div>
                 <div class="table-container">
                     <table class="modern-table">
-                        <thead><tr><th>Grading Period</th><th class="center">Status</th><th class="center">Transmuted Grade</th><th class="center">Remarks</th></tr></thead>
+                        <thead><tr><th>Grading Period</th><th class="center">Grade</th><th class="center">Transmuted Grade</th><th class="center">Remarks</th></tr></thead>
                         <tbody>
                             <tr>
                                 <td><div class="period-info"><div class="period-icon"><i class="ph-bold ph-circle-half"></i></div><div class="period-text"><span class="period-title">Midterm Period</span><span class="period-sub">Evaluation</span></div></div></td>
-                                <td class="center"><span style="color: var(--text-muted); font-weight: 600; font-size: 13px;">Graded</span></td>
+                                <td class="center score-cell"><span class="score-val" id="rawMid">--</span><span class="score-denom" id="rawMidDenom"></span></td>
                                 <td class="center grade-cell" id="tMid">--</td><td class="center" id="rMid">--</td>
                             </tr>
                             <tr>
                                 <td><div class="period-info"><div class="period-icon"><i class="ph-bold ph-circle"></i></div><div class="period-text"><span class="period-title">Final Term Period</span><span class="period-sub">Evaluation</span></div></div></td>
-                                <td class="center"><span style="color: var(--text-muted); font-weight: 600; font-size: 13px;">Graded</span></td>
+                                <td class="center score-cell"><span class="score-val" id="rawFin">--</span><span class="score-denom" id="rawFinDenom"></span></td>
                                 <td class="center grade-cell" id="tFin">--</td><td class="center" id="rFin">--</td>
                             </tr>
                             <tr class="row-final">
                                 <td><div class="period-info"><div class="period-icon"><i class="ph-fill ph-trophy"></i></div><div class="period-text"><span class="period-title" style="color: var(--accent-primary);">Final Computed Grade</span><span class="period-sub" style="color: var(--accent-primary); opacity: 0.8;">Average of Midterm and Final</span></div></div></td>
-                                <td class="center"><span style="color: var(--accent-primary); font-weight: 700; font-size: 13px;">Official</span></td>
+                                <td class="center score-cell"><span class="score-val" id="rawOver">--</span><span class="score-denom" id="rawOverDenom"></span></td>
                                 <td class="center grade-cell" id="tOver">--</td><td class="center" id="rOver">--</td>
                             </tr>
                         </tbody>
@@ -194,10 +208,25 @@
             toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        function badge(grade) { 
-            if(!grade) return "--";
-            if(grade <= 1.25) return `<span class="badge excellent">Excellent</span>`;
-            if(grade <= 3.00) return `<span class="badge passed">Passed</span>`;
+        function transmute(rawGrade) {
+            if (!rawGrade && rawGrade !== 0) return null;
+            const g = Number(rawGrade);
+            if (g >= 97) return 1.00;
+            if (g >= 94) return 1.25;
+            if (g >= 91) return 1.50;
+            if (g >= 88) return 1.75;
+            if (g >= 85) return 2.00;
+            if (g >= 82) return 2.25;
+            if (g >= 79) return 2.50;
+            if (g >= 76) return 2.75;
+            if (g >= 75) return 3.00;
+            return 5.00;
+        }
+
+        function badge(transmuted) { 
+            if(!transmuted) return "--";
+            if(transmuted <= 1.25) return `<span class="badge excellent">Excellent</span>`;
+            if(transmuted <= 3.00) return `<span class="badge passed">Passed</span>`;
             return `<span class="badge failed">Failed</span>`;
         }
 
@@ -210,10 +239,65 @@
                 const sSnap = await getDoc(doc(db, "subjects", enroll.subjectCode));
                 if(sSnap.exists()) document.getElementById('subTitle').innerText = `${sSnap.data().subjectCode}: ${sSnap.data().subjectName}`;
 
-                const mG = enroll.midtermGrade; const fG = enroll.finalTermGrade;
-                if(mG) { document.getElementById('midVal').innerText = mG.toFixed(2); document.getElementById('tMid').innerText = mG.toFixed(2); document.getElementById('rMid').innerHTML = badge(mG); }
-                if(fG) { document.getElementById('finVal').innerText = fG.toFixed(2); document.getElementById('tFin').innerText = fG.toFixed(2); document.getElementById('rFin').innerHTML = badge(fG); }
-                if(mG && fG) { const avg = (mG + fG) / 2; document.getElementById('overallVal').innerText = avg.toFixed(2); document.getElementById('tOver').innerText = avg.toFixed(2); document.getElementById('rOver').innerHTML = badge(avg); }
+                // Support both raw grade (0-100) and already-transmuted (1.00-5.00) storage
+                const mRaw = enroll.midtermRawGrade ?? enroll.midtermGrade;
+                const fRaw = enroll.finalTermRawGrade ?? enroll.finalTermGrade;
+
+                // Determine if stored value is raw (>5) or already transmuted (<=5)
+                function isRaw(val) { return val !== null && val !== undefined && val > 5; }
+
+                let mTransmuted = null, fTransmuted = null;
+                let mRawDisplay = null, fRawDisplay = null;
+
+                if (mRaw !== null && mRaw !== undefined) {
+                    if (isRaw(mRaw)) {
+                        mRawDisplay = mRaw;
+                        mTransmuted = transmute(mRaw);
+                    } else {
+                        mTransmuted = mRaw; // already transmuted
+                    }
+                }
+                if (fRaw !== null && fRaw !== undefined) {
+                    if (isRaw(fRaw)) {
+                        fRawDisplay = fRaw;
+                        fTransmuted = transmute(fRaw);
+                    } else {
+                        fTransmuted = fRaw;
+                    }
+                }
+
+                if (mRawDisplay !== null) { document.getElementById('rawMid').innerText = Number(mRawDisplay).toFixed(2); document.getElementById('rawMidDenom').innerText = ''; }
+                if (fRawDisplay !== null) { document.getElementById('rawFin').innerText = Number(fRawDisplay).toFixed(2); document.getElementById('rawFinDenom').innerText = ''; }
+
+                if (mTransmuted) { 
+                    // Hero: show raw grade as main value, transmuted as sub
+                    document.getElementById('midVal').innerText = mRawDisplay !== null ? Number(mRawDisplay).toFixed(2) : mTransmuted.toFixed(2); 
+                    document.getElementById('midTransSub').innerText = mTransmuted.toFixed(2); 
+                    document.getElementById('tMid').innerText = mTransmuted.toFixed(2); 
+                    document.getElementById('rMid').innerHTML = badge(mTransmuted); 
+                }
+                if (fTransmuted) { 
+                    document.getElementById('finVal').innerText = fRawDisplay !== null ? Number(fRawDisplay).toFixed(2) : fTransmuted.toFixed(2); 
+                    document.getElementById('finTransSub').innerText = fTransmuted.toFixed(2); 
+                    document.getElementById('tFin').innerText = fTransmuted.toFixed(2); 
+                    document.getElementById('rFin').innerHTML = badge(fTransmuted); 
+                }
+                if (mTransmuted && fTransmuted) { 
+                    const avg = (mTransmuted + fTransmuted) / 2; 
+                    const roundedAvg = Math.round(avg / 0.25) * 0.25;
+                    if (mRawDisplay !== null && fRawDisplay !== null) {
+                        const rawAvg = (Number(mRawDisplay) + Number(fRawDisplay)) / 2;
+                        document.getElementById('rawOver').innerText = rawAvg.toFixed(2);
+                        document.getElementById('rawOverDenom').innerText = '/100';
+                        // Hero overall: raw avg as main, transmuted as sub
+                        document.getElementById('overallVal').innerText = rawAvg.toFixed(2);
+                    } else {
+                        document.getElementById('overallVal').innerText = roundedAvg.toFixed(2);
+                    }
+                    document.getElementById('overTransSub').innerText = roundedAvg.toFixed(2);
+                    document.getElementById('tOver').innerText = roundedAvg.toFixed(2); 
+                    document.getElementById('rOver').innerHTML = badge(roundedAvg); 
+                }
             } catch (error) { console.error("Database error:", error); window.showToast("Database Error", "error"); }
         }
         loadData();

@@ -25,6 +25,10 @@
         
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } .form-group { display: flex; flex-direction: column; gap: 8px; position: relative; } .form-group.full { grid-column: span 2; } .form-label { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; } .form-control { background: var(--input-bg); border: 1px solid var(--input-border); padding: 14px 16px; border-radius: 12px; font-size: 15px; color: var(--text-main); font-weight: 500; outline: none; transition: all 0.3s; width: 100%; } .form-control:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 4px var(--accent-light); }
         
+        .transmuted-preview { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--accent-primary); min-height: 20px; display: flex; align-items: center; gap: 6px; transition: all 0.3s; }
+        .transmuted-preview.failed { color: var(--danger); }
+        .transmuted-preview.excellent { color: #D4AF37; }
+        .transmuted-preview i { font-size: 15px; }
         select.form-control { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 256 256'%3E%3Cpath fill='%2364748b' d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 48px; }
         
         /* SEARCHABLE DROPDOWN STYLES */
@@ -36,7 +40,77 @@
         .dropdown-item:hover { background: var(--accent-light); color: var(--accent-primary); }
         .dropdown-item strong { display: block; font-size: 12px; color: var(--text-muted); font-weight: 700; margin-bottom: 2px; }
 
-        .btn { padding: 14px 24px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; } .btn-primary { background: var(--accent-primary); color: #fff; box-shadow: 0 8px 16px var(--accent-light); } .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); } .btn-outline { background: transparent; border: 1px solid var(--accent-primary); color: var(--accent-primary); } .btn-outline:hover { background: var(--accent-light); }
+        .btn { padding: 14px 24px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; } .btn-primary { background: var(--accent-primary); color: #fff; box-shadow: 0 8px 16px var(--accent-light); } .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); } .btn-outline { background: transparent; border: 1px solid var(--accent-primary); color: var(--accent-primary); } .btn-outline:hover { background: var(--accent-light); } .btn-danger { background: var(--danger); color: #fff; box-shadow: 0 8px 16px rgba(225,29,72,0.2); } .btn-danger:hover { background: #be0032; transform: translateY(-2px); } .btn-danger-outline { background: transparent; border: 1.5px solid var(--danger); color: var(--danger); } .btn-danger-outline:hover { background: rgba(225,29,72,0.08); }
+        .tab-btn-danger.active { background: rgba(225,29,72,0.1) !important; color: var(--danger) !important; }
+        .tab-btn-danger:hover { color: var(--danger) !important; }
+
+        /* BATCH DELETE */
+        .batch-summary-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--accent-light); border-radius: 14px; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+        .batch-summary-bar .sum-info { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .batch-summary-bar .sum-chip { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; color: var(--text-main); }
+        .batch-summary-bar .sum-chip i { font-size: 16px; color: var(--accent-primary); }
+        .batch-actions { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+        .batch-actions .sel-info { font-size: 13px; font-weight: 700; color: var(--text-muted); flex: 1; }
+        .batch-table-wrap { overflow-x: auto; border-radius: 16px; border: 1px solid var(--glass-border); }
+        .batch-table { width: 100%; border-collapse: collapse; min-width: 620px; }
+        .batch-table thead tr { background: rgba(0,0,0,0.03); }
+        .dark-theme .batch-table thead tr { background: rgba(255,255,255,0.03); }
+        .batch-table th { padding: 13px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--glass-border); }
+        .batch-table th.center, .batch-table td.center { text-align: center; }
+        .batch-table tbody tr { border-bottom: 1px solid var(--glass-border); transition: background 0.2s; }
+        .batch-table tbody tr:last-child { border-bottom: none; }
+        .batch-table tbody tr:hover { background: var(--accent-light); }
+        .batch-table tbody tr.row-selected { background: rgba(225,29,72,0.05); }
+        .dark-theme .batch-table tbody tr.row-selected { background: rgba(225,29,72,0.08); }
+        .batch-table td { padding: 14px 16px; font-size: 14px; color: var(--text-main); vertical-align: middle; }
+        .batch-chk { width: 16px; height: 16px; cursor: pointer; accent-color: var(--danger); }
+        .student-cell { display: flex; flex-direction: column; gap: 2px; }
+        .student-cell .sname { font-weight: 700; font-size: 14px; }
+        .student-cell .sno { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .grade-tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+        .grade-tag.has { background: var(--accent-light); color: var(--accent-primary); }
+        .grade-tag.none { background: rgba(0,0,0,0.05); color: var(--text-muted); font-weight: 600; }
+        .dark-theme .grade-tag.none { background: rgba(255,255,255,0.06); }
+        .row-del-btn { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid rgba(225,29,72,0.3); background: rgba(225,29,72,0.06); color: var(--danger); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+        .row-del-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); transform: scale(1.1); }
+        .row-del-btn:disabled { opacity: 0.28; cursor: not-allowed; pointer-events: none; }
+        .row-del-btn + .row-del-btn { margin-left: 4px; }
+        .btn-sm { padding: 9px 16px; font-size: 13px; border-radius: 10px; }
+
+        /* DELETE GRADE PANEL */
+        .delete-grade-card { border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; background: var(--glass-bg); backdrop-filter: blur(12px); }
+        .delete-grade-header { padding: 20px 24px; background: rgba(0,0,0,0.03); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 14px; }
+        .dark-theme .delete-grade-header { background: rgba(255,255,255,0.03); }
+        .delete-grade-header .student-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--accent-primary); flex-shrink: 0; }
+        .delete-grade-header .student-info h4 { font-size: 16px; font-weight: 800; color: var(--text-main); }
+        .delete-grade-header .student-info p { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .delete-grade-row { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--glass-border); gap: 16px; flex-wrap: wrap; }
+        .delete-grade-row:last-child { border-bottom: none; }
+        .delete-grade-info { display: flex; align-items: center; gap: 14px; }
+        .delete-grade-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .delete-grade-icon.midterm { background: rgba(0,61,165,0.1); color: var(--accent-primary); }
+        .delete-grade-icon.final { background: rgba(16,185,129,0.12); color: #10b981; }
+        .delete-grade-text h5 { font-size: 15px; font-weight: 700; color: var(--text-main); }
+        .delete-grade-text p { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+        .delete-grade-values { display: flex; align-items: center; gap: 12px; }
+        .grade-pill { padding: 6px 14px; border-radius: 100px; font-size: 13px; font-weight: 800; }
+        .grade-pill.has-grade { background: var(--accent-light); color: var(--accent-primary); }
+        .grade-pill.no-grade { background: rgba(0,0,0,0.05); color: var(--text-muted); font-weight: 600; }
+        .dark-theme .grade-pill.no-grade { background: rgba(255,255,255,0.06); }
+        .delete-single-btn { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid rgba(225,29,72,0.3); background: rgba(225,29,72,0.06); color: var(--danger); display: flex; align-items: center; justify-content: center; font-size: 17px; cursor: pointer; transition: all 0.25s; flex-shrink: 0; }
+        .delete-single-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); transform: scale(1.08); box-shadow: 0 4px 12px rgba(225,29,72,0.3); }
+        .delete-single-btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+        /* CONFIRM MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); z-index: 500; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-overlay.show { opacity: 1; pointer-events: all; }
+        .modal-box { background: var(--glass-bg); backdrop-filter: blur(32px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 36px 32px; max-width: 420px; width: 90%; box-shadow: 0 32px 64px rgba(0,0,0,0.2); transform: scale(0.92) translateY(20px); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+        .modal-overlay.show .modal-box { transform: scale(1) translateY(0); }
+        .modal-icon { width: 56px; height: 56px; border-radius: 16px; background: rgba(225,29,72,0.1); display: flex; align-items: center; justify-content: center; font-size: 26px; color: var(--danger); margin-bottom: 20px; }
+        .modal-box h3 { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .modal-box p { font-size: 14px; color: var(--text-muted); font-weight: 500; line-height: 1.6; margin-bottom: 28px; }
+        .modal-actions { display: flex; gap: 12px; }
+        .modal-actions .btn { flex: 1; padding: 12px 16px; font-size: 14px; }
         .upload-zone { border: 2px dashed var(--accent-primary); background: var(--accent-light); border-radius: 20px; padding: 48px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; cursor: pointer; transition: all 0.3s; margin-bottom: 24px;} .upload-zone:hover { background: rgba(0, 61, 165, 0.15); border-color: var(--accent-hover); } .dark-theme .upload-zone:hover { background: rgba(59, 130, 246, 0.2); } .upload-icon { font-size: 48px; color: var(--accent-primary); } .upload-text h4 { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;} .upload-text p { font-size: 13px; color: var(--text-muted); font-weight: 500;}
         .toast { position: fixed; bottom: 32px; right: 32px; background: var(--success); color: #fff; padding: 16px 24px; border-radius: 12px; font-weight: 600; box-shadow: 0 12px 24px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 12px; transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;} .toast.show { transform: translateX(0); } .toast.error { background: var(--danger); }
         @media (max-width: 1024px) { body { flex-direction: column; } .sidebar { width: 100%; height: auto; flex-direction: row; padding: 20px; justify-content: space-between; align-items: center; z-index: 100; border-right: none; border-bottom: 1px solid var(--glass-border);} .nav-menu { display: none; } .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } }
@@ -154,8 +228,10 @@
 
         <div class="card glass">
             <div class="tab-controls">
-                <button class="tab-btn active" onclick="window.toggleTab('grd-manual', 'grd-bulk', this)">Manual Entry</button>
-                <button class="tab-btn" onclick="window.toggleTab('grd-bulk', 'grd-manual', this)">Bulk CSV Upload</button>
+                <button class="tab-btn active" onclick="window.switchTab('grd-manual', this)">Manual Entry</button>
+                <button class="tab-btn" onclick="window.switchTab('grd-bulk', this)">Bulk CSV Upload</button>
+                <button class="tab-btn tab-btn-danger" onclick="window.switchTab('grd-delete', this)"><i class="ph-bold ph-trash" style="font-size:13px;margin-right:4px;"></i>Delete Grade</button>
+                <button class="tab-btn tab-btn-danger" onclick="window.switchTab('grd-batch-delete', this)"><i class="ph-bold ph-trash-simple" style="font-size:13px;margin-right:4px;"></i>Batch Delete</button>
             </div>
 
             <div id="grd-manual" class="tab-content active">
@@ -179,8 +255,14 @@
                                 <option value="">Loading subjects...</option>
                             </select>
                         </div>
-                        <div class="form-group"><label class="form-label">Midterm Computed Grade</label><input type="number" step="0.25" min="1.0" max="5.0" id="gMid" class="form-control" placeholder="e.g. 1.50"></div>
-                        <div class="form-group"><label class="form-label">Final Term Computed Grade</label><input type="number" step="0.25" min="1.0" max="5.0" id="gFin" class="form-control" placeholder="e.g. 1.25"></div>
+                        <div class="form-group"><label class="form-label">Midterm Raw Grade <span style="color:var(--text-muted);font-weight:500;">(0–100)</span></label>
+                            <input type="number" step="0.01" min="0" max="100" id="gMid" class="form-control" placeholder="e.g. 88">
+                            <div class="transmuted-preview" id="prevMid"></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Final Term Raw Grade <span style="color:var(--text-muted);font-weight:500;">(0–100)</span></label>
+                            <input type="number" step="0.01" min="0" max="100" id="gFin" class="form-control" placeholder="e.g. 92">
+                            <div class="transmuted-preview" id="prevFin"></div>
+                        </div>
                         <div class="form-group full" style="margin-top: 10px;"><button type="submit" id="saveBtn" class="btn btn-primary"><i class="ph-bold ph-floppy-disk"></i> Save Student Grades</button></div>
                     </div>
                 </form>
@@ -193,8 +275,96 @@
                 </div>
                 <button class="btn btn-outline" onclick="window.downloadTemplate('grades_template.csv', 'Student_No,Subject_Code,Midterm_Grade,Final_Term_Grade')"><i class="ph-bold ph-download-simple"></i> Download CSV Template</button>
             </div>
+
+            <div id="grd-delete" class="tab-content">
+                <div class="form-grid" style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Search Student</label>
+                        <div class="searchable-select-wrapper">
+                            <input type="text" id="delStudentSearchInput" class="form-control" placeholder="Type Name or Student No..." autocomplete="off">
+                            <input type="hidden" id="delSno">
+                            <div id="delStudentDropdownList" class="custom-dropdown-list"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Select Subject</label>
+                        <select id="delSub" class="form-control">
+                            <option value="">-- Select Subject --</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <button type="button" class="btn btn-outline" onclick="window.loadGradesForDelete()" id="loadGradesBtn">
+                            <i class="ph-bold ph-magnifying-glass"></i> Load Grades
+                        </button>
+                    </div>
+                </div>
+
+                <div id="deleteGradePanel" style="display:none;">
+                    <div class="delete-grade-card" id="deleteGradeCard">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- BATCH DELETE TAB -->
+            <div id="grd-batch-delete" class="tab-content">
+                <div class="form-grid" style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Select Section</label>
+                        <select id="batchSection" class="form-control">
+                            <option value="">Loading sections...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Select Subject</label>
+                        <select id="batchSubject" class="form-control">
+                            <option value="">-- Select Subject --</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <button type="button" class="btn btn-outline" onclick="window.loadBatchGrades()" id="loadBatchBtn">
+                            <i class="ph-bold ph-magnifying-glass"></i> Load Section Grades
+                        </button>
+                    </div>
+                </div>
+
+                <div id="batchDeletePanel" style="display:none;">
+                    <!-- Summary bar -->
+                    <div class="batch-summary-bar" id="batchSummaryBar"></div>
+                    <!-- Bulk action buttons -->
+                    <div class="batch-actions" id="batchActions"></div>
+                    <!-- Table -->
+                    <div class="batch-table-wrap">
+                        <table class="batch-table" id="batchTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:36px;"><input type="checkbox" id="selectAllChk" class="batch-chk" title="Select All"></th>
+                                    <th>Student</th>
+                                    <th class="center">Midterm Grade</th>
+                                    <th class="center">Final Term Grade</th>
+                                    <th class="center" style="width:100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <!-- CONFIRM DELETE MODAL -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box">
+            <div class="modal-icon"><i class="ph-fill ph-trash"></i></div>
+            <h3 id="modalTitle">Delete Grade?</h3>
+            <p id="modalDesc">This will permanently clear the grade. This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="window.closeModal()">Cancel</button>
+                <button class="btn btn-danger" id="modalConfirmBtn">Delete</button>
+            </div>
+        </div>
+    </div>
 
     <div id="toast" class="toast"><i id="toast-icon" class="ph-fill ph-check-circle" style="font-size: 24px;"></i><span id="toast-msg">Success!</span></div>
 
@@ -239,6 +409,19 @@
                 subjects.forEach(sub => {
                     subSelect.innerHTML += `<option value="${sub.code}">${sub.code}: ${sub.name}</option>`;
                 });
+                // Sync to delete tab dropdown too
+                window.syncDeleteSubjects();
+
+                // 3. Fetch Sections
+                try {
+                    const secSnap = await getDocs(collection(db, "sections"));
+                    const batchSecSel = document.getElementById('batchSection');
+                    batchSecSel.innerHTML = '<option value="">-- Select Section --</option>';
+                    let sections = [];
+                    secSnap.forEach(d => { const s = d.data(); sections.push({ id: d.id, name: s.sectionName || s.name || d.id }); });
+                    sections.sort((a,b) => a.name.localeCompare(b.name));
+                    sections.forEach(s => { batchSecSel.innerHTML += `<option value="${s.id}">${s.name}</option>`; });
+                } catch(e2) { console.warn("Sections not loaded:", e2); }
 
             } catch (e) {
                 console.error("Error loading data:", e);
@@ -298,11 +481,48 @@
             }
         });
 
-        // --- TAB LOGIC ---
-        window.toggleTab = function(showId, hideId, element) {
-            const parent = element.parentElement; parent.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            element.classList.add('active'); document.getElementById(hideId).classList.remove('active'); document.getElementById(showId).classList.add('active');
+        // --- TRANSMUTE FUNCTION ---
+        function transmute(rawGrade) {
+            const g = Number(rawGrade);
+            if (g >= 97) return 1.00;
+            if (g >= 94) return 1.25;
+            if (g >= 91) return 1.50;
+            if (g >= 88) return 1.75;
+            if (g >= 85) return 2.00;
+            if (g >= 82) return 2.25;
+            if (g >= 79) return 2.50;
+            if (g >= 76) return 2.75;
+            if (g >= 75) return 3.00;
+            return 5.00;
         }
+
+        function showPreview(inputId, previewId) {
+            const val = document.getElementById(inputId).value;
+            const prev = document.getElementById(previewId);
+            if (!val || val === '') { prev.innerHTML = ''; return; }
+            const raw = Number(val);
+            if (raw < 0 || raw > 100) { prev.innerHTML = '<i class="ph-fill ph-warning"></i> Enter 0–100'; prev.className = 'transmuted-preview failed'; return; }
+            const t = transmute(raw);
+            let cls = 'transmuted-preview';
+            let icon = 'ph-fill ph-arrow-right';
+            if (t <= 1.25) { cls += ' excellent'; icon = 'ph-fill ph-star'; }
+            else if (t >= 5.00) { cls += ' failed'; icon = 'ph-fill ph-x-circle'; }
+            prev.className = cls;
+            prev.innerHTML = `<i class="${icon}"></i> Transmuted: <strong>${t.toFixed(2)}</strong>`;
+        }
+
+        document.getElementById('gMid').addEventListener('input', () => showPreview('gMid', 'prevMid'));
+        document.getElementById('gFin').addEventListener('input', () => showPreview('gFin', 'prevFin'));
+
+        // --- TAB LOGIC ---
+        window.switchTab = function(showId, element) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(showId).classList.add('active');
+            element.classList.add('active');
+            if (showId === 'grd-delete' || showId === 'grd-batch-delete') window.syncDeleteSubjects();
+        }
+        window.toggleTab = function(showId, hideId, element) { window.switchTab(showId, element); }
 
         window.showToast = function(message, type='success') {
             const toast = document.getElementById('toast');
@@ -311,6 +531,282 @@
             toast.className = 'toast'; 
             if(type === 'error') { toast.classList.add('error'); icon.className = 'ph-fill ph-warning-circle'; } else { icon.className = 'ph-fill ph-check-circle'; }
             toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // --- BATCH DELETE LOGIC ---
+        let batchData = [];
+
+        window.loadBatchGrades = async function() {
+            const sectionId = document.getElementById('batchSection').value;
+            const subCode = document.getElementById('batchSubject').value;
+            if (!sectionId) { window.showToast("Please select a section.", "error"); return; }
+            if (!subCode) { window.showToast("Please select a subject.", "error"); return; }
+            const btn = document.getElementById('loadBatchBtn');
+            btn.innerHTML = '<i class="ph-bold ph-spinner"></i> Loading...'; btn.disabled = true;
+            try {
+                const stuQ = query(collection(db, "users"), where("role", "==", "student"), where("sectionId", "==", sectionId));
+                const stuSnap = await getDocs(stuQ);
+                if (stuSnap.empty) { window.showToast("No students found in this section.", "error"); btn.innerHTML = '<i class="ph-bold ph-magnifying-glass"></i> Load Section Grades'; btn.disabled = false; return; }
+                batchData = [];
+                const promises = [];
+                stuSnap.forEach(d => {
+                    const s = d.data();
+                    const sNo = s.studentNo; const name = s.fullName;
+                    const ref = doc(db, "enrollments", `${sNo}_${subCode}`);
+                    promises.push(getDoc(ref).then(snap => {
+                        const g = snap.exists() ? snap.data() : {};
+                        batchData.push({ sNo, name, subCode, mRaw: g.midtermRawGrade ?? null, mT: g.midtermGrade ?? null, fRaw: g.finalTermRawGrade ?? null, fT: g.finalTermGrade ?? null, hasEnroll: snap.exists() });
+                    }));
+                });
+                await Promise.all(promises);
+                batchData.sort((a,b) => a.name.localeCompare(b.name));
+                renderBatchTable();
+                document.getElementById('batchDeletePanel').style.display = 'block';
+            } catch(err) { console.error(err); window.showToast("Error loading section grades.", "error"); }
+            btn.innerHTML = '<i class="ph-bold ph-magnifying-glass"></i> Load Section Grades'; btn.disabled = false;
+        }
+
+        function getGradeLabel(raw, t) {
+            if (raw !== null && raw !== undefined) return `${Number(raw).toFixed(2)} → ${Number(t).toFixed(2)}`;
+            if (t !== null && t !== undefined) return `Trans: ${Number(t).toFixed(2)}`;
+            return null;
+        }
+
+        function renderBatchTable() {
+            const tbody = document.getElementById('batchTableBody');
+            tbody.innerHTML = '';
+            let totalMid = 0, totalFin = 0;
+            batchData.forEach((row, idx) => {
+                const mLabel = getGradeLabel(row.mRaw, row.mT);
+                const fLabel = getGradeLabel(row.fRaw, row.fT);
+                if (mLabel) totalMid++;
+                if (fLabel) totalFin++;
+                const tr = document.createElement('tr');
+                tr.dataset.idx = idx;
+                tr.innerHTML = `
+                    <td><input type="checkbox" class="batch-chk row-chk" data-idx="${idx}" onchange="window.updateBatchSelection()"></td>
+                    <td><div class="student-cell"><span class="sname">${row.name}</span><span class="sno">${row.sNo}</span></div></td>
+                    <td class="center">${mLabel ? `<span class="grade-tag has"><i class="ph-fill ph-circle-half" style="font-size:11px;"></i> ${mLabel}</span>` : `<span class="grade-tag none">No Grade</span>`}</td>
+                    <td class="center">${fLabel ? `<span class="grade-tag has"><i class="ph-fill ph-circle" style="font-size:11px;"></i> ${fLabel}</span>` : `<span class="grade-tag none">No Grade</span>`}</td>
+                    <td class="center">
+                        <button class="row-del-btn" title="Delete Midterm" ${!mLabel ? 'disabled' : ''} onclick="window.batchSingleDelete(${idx},'midterm')"><i class="ph-bold ph-circle-half"></i></button>
+                        <button class="row-del-btn" title="Delete Final" ${!fLabel ? 'disabled' : ''} onclick="window.batchSingleDelete(${idx},'final')"><i class="ph-bold ph-circle"></i></button>
+                        <button class="row-del-btn" title="Delete Both" ${(!mLabel && !fLabel) ? 'disabled' : ''} onclick="window.batchSingleDelete(${idx},'both')"><i class="ph-bold ph-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('batchSummaryBar').innerHTML = `
+                <div class="sum-info">
+                    <div class="sum-chip"><i class="ph-fill ph-users"></i> ${batchData.length} Students</div>
+                    <div class="sum-chip"><i class="ph-fill ph-circle-half"></i> ${totalMid} with Midterm</div>
+                    <div class="sum-chip"><i class="ph-fill ph-circle"></i> ${totalFin} with Final</div>
+                </div>`;
+            updateBatchActions();
+            const chk = document.getElementById('selectAllChk');
+            chk.checked = false;
+            chk.onchange = function() { document.querySelectorAll('.row-chk').forEach(c => { c.checked = chk.checked; c.closest('tr').classList.toggle('row-selected', chk.checked); }); updateBatchActions(); };
+        }
+
+        window.updateBatchSelection = function() {
+            const all = document.querySelectorAll('.row-chk');
+            const checked = document.querySelectorAll('.row-chk:checked');
+            document.getElementById('selectAllChk').checked = all.length > 0 && checked.length === all.length;
+            document.querySelectorAll('.row-chk').forEach(c => c.closest('tr').classList.toggle('row-selected', c.checked));
+            updateBatchActions();
+        }
+
+        function getSelectedIndices() { return [...document.querySelectorAll('.row-chk:checked')].map(c => Number(c.dataset.idx)); }
+
+        function updateBatchActions() {
+            const sel = getSelectedIndices();
+            const container = document.getElementById('batchActions');
+            if (!container) return;
+            if (sel.length === 0) {
+                container.innerHTML = `<span class="sel-info">Select rows to act on selected students, or use buttons to clear the entire section:</span>
+                    <button class="btn btn-sm btn-danger" onclick="window.batchDeleteAll('midterm')"><i class="ph-bold ph-circle-half"></i> Clear All Midterm</button>
+                    <button class="btn btn-sm btn-danger" onclick="window.batchDeleteAll('final')"><i class="ph-bold ph-circle"></i> Clear All Final</button>
+                    <button class="btn btn-sm btn-danger" onclick="window.batchDeleteAll('both')"><i class="ph-bold ph-trash"></i> Delete All Grades</button>`;
+            } else {
+                container.innerHTML = `<span class="sel-info">${sel.length} student${sel.length > 1 ? 's' : ''} selected</span>
+                    <button class="btn btn-sm btn-danger-outline" onclick="window.batchDeleteSelected('midterm')"><i class="ph-bold ph-circle-half"></i> Delete Midterm</button>
+                    <button class="btn btn-sm btn-danger-outline" onclick="window.batchDeleteSelected('final')"><i class="ph-bold ph-circle"></i> Delete Final</button>
+                    <button class="btn btn-sm btn-danger" onclick="window.batchDeleteSelected('both')"><i class="ph-bold ph-trash"></i> Delete Both</button>`;
+            }
+        }
+
+        async function performBatchDelete(indices, term, label) {
+            const termLabel = term === 'midterm' ? 'Midterm' : term === 'final' ? 'Final Term' : 'All';
+            openModal(
+                `Delete ${termLabel} Grades?`,
+                `This will permanently remove ${label || `${termLabel} grades for ${indices.length} student${indices.length > 1 ? 's' : ''}`}. This cannot be undone.`,
+                async () => {
+                    let success = 0, fail = 0;
+                    for (const idx of indices) {
+                        const row = batchData[idx];
+                        const updates = {};
+                        if (term === 'midterm' || term === 'both') { updates.midtermGrade = null; updates.midtermRawGrade = null; }
+                        if (term === 'final' || term === 'both') { updates.finalTermGrade = null; updates.finalTermRawGrade = null; }
+                        try {
+                            if (row.hasEnroll) { await updateDoc(doc(db, "enrollments", `${row.sNo}_${row.subCode}`), updates); }
+                            if (term === 'midterm' || term === 'both') { row.mRaw = null; row.mT = null; }
+                            if (term === 'final' || term === 'both') { row.fRaw = null; row.fT = null; }
+                            success++;
+                        } catch(e) { console.error(e); fail++; }
+                    }
+                    window.showToast(fail > 0 ? `${success} deleted, ${fail} failed.` : `${success} grade${success > 1 ? 's' : ''} deleted.`, fail > 0 ? 'error' : 'success');
+                    document.querySelectorAll('.row-chk').forEach(c => c.checked = false);
+                    document.getElementById('selectAllChk').checked = false;
+                    renderBatchTable();
+                }
+            );
+        }
+
+        window.batchSingleDelete = function(idx, term) { performBatchDelete([idx], term); }
+        window.batchDeleteSelected = function(term) { const sel = getSelectedIndices(); if (!sel.length) { window.showToast("No students selected.", "error"); return; } performBatchDelete(sel, term); }
+        window.batchDeleteAll = function(term) { const all = batchData.map((_,i)=>i); const tl = term==='both'?'all grades':`all ${term==='midterm'?'Midterm':'Final Term'} grades`; performBatchDelete(all, term, `${tl} for ALL ${all.length} students in this section`); }
+
+        // --- MODAL LOGIC ---
+        let pendingDeleteFn = null;
+        window.closeModal = function() { document.getElementById('confirmModal').classList.remove('show'); pendingDeleteFn = null; }
+        function openModal(title, desc, onConfirm) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            pendingDeleteFn = onConfirm;
+            document.getElementById('confirmModal').classList.add('show');
+        }
+        document.getElementById('modalConfirmBtn').addEventListener('click', () => { if(pendingDeleteFn) { pendingDeleteFn(); } window.closeModal(); });
+        document.getElementById('confirmModal').addEventListener('click', (e) => { if(e.target === e.currentTarget) window.closeModal(); });
+
+        // --- DELETE TAB SEARCH LOGIC ---
+        const delSearchInput = document.getElementById('delStudentSearchInput');
+        const delHiddenInput = document.getElementById('delSno');
+        const delDropdownList = document.getElementById('delStudentDropdownList');
+
+        function renderDelStudentOptions(list) {
+            delDropdownList.innerHTML = '';
+            if (!list.length) { delDropdownList.innerHTML = '<div class="dropdown-item" style="cursor:default;color:var(--text-muted);">No match found</div>'; return; }
+            list.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-item';
+                div.innerHTML = `<strong>${s.no}</strong> ${s.name}`;
+                div.onclick = () => { delSearchInput.value = `${s.name} (${s.no})`; delHiddenInput.value = s.no; delDropdownList.classList.remove('show'); document.getElementById('deleteGradePanel').style.display = 'none'; };
+                delDropdownList.appendChild(div);
+            });
+        }
+        delSearchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            if (!val) delHiddenInput.value = '';
+            renderDelStudentOptions(allStudents.filter(s => s.name.toLowerCase().includes(val) || s.no.toLowerCase().includes(val)));
+            delDropdownList.classList.add('show');
+        });
+        delSearchInput.addEventListener('focus', () => { renderDelStudentOptions(allStudents); delDropdownList.classList.add('show'); });
+        document.addEventListener('click', (e) => { if (!delSearchInput.contains(e.target) && !delDropdownList.contains(e.target)) delDropdownList.classList.remove('show'); });
+
+        // Sync subjects to delete dropdown
+        window.syncDeleteSubjects = function() {
+            const src = document.getElementById('gSub');
+            const dest = document.getElementById('delSub');
+            dest.innerHTML = src.innerHTML;
+            const batchDest = document.getElementById('batchSubject');
+            if (batchDest) batchDest.innerHTML = src.innerHTML;
+        }
+
+        // Load grades for delete
+        window.loadGradesForDelete = async function() {
+            const sNo = delHiddenInput.value;
+            const subCode = document.getElementById('delSub').value;
+            if (!sNo) { window.showToast("Please select a student.", "error"); return; }
+            if (!subCode) { window.showToast("Please select a subject.", "error"); return; }
+            const btn = document.getElementById('loadGradesBtn');
+            btn.innerHTML = '<i class="ph-bold ph-spinner"></i> Loading...'; btn.disabled = true;
+            try {
+                const ref = doc(db, "enrollments", `${sNo}_${subCode}`);
+                const snap = await getDoc(ref);
+                if (!snap.exists()) { window.showToast("No enrollment record found for this student & subject.", "error"); btn.innerHTML = '<i class="ph-bold ph-magnifying-glass"></i> Load Grades'; btn.disabled = false; return; }
+                const data = snap.data();
+                renderDeletePanel(sNo, subCode, data, ref);
+            } catch(err) { console.error(err); window.showToast("Error loading grades.", "error"); }
+            btn.innerHTML = '<i class="ph-bold ph-magnifying-glass"></i> Load Grades'; btn.disabled = false;
+        }
+
+        function renderDeletePanel(sNo, subCode, data, ref) {
+            const studentName = allStudents.find(s => s.no === sNo)?.name || sNo;
+            const mRaw = data.midtermRawGrade ?? null;
+            const fRaw = data.finalTermRawGrade ?? null;
+            const mT = data.midtermGrade ?? null;
+            const fT = data.finalTermGrade ?? null;
+
+            function gradeDisplay(raw, transmuted) {
+                if (raw !== null && raw !== undefined) return `${Number(raw).toFixed(2)} <span style="font-size:11px;opacity:0.6;">/100</span> &nbsp;→&nbsp; <span style="opacity:0.85;">${Number(transmuted).toFixed(2)}</span>`;
+                if (transmuted !== null && transmuted !== undefined) return `Transmuted: ${Number(transmuted).toFixed(2)}`;
+                return null;
+            }
+
+            const mDisplay = gradeDisplay(mRaw, mT);
+            const fDisplay = gradeDisplay(fRaw, fT);
+
+            document.getElementById('deleteGradeCard').innerHTML = `
+                <div class="delete-grade-header">
+                    <div class="student-avatar"><i class="ph-fill ph-user"></i></div>
+                    <div class="student-info">
+                        <h4>${studentName}</h4>
+                        <p>${sNo} &nbsp;·&nbsp; ${subCode}</p>
+                    </div>
+                </div>
+                <div class="delete-grade-row">
+                    <div class="delete-grade-info">
+                        <div class="delete-grade-icon midterm"><i class="ph-bold ph-circle-half"></i></div>
+                        <div class="delete-grade-text">
+                            <h5>Midterm Grade</h5>
+                            <p>${mDisplay ? `Grade: ${mDisplay.replace(/<[^>]*>/g,'')}` : 'No grade recorded'}</p>
+                        </div>
+                    </div>
+                    <div class="delete-grade-values">
+                        ${mDisplay ? `<span class="grade-pill has-grade">${mDisplay}</span>` : `<span class="grade-pill no-grade">No Grade</span>`}
+                        <button class="delete-single-btn" id="delMidBtn" title="Delete Midterm Grade" ${!mDisplay ? 'disabled' : ''} onclick="window.confirmDelete('midterm','${sNo}','${subCode}')">
+                            <i class="ph-bold ph-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="delete-grade-row">
+                    <div class="delete-grade-info">
+                        <div class="delete-grade-icon final"><i class="ph-bold ph-circle"></i></div>
+                        <div class="delete-grade-text">
+                            <h5>Final Term Grade</h5>
+                            <p>${fDisplay ? `Grade: ${fDisplay.replace(/<[^>]*>/g,'')}` : 'No grade recorded'}</p>
+                        </div>
+                    </div>
+                    <div class="delete-grade-values">
+                        ${fDisplay ? `<span class="grade-pill has-grade">${fDisplay}</span>` : `<span class="grade-pill no-grade">No Grade</span>`}
+                        <button class="delete-single-btn" id="delFinBtn" title="Delete Final Term Grade" ${!fDisplay ? 'disabled' : ''} onclick="window.confirmDelete('final','${sNo}','${subCode}')">
+                            <i class="ph-bold ph-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('deleteGradePanel').style.display = 'block';
+        }
+
+        window.confirmDelete = function(term, sNo, subCode) {
+            const termLabel = term === 'midterm' ? 'Midterm' : 'Final Term';
+            openModal(
+                `Delete ${termLabel} Grade?`,
+                `This will permanently remove the ${termLabel} grade for ${sNo} in ${subCode}. This cannot be undone.`,
+                async () => {
+                    try {
+                        const ref = doc(db, "enrollments", `${sNo}_${subCode}`);
+                        const updates = term === 'midterm'
+                            ? { midtermGrade: null, midtermRawGrade: null }
+                            : { finalTermGrade: null, finalTermRawGrade: null };
+                        await updateDoc(ref, updates);
+                        window.showToast(`${termLabel} grade deleted successfully.`);
+                        // Reload the panel to reflect changes
+                        const snap = await getDoc(ref);
+                        if (snap.exists()) renderDeletePanel(sNo, subCode, snap.data(), ref);
+                    } catch(err) { console.error(err); window.showToast("Error deleting grade.", "error"); }
+                }
+            );
         }
 
         // --- SUBMIT LOGIC ---
@@ -343,8 +839,10 @@
                 }
                 
                 await updateDoc(ref, { 
-                    midtermGrade: mG ? Number(mG) : null, 
-                    finalTermGrade: fG ? Number(fG) : null 
+                    midtermRawGrade: mG ? Number(mG) : null,
+                    finalTermRawGrade: fG ? Number(fG) : null,
+                    midtermGrade: mG ? transmute(Number(mG)) : null, 
+                    finalTermGrade: fG ? transmute(Number(fG)) : null 
                 });
                 
                 window.showToast("Grades Saved Successfully!"); 
@@ -352,6 +850,8 @@
                 // Reset custom inputs
                 document.getElementById('gSno').value = "";
                 document.getElementById('studentSearchInput').value = "";
+                document.getElementById('prevMid').innerHTML = "";
+                document.getElementById('prevFin').innerHTML = "";
                 
             } catch(error) { 
                 console.error(error); 
@@ -362,7 +862,7 @@
 
         window.simulateUpload = function() {
             const input = document.createElement('input'); input.type = 'file'; input.accept = '.csv';
-            input.onchange = e => { const file = e.target.files[0]; if(!file) return; window.showToast(`Processing ${file.name}...`); Papa.parse(file, { header: true, skipEmptyLines: true, complete: async function(results) { try { for(let row of results.data) { const sNo = row.Student_No; const subCode = row.Subject_Code; if(!sNo || !subCode) continue; const mG = row.Midterm_Grade ? Number(row.Midterm_Grade) : null; const fG = row.Final_Term_Grade ? Number(row.Final_Term_Grade) : null; const ref = doc(db, "enrollments", `${sNo}_${subCode}`); const snap = await getDoc(ref); if(snap.exists()) { await updateDoc(ref, { midtermGrade: mG, finalTermGrade: fG }); } } window.showToast("Bulk Grades Updated Successfully!"); } catch(err) { console.error(err); window.showToast("Error during bulk upload", "error"); } } }); }
+            input.onchange = e => { const file = e.target.files[0]; if(!file) return; window.showToast(`Processing ${file.name}...`); Papa.parse(file, { header: true, skipEmptyLines: true, complete: async function(results) { try { for(let row of results.data) { const sNo = row.Student_No; const subCode = row.Subject_Code; if(!sNo || !subCode) continue; const mRaw = row.Midterm_Grade ? Number(row.Midterm_Grade) : null; const fRaw = row.Final_Term_Grade ? Number(row.Final_Term_Grade) : null; const ref = doc(db, "enrollments", `${sNo}_${subCode}`); const snap = await getDoc(ref); if(snap.exists()) { await updateDoc(ref, { midtermRawGrade: mRaw, finalTermRawGrade: fRaw, midtermGrade: mRaw !== null ? transmute(mRaw) : null, finalTermGrade: fRaw !== null ? transmute(fRaw) : null }); } } window.showToast("Bulk Grades Updated Successfully!"); } catch(err) { console.error(err); window.showToast("Error during bulk upload", "error"); } } }); }
             input.click();
         }
 
