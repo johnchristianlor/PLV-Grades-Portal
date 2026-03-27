@@ -196,6 +196,22 @@
             .modal-box { padding: 24px 20px !important; width: 95% !important; }
         }
 
+        /* SMART TEMPLATE BUILDER */
+        .bulk-step-box { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 28px 32px; margin-bottom: 12px; }
+        .bulk-step-header { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 20px; }
+        .bulk-step-num { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-primary); color: #fff; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .bulk-step-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+        .bulk-step-sub { font-size: 13px; color: var(--text-muted); font-weight: 500; line-height: 1.5; }
+        .template-builder { padding-left: 58px; }
+        .bulk-divider { display: flex; align-items: center; gap: 16px; margin: 16px 0; }
+        .bulk-divider-line { flex: 1; height: 1px; background: var(--glass-border); }
+        .bulk-divider-text { font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 2px; white-space: nowrap; }
+        .section-summary-pill { display: flex; flex-wrap: wrap; gap: 8px; }
+        .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; background: var(--accent-light); color: var(--accent-primary); border: 1px solid rgba(0,61,165,0.15); }
+        .dark-theme .pill { border-color: rgba(59,130,246,0.2); }
+        .spin-ring { width: 18px; height: 18px; border: 2px solid rgba(0,61,165,0.2); border-top-color: var(--accent-primary); border-radius: 50%; animation: spin-anim 0.6s linear infinite; display: inline-block; flex-shrink: 0; }
+        @keyframes spin-anim { to { transform: rotate(360deg); } }
+        @media (max-width: 768px) { .template-builder { padding-left: 0; } .bulk-step-box { padding: 18px 14px; } }
         </style>
 </head>
 <body>
@@ -269,11 +285,102 @@
             </div>
 
             <div id="grd-bulk" class="tab-content">
-                <div class="upload-zone" onclick="window.simulateUpload()">
-                    <i class="ph-fill ph-file-csv upload-icon"></i>
-                    <div class="upload-text"><h4>Click Here to Upload CSV File</h4><p>Upload the professor's grading sheet directly to the system.</p></div>
+
+                <!-- STEP 1 -->
+                <div class="bulk-step-box">
+                    <div class="bulk-step-header">
+                        <div class="bulk-step-num">1</div>
+                        <div>
+                            <h3 class="bulk-step-title">Generate Pre-Filled Grade Template</h3>
+                            <p class="bulk-step-sub">Select a section and subject — the system fetches all enrolled students so you only need to type the grades.</p>
+                        </div>
+                    </div>
+                    <div class="template-builder">
+                        <div class="form-grid" style="max-width:680px;">
+                            <div class="form-group">
+                                <label class="form-label">Class Section</label>
+                                <select id="csvSection" class="form-control" onchange="window.loadCsvRoster()">
+                                    <option value="">Loading sections...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Subject</label>
+                                <select id="csvSubject" class="form-control" onchange="window.loadCsvRoster()">
+                                    <option value="">Loading subjects...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="csvLoadingMsg" style="display:none;align-items:center;gap:10px;color:var(--accent-primary);font-weight:600;font-size:14px;margin-top:12px;">
+                            <div class="spin-ring"></div> Fetching enrolled students...
+                        </div>
+                        <div id="csvPreviewPanel" style="display:none;margin-top:24px;">
+                            <div id="csvRosterSummary" class="section-summary-pill" style="margin-bottom:16px;"></div>
+                            <div class="batch-table-wrap" style="max-height:260px;overflow-y:auto;margin-bottom:20px;">
+                                <table class="batch-table">
+                                    <thead><tr>
+                                        <th style="width:40px;">#</th>
+                                        <th>Student No.</th>
+                                        <th>Student Name</th>
+                                        <th class="center">Existing Midterm</th>
+                                        <th class="center">Existing Final</th>
+                                    </tr></thead>
+                                    <tbody id="csvPreviewBody"></tbody>
+                                </table>
+                            </div>
+                            <div style="margin-bottom:20px;">
+                                <p class="form-label" style="margin-bottom:10px;">Include Columns</p>
+                                <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text-main);">
+                                        <input type="checkbox" id="csvIncludeMid" checked style="width:16px;height:16px;accent-color:var(--accent-primary);"> Midterm Grade
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text-main);">
+                                        <input type="checkbox" id="csvIncludeFin" checked style="width:16px;height:16px;accent-color:var(--accent-primary);"> Final Term Grade
+                                    </label>
+                                </div>
+                                <p style="font-size:12px;color:var(--text-muted);margin-top:6px;">Student_No and Student_Name are always included — do not modify them when filling grades.</p>
+                            </div>
+                            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+                                <button class="btn btn-primary" onclick="window.downloadGradeTemplate()">
+                                    <i class="ph-bold ph-download-simple"></i> Download Pre-Filled CSV
+                                </button>
+                                <span style="font-size:13px;color:var(--text-muted);font-weight:500;"><i class="ph-fill ph-info" style="font-size:15px;vertical-align:middle;"></i> Fill grades (0-100), then upload below.</span>
+                            </div>
+                        </div>
+                        <div id="csvEmptyState" style="display:none;text-align:center;padding:32px;border:2px dashed var(--glass-border);border-radius:14px;margin-top:16px;">
+                            <i class="ph-fill ph-warning" style="font-size:36px;color:var(--text-muted);opacity:0.5;display:block;margin-bottom:8px;"></i>
+                            <p style="font-size:14px;font-weight:700;color:var(--text-main);margin-bottom:4px;">No enrolled students found</p>
+                            <p style="font-size:13px;color:var(--text-muted);">No students are enrolled in this section for the selected subject.</p>
+                        </div>
+                    </div>
                 </div>
-                <button class="btn btn-outline" onclick="window.downloadTemplate('grades_template.csv', 'Student_No,Subject_Code,Midterm_Grade,Final_Term_Grade')"><i class="ph-bold ph-download-simple"></i> Download CSV Template</button>
+
+                <div class="bulk-divider">
+                    <div class="bulk-divider-line"></div>
+                    <span class="bulk-divider-text">FILL IN GRADES THEN UPLOAD</span>
+                    <div class="bulk-divider-line"></div>
+                </div>
+
+                <!-- STEP 2 -->
+                <div class="bulk-step-box">
+                    <div class="bulk-step-header">
+                        <div class="bulk-step-num">2</div>
+                        <div>
+                            <h3 class="bulk-step-title">Upload Filled CSV</h3>
+                            <p class="bulk-step-sub">Open the downloaded CSV, fill in the grade values (0-100), then upload here. Do not modify the Student_No column.</p>
+                        </div>
+                    </div>
+                    <div class="upload-zone" onclick="window.simulateUpload()" style="margin-top:20px;">
+                        <i class="ph-fill ph-file-csv upload-icon"></i>
+                        <div class="upload-text">
+                            <h4>Click Here to Upload Filled CSV</h4>
+                            <p>Required columns: Student_No, Subject_Code, Midterm_Grade / Final_Term_Grade</p>
+                        </div>
+                    </div>
+                    <div id="csvUploadLog" style="display:none;margin-top:16px;padding:20px;background:var(--accent-light);border-radius:16px;border:1px solid rgba(0,61,165,0.12);">
+                        <p style="font-size:14px;font-weight:800;color:var(--accent-primary);margin-bottom:10px;"><i class="ph-bold ph-list-checks"></i> Upload Summary</p>
+                        <div id="csvUploadLogContent" style="font-size:13px;color:var(--text-muted);line-height:2;max-height:200px;overflow-y:auto;"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="grd-delete" class="tab-content">
@@ -411,6 +518,9 @@
                 });
                 // Sync to delete tab dropdown too
                 window.syncDeleteSubjects();
+                // Sync subjects to csv bulk tab dropdown too
+                const csvSubEl = document.getElementById('csvSubject');
+                if (csvSubEl) csvSubEl.innerHTML = subSelect.innerHTML;
 
                 // 3. Fetch Sections
                 try {
@@ -418,9 +528,15 @@
                     const batchSecSel = document.getElementById('batchSection');
                     batchSecSel.innerHTML = '<option value="">-- Select Section --</option>';
                     let sections = [];
-                    secSnap.forEach(d => { const s = d.data(); sections.push({ id: d.id, name: s.sectionName || s.name || d.id }); });
-                    sections.sort((a,b) => a.name.localeCompare(b.name));
-                    sections.forEach(s => { batchSecSel.innerHTML += `<option value="${s.id}">${s.name}</option>`; });
+                    secSnap.forEach(d => { const s = d.data(); const nm = s.sectionName || s.name || d.id; sections.push(nm); });
+                    sections.sort();
+                    sections.forEach(nm => { batchSecSel.innerHTML += `<option value="${nm}">${nm}</option>`; });
+                    // Also populate csvSection at the same time
+                    const csvSecSel = document.getElementById('csvSection');
+                    if (csvSecSel) {
+                        csvSecSel.innerHTML = '<option value="">-- Select Section --</option>';
+                        sections.forEach(nm => { csvSecSel.innerHTML += `<option value="${nm}">${nm}</option>`; });
+                    }
                 } catch(e2) { console.warn("Sections not loaded:", e2); }
 
             } catch (e) {
@@ -544,21 +660,25 @@
             const btn = document.getElementById('loadBatchBtn');
             btn.innerHTML = '<i class="ph-bold ph-spinner"></i> Loading...'; btn.disabled = true;
             try {
-                const stuQ = query(collection(db, "users"), where("role", "==", "student"), where("sectionId", "==", sectionId));
-                const stuSnap = await getDocs(stuQ);
-                if (stuSnap.empty) { window.showToast("No students found in this section.", "error"); btn.innerHTML = '<i class="ph-bold ph-magnifying-glass"></i> Load Section Grades'; btn.disabled = false; return; }
+                // Query enrollments directly by section+subject (same as activities page)
+                const enrollQ = query(collection(db, "enrollments"), where("section", "==", sectionId), where("subjectCode", "==", subCode));
+                const enrollSnap = await getDocs(enrollQ);
+                if (enrollSnap.empty) { window.showToast("No students enrolled in this section for the selected subject.", "error"); btn.innerHTML = '<i class="ph-bold ph-magnifying-glass"></i> Load Section Grades'; btn.disabled = false; return; }
                 batchData = [];
-                const promises = [];
-                stuSnap.forEach(d => {
-                    const s = d.data();
-                    const sNo = s.studentNo; const name = s.fullName;
-                    const ref = doc(db, "enrollments", `${sNo}_${subCode}`);
-                    promises.push(getDoc(ref).then(snap => {
-                        const g = snap.exists() ? snap.data() : {};
-                        batchData.push({ sNo, name, subCode, mRaw: g.midtermRawGrade ?? null, mT: g.midtermGrade ?? null, fRaw: g.finalTermRawGrade ?? null, fT: g.finalTermGrade ?? null, hasEnroll: snap.exists() });
-                    }));
+                enrollSnap.forEach(d => {
+                    const g = d.data();
+                    batchData.push({
+                        sNo: g.studentNo || '',
+                        name: g.studentName || g.studentNo || '',
+                        subCode: g.subjectCode || subCode,
+                        mRaw: g.midtermRawGrade ?? null,
+                        mT: g.midtermGrade ?? null,
+                        fRaw: g.finalTermRawGrade ?? null,
+                        fT: g.finalTermGrade ?? null,
+                        hasEnroll: true,
+                        enrollId: d.id
+                    });
                 });
-                await Promise.all(promises);
                 batchData.sort((a,b) => a.name.localeCompare(b.name));
                 renderBatchTable();
                 document.getElementById('batchDeletePanel').style.display = 'block';
@@ -648,7 +768,7 @@
                         if (term === 'midterm' || term === 'both') { updates.midtermGrade = null; updates.midtermRawGrade = null; }
                         if (term === 'final' || term === 'both') { updates.finalTermGrade = null; updates.finalTermRawGrade = null; }
                         try {
-                            if (row.hasEnroll) { await updateDoc(doc(db, "enrollments", `${row.sNo}_${row.subCode}`), updates); }
+                            if (row.hasEnroll) { await updateDoc(doc(db, "enrollments", row.enrollId || `${row.sNo}_${row.subCode}`), updates); }
                             if (term === 'midterm' || term === 'both') { row.mRaw = null; row.mT = null; }
                             if (term === 'final' || term === 'both') { row.fRaw = null; row.fT = null; }
                             success++;
@@ -860,15 +980,132 @@
             btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Save Student Grades'; btn.disabled = false;
         });
 
-        window.simulateUpload = function() {
-            const input = document.createElement('input'); input.type = 'file'; input.accept = '.csv';
-            input.onchange = e => { const file = e.target.files[0]; if(!file) return; window.showToast(`Processing ${file.name}...`); Papa.parse(file, { header: true, skipEmptyLines: true, complete: async function(results) { try { for(let row of results.data) { const sNo = row.Student_No; const subCode = row.Subject_Code; if(!sNo || !subCode) continue; const mRaw = row.Midterm_Grade ? Number(row.Midterm_Grade) : null; const fRaw = row.Final_Term_Grade ? Number(row.Final_Term_Grade) : null; const ref = doc(db, "enrollments", `${sNo}_${subCode}`); const snap = await getDoc(ref); if(snap.exists()) { await updateDoc(ref, { midtermRawGrade: mRaw, finalTermRawGrade: fRaw, midtermGrade: mRaw !== null ? transmute(mRaw) : null, finalTermGrade: fRaw !== null ? transmute(fRaw) : null }); } } window.showToast("Bulk Grades Updated Successfully!"); } catch(err) { console.error(err); window.showToast("Error during bulk upload", "error"); } } }); }
-            input.click();
+        // ===== SMART CSV TEMPLATE =====
+        let csvRosterData = [];
+
+        window.loadCsvRoster = async function() {
+            const sec = document.getElementById('csvSection').value;
+            const sub = document.getElementById('csvSubject').value;
+            const previewPanel = document.getElementById('csvPreviewPanel');
+            const emptyState  = document.getElementById('csvEmptyState');
+            const loadMsg     = document.getElementById('csvLoadingMsg');
+            previewPanel.style.display = 'none';
+            emptyState.style.display   = 'none';
+            if (!sec || !sub) return;
+            loadMsg.style.display = 'flex';
+            try {
+                // Query enrollments by section + subjectCode — identical to activities page pattern
+                const q = query(collection(db, "enrollments"), where("section", "==", sec), where("subjectCode", "==", sub));
+                const snap = await getDocs(q);
+                if (snap.empty) { loadMsg.style.display = 'none'; emptyState.style.display = 'block'; return; }
+                csvRosterData = [];
+                snap.forEach(d => {
+                    const g = d.data();
+                    csvRosterData.push({
+                        enrollId:    d.id,
+                        sNo:         g.studentNo   || '',
+                        name:        g.studentName || g.studentNo || '',
+                        subCode:     g.subjectCode || sub,
+                        existingMid: (g.midtermRawGrade  != null) ? g.midtermRawGrade  : '',
+                        existingFin: (g.finalTermRawGrade != null) ? g.finalTermRawGrade : ''
+                    });
+                });
+                csvRosterData.sort((a, b) => a.name.localeCompare(b.name));
+                const secSel = document.getElementById('csvSection');
+                const subSel = document.getElementById('csvSubject');
+                const secName = secSel.options[secSel.selectedIndex]?.text || sec;
+                const subName = subSel.options[subSel.selectedIndex]?.text || sub;
+                document.getElementById('csvRosterSummary').innerHTML =
+                    `<span class="pill"><i class="ph-fill ph-users-three"></i> ${secName}</span>
+                     <span class="pill"><i class="ph-fill ph-notebook"></i> ${subName}</span>
+                     <span class="pill"><i class="ph-fill ph-student"></i> ${csvRosterData.length} Enrolled</span>`;
+                const tbody = document.getElementById('csvPreviewBody');
+                tbody.innerHTML = '';
+                csvRosterData.forEach((r, i) => {
+                    const midCell = r.existingMid !== '' ? `<span class="grade-tag has">${Number(r.existingMid).toFixed(2)}</span>` : `<span class="grade-tag none">Empty</span>`;
+                    const finCell = r.existingFin !== '' ? `<span class="grade-tag has">${Number(r.existingFin).toFixed(2)}</span>` : `<span class="grade-tag none">Empty</span>`;
+                    tbody.innerHTML += `<tr>
+                        <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+                        <td style="font-weight:700;font-family:monospace;font-size:13px;">${r.sNo}</td>
+                        <td>${r.name}</td>
+                        <td class="center">${midCell}</td>
+                        <td class="center">${finCell}</td>
+                    </tr>`;
+                });
+                previewPanel.style.display = 'block';
+            } catch(err) { console.error(err); window.showToast("Error fetching students.", "error"); }
+            loadMsg.style.display = 'none';
         }
 
-        window.downloadTemplate = function(filename, headers) {
-            const link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + headers + "\n")); link.setAttribute("download", filename);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link); window.showToast("Template Downloaded!");
+        window.downloadGradeTemplate = function() {
+            if (!csvRosterData.length) { window.showToast("No students loaded. Select a section and subject first.", "error"); return; }
+            const incMid = document.getElementById('csvIncludeMid').checked;
+            const incFin = document.getElementById('csvIncludeFin').checked;
+            if (!incMid && !incFin) { window.showToast("Select at least one grade column.", "error"); return; }
+            const secSel  = document.getElementById('csvSection');
+            const secName = secSel.options[secSel.selectedIndex]?.text || 'section';
+            const sub     = csvRosterData[0]?.subCode || '';
+            const headers = ['Student_No','Student_Name','Subject_Code'];
+            if (incMid) headers.push('Midterm_Grade');
+            if (incFin) headers.push('Final_Term_Grade');
+            const rows = [headers.join(',')];
+            csvRosterData.forEach(r => {
+                const cols = [r.sNo, `"${r.name}"`, r.subCode];
+                if (incMid) cols.push(r.existingMid !== '' ? r.existingMid : '');
+                if (incFin) cols.push(r.existingFin !== '' ? r.existingFin : '');
+                rows.push(cols.join(','));
+            });
+            const filename = `grades_${secName.replace(/[^a-zA-Z0-9]/g,'_')}_${sub}.csv`;
+            const link = document.createElement('a');
+            link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(rows.join('\n')));
+            link.setAttribute('download', filename);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            window.showToast(`Downloaded: ${filename}`);
+        }
+
+        window.simulateUpload = function() {
+            const input = document.createElement('input'); input.type = 'file'; input.accept = '.csv';
+            input.onchange = e => {
+                const file = e.target.files[0]; if (!file) return;
+                window.showToast(`Processing ${file.name}...`);
+                Papa.parse(file, { header: true, skipEmptyLines: true, complete: async function(results) {
+                    let saved=0, skipped=0, errors=0, log=[];
+                    for (const row of results.data) {
+                        const sNo    = (row.Student_No    || '').trim();
+                        const subCode= (row.Subject_Code  || '').trim();
+                        if (!sNo || !subCode) { skipped++; continue; }
+                        const mRaw = (row.Midterm_Grade    != null && row.Midterm_Grade    !== '') ? Number(row.Midterm_Grade)    : null;
+                        const fRaw = (row.Final_Term_Grade != null && row.Final_Term_Grade !== '') ? Number(row.Final_Term_Grade) : null;
+                        try {
+                            const ref  = doc(db, "enrollments", `${sNo}_${subCode}`);
+                            const snap = await getDoc(ref);
+                            if (snap.exists()) {
+                                await updateDoc(ref, {
+                                    midtermRawGrade:  mRaw,  finalTermRawGrade:  fRaw,
+                                    midtermGrade:  mRaw != null ? transmute(mRaw) : null,
+                                    finalTermGrade:fRaw != null ? transmute(fRaw) : null
+                                });
+                                saved++;
+                                log.push(`<span style="color:var(--success)">&#10003;</span> ${sNo} &mdash; ${subCode}: Mid=${mRaw??'&mdash;'}, Final=${fRaw??'&mdash;'}`);
+                            } else {
+                                skipped++;
+                                log.push(`<span style="color:var(--accent-gold)">&#9888;</span> ${sNo} &mdash; ${subCode}: enrollment not found (skipped)`);
+                            }
+                        } catch(err2) {
+                            errors++;
+                            log.push(`<span style="color:var(--danger)">&#10007;</span> ${sNo} &mdash; Error: ${err2.message}`);
+                        }
+                    }
+                    const logEl = document.getElementById('csvUploadLog');
+                    const logContent = document.getElementById('csvUploadLogContent');
+                    if (logEl && logContent) {
+                        logContent.innerHTML = `<strong>${saved} saved</strong> &nbsp;&middot;&nbsp; ${skipped} skipped &nbsp;&middot;&nbsp; ${errors} errors<br><br>` + log.join('<br>');
+                        logEl.style.display = 'block';
+                    }
+                    window.showToast(errors > 0 ? `${saved} saved, ${errors} errors` : `${saved} grades updated!`, errors > 0 ? 'error' : 'success');
+                }});
+            };
+            input.click();
         }
 
         const themeToggleBtn = document.getElementById('themeToggle'); const themeIcon = document.getElementById('themeIcon'); const body = document.body;
