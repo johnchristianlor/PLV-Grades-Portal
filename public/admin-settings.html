@@ -75,6 +75,7 @@
         .rank-other { color: var(--text-muted); }
         .section-selector { margin-bottom: 16px; width: 250px; }
 
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .toast { position: fixed; bottom: 32px; right: 32px; background: var(--success); color: #fff; padding: 16px 24px; border-radius: 12px; font-weight: 600; box-shadow: 0 12px 24px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 12px; transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;} .toast.show { transform: translateX(0); } .toast.error { background: var(--danger); }
 
         @media (max-width: 1024px) { body { flex-direction: column; } .sidebar { width: 100%; height: auto; flex-direction: row; padding: 20px; justify-content: space-between; align-items: center; z-index: 100; border-right: none; border-bottom: 1px solid var(--glass-border);} .nav-menu { display: none; } .form-grid { grid-template-columns: 1fr; } .form-section-title, .form-group.full { grid-column: span 1; } }
@@ -344,6 +345,15 @@
         const CLOUD_NAME = 'dfdlqf6ng';
         const UPLOAD_PRESET = 'plv_files';
 
+        // ── localStorage helpers for shared files ──
+        const LS_KEY = 'plv_sharedFiles';
+        function lsGetFiles() {
+            try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; }
+        }
+        function lsSaveFiles(files) {
+            localStorage.setItem(LS_KEY, JSON.stringify(files));
+        }
+
         window.toggleTab = function(showId, element) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -486,10 +496,10 @@
         themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); const isDark = body.classList.contains('dark-theme'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeIcon.style.transform = 'rotate(360deg)'; setTimeout(() => { themeIcon.className = isDark ? 'ph-fill ph-moon' : 'ph-fill ph-sun'; themeIcon.style.transform = 'rotate(0deg)'; }, 150); });
 
         // ══════════════════════════════════════════
-        //  FILE SHARING — powered by Cloudinary
+        //  FILE SHARING — Cloudinary upload + localStorage metadata
         // ══════════════════════════════════════════
 
-        // Load students into dropdowns
+        // Load students into dropdowns from Firebase users collection
         async function loadStudentDropdowns() {
             try {
                 const snap = await getDocs(collection(db, 'users'));
@@ -556,7 +566,7 @@
             return bytes > 1024 * 1024 ? (bytes / 1024 / 1024).toFixed(1) + ' MB' : Math.round(bytes / 1024) + ' KB';
         }
 
-        // ── SEND FILE via Cloudinary ──
+        // ── SEND FILE via Cloudinary + localStorage ──
         window.sendFile = async function() {
             const file = fFileInput.files[0];
             if (!file) { window.showToast('Please choose a file first.', 'error'); return; }
@@ -577,7 +587,6 @@
             pLabel.textContent = 'Uploading to Cloudinary...';
 
             try {
-                // Upload to Cloudinary using XMLHttpRequest for progress tracking
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('upload_preset', UPLOAD_PRESET);
@@ -608,10 +617,12 @@
 
                 bar.style.width = '90%';
                 pct.textContent = '90%';
-                pLabel.textContent = 'Saving to database...';
+                pLabel.textContent = 'Saving file info...';
 
-                // Save metadata to Firestore
-                await addDoc(collection(db, 'sharedFiles'), {
+                // Save metadata to localStorage (shared with student-settings)
+                const files = lsGetFiles();
+                files.unshift({
+                    id: 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
                     fileName: label,
                     originalName: file.name,
                     fileUrl: downloadURL,
@@ -619,8 +630,9 @@
                     fileSize: file.size,
                     recipientStudentNo: recipient,
                     uploadedBy: user.name || user.fullName || user.username || 'Admin',
-                    uploadedAt: new Date()
+                    uploadedAt: new Date().toISOString()
                 });
+                lsSaveFiles(files);
 
                 bar.style.width = '100%';
                 pct.textContent = '100%';
@@ -648,32 +660,17 @@
             }
         };
 
-        // Spin keyframe
-        const spinStyle = document.createElement('style');
-        spinStyle.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
-        document.head.appendChild(spinStyle);
-
-        // ── LOAD SENT FILES ──
+        // ── LOAD SENT FILES from localStorage ──
         let allSentFiles = [];
 
-        window.loadSentFiles = async function() {
+        window.loadSentFiles = function() {
             const container = document.getElementById('sentFilesGrid');
             container.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;padding:20px 0;">Loading...</p>';
-            try {
-                const recipFilter = document.getElementById('fFilterRecipient').value;
-                let q;
-                if (recipFilter) {
-                    q = query(collection(db, 'sharedFiles'), where('recipientStudentNo', '==', recipFilter), orderBy('uploadedAt', 'desc'));
-                } else {
-                    q = query(collection(db, 'sharedFiles'), orderBy('uploadedAt', 'desc'));
-                }
-                const snap = await getDocs(q);
-                allSentFiles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                window.filterSentFiles();
-            } catch(e) {
-                console.error(e);
-                container.innerHTML = `<p style="color:var(--danger);grid-column:1/-1;">Error: ${e.message}</p>`;
-            }
+            const recipFilter = document.getElementById('fFilterRecipient').value;
+            let files = lsGetFiles();
+            if (recipFilter) files = files.filter(f => f.recipientStudentNo === recipFilter);
+            allSentFiles = files;
+            window.filterSentFiles();
         };
 
         window.filterSentFiles = function() {
@@ -684,7 +681,7 @@
 
         function fmtDate(ts) {
             if (!ts) return '';
-            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            const d = new Date(ts);
             return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
         }
 
@@ -722,17 +719,15 @@
             }).join('');
         }
 
-        window.deleteSentFile = async function(id) {
+        window.deleteSentFile = function(id) {
             if (!confirm('Delete this file? Students will no longer see it.')) return;
-            try {
-                await deleteDoc(doc(db, 'sharedFiles', id));
-                window.showToast('File deleted!');
-                window.loadSentFiles();
-            } catch(e) { window.showToast('Delete failed: ' + e.message, 'error'); }
+            const files = lsGetFiles().filter(f => f.id !== id);
+            lsSaveFiles(files);
+            window.showToast('File deleted!');
+            window.loadSentFiles();
         };
 
         window.loadSentFiles();
-        // ══════════════════════════════════════════
 
     </script>
     <!-- MOBILE BOTTOM NAV -->

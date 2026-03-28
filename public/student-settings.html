@@ -142,12 +142,12 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
 <aside class="sidebar">
     <div class="logo-container">
         <img src="https://res.cloudinary.com/dfdlqf6ng/image/upload/v1772078917/PamantasanNgLungsodNgValenzuelaLogo_t53djy.png" alt="PLV Logo" class="logo-img">
-        <div class="logo-text"><h2>PLV Portal</h2><p>Student Hub</p></div>
+        <div class="logo-text"><h2>PLV</h2><p>Pamantasan ng<br>Lungsod ng Valenzuela</p></div>
     </div>
     <ul class="nav-menu">
         <li class="nav-item"><a href="student-dashboard.html"><i class="ph-fill ph-squares-four"></i> Dashboard</a></li>
-        <li class="nav-item"><a href="student-activity.html"><i class="ph ph-calendar-check"></i> My Activities</a></li>
-        <li class="nav-item"><a href="student-grades.html"><i class="ph ph-exam"></i> My Grades</a></li>
+        <li class="nav-item"><a href="student-activity.html"><i class="ph ph-calendar-check"></i> Activities</a></li>
+        <li class="nav-item"><a href="student-grades.html"><i class="ph ph-exam"></i> Grades</a></li>
         <li class="nav-item"><a href="student-attendance.html"><i class="ph ph-calendar-dots"></i> Attendance</a></li>
         <li class="nav-item"><a href="student-settings.html" class="active"><i class="ph-fill ph-gear"></i> Settings</a></li>
         <li class="nav-item" style="margin-top:auto;"><a onclick="window.logout()"><i class="ph ph-sign-out"></i> Logout</a></li>
@@ -226,7 +226,7 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const user = JSON.parse(localStorage.getItem('loggedInUser'));
 if (!user || user.role !== 'student') window.location.href = 'index.html';
@@ -241,6 +241,12 @@ const app = initializeApp({
     appId: "1:951401194726:web:28ea9972358d0e30fb4727"
 });
 const db = getFirestore(app);
+
+// ── localStorage helpers (shared with admin-settings) ──
+const LS_KEY = 'plv_sharedFiles';
+function lsGetFiles() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; }
+}
 
 // ── THEME ──
 const themeBtn = document.getElementById('themeToggle'), themeIco = document.getElementById('themeIcon');
@@ -306,12 +312,14 @@ function fileIcon(t) {
 function iconClass(t) { return t === 'image' ? 'fi-img' : t === 'pdf' ? 'fi-pdf' : 'fi-doc'; }
 function fmtDate(ts) {
     if (!ts) return '';
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    const d = new Date(ts);
+    if (isNaN(d)) return '';
     return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
 }
 function isNew(ts) {
     if (!ts) return false;
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    const d = new Date(ts);
+    if (isNaN(d)) return false;
     return Date.now() - d.getTime() < 48 * 3600 * 1000;
 }
 
@@ -356,23 +364,17 @@ window.applyFilter = () => {
     renderFiles(list);
 };
 
-async function loadFiles() {
+function loadFiles() {
     try {
-        // Fetch files sent specifically to this student AND files sent to "all"
-        const [snapSpecific, snapAll] = await Promise.all([
-            getDocs(query(collection(db, 'sharedFiles'), where('recipientStudentNo', '==', user.studentNo), orderBy('uploadedAt', 'desc'))),
-            getDocs(query(collection(db, 'sharedFiles'), where('recipientStudentNo', '==', 'all'), orderBy('uploadedAt', 'desc')))
-        ]);
-        const seen = new Set();
-        allFiles = [];
-        [...snapSpecific.docs, ...snapAll.docs].forEach(d => {
-            if (!seen.has(d.id)) { seen.add(d.id); allFiles.push({ id: d.id, ...d.data() }); }
-        });
-        allFiles.sort((a, b) => {
-            const at = a.uploadedAt?.toDate?.() ?? new Date(0);
-            const bt = b.uploadedAt?.toDate?.() ?? new Date(0);
-            return bt - at;
-        });
+        // Read from localStorage (written by admin-settings via Cloudinary upload)
+        const all = lsGetFiles();
+        const myNo = user.studentNo || user.username || '';
+
+        // Show files sent to this student specifically OR to all students
+        allFiles = all.filter(f =>
+            f.recipientStudentNo === 'all' || f.recipientStudentNo === myNo
+        );
+        // Already sorted newest-first from admin (unshift on upload)
 
         // Update counts
         const imgs = allFiles.filter(f => (f.fileType || fileType(f)) === 'image').length;
