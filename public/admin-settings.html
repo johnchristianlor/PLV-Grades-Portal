@@ -196,6 +196,7 @@
                 <button class="tab-btn active" onclick="window.toggleTab('set-standing', this)">Class Standing</button>
                 <button class="tab-btn" onclick="window.toggleTab('set-deadlines', this)">Course Deadlines</button>
                 <button class="tab-btn" onclick="window.toggleTab('set-announce', this)">Announcements</button>
+                <button class="tab-btn" onclick="window.toggleTab('set-files', this)"><i class="ph-bold ph-folder-open" style="font-size:14px;margin-right:6px;"></i>File Sharing</button>
             </div>
 
             <!-- TAB 1: CLASS STANDING & RANKING -->
@@ -249,10 +250,80 @@
                         <div class="form-group"><button type="submit" class="btn btn-primary" style="margin-top: 24px;"><i class="ph-bold ph-paper-plane-right"></i> Post Now</button></div>
                     </div>
                 </form>
-
                 <div class="form-section-title" style="margin-top: 32px;"><i class="ph-bold ph-article"></i> Active Announcements</div>
                 <div id="announceList" class="item-list">Loading...</div>
             </div>
+
+            <!-- TAB 4: FILE SHARING -->
+            <div id="set-files" class="tab-content">
+                <div class="form-section-title"><i class="ph-bold ph-upload-simple"></i> Upload & Send File to Student</div>
+
+                <div style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:20px;padding:28px;margin-bottom:32px;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Send To</label>
+                            <select id="fRecipient" class="form-control">
+                                <option value="all">📢 All Students</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">File Label (optional)</label>
+                            <input type="text" id="fLabel" class="form-control" placeholder="e.g. Lab 3 Instructions">
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">Choose File</label>
+                            <div id="dropZone" onclick="document.getElementById('fFile').click()" style="border:2px dashed var(--accent-primary);border-radius:16px;padding:36px;text-align:center;cursor:pointer;background:var(--accent-light);transition:all 0.3s;">
+                                <input type="file" id="fFile" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx" style="display:none;">
+                                <i class="ph-bold ph-cloud-arrow-up" style="font-size:44px;color:var(--accent-primary);display:block;margin-bottom:12px;"></i>
+                                <p style="font-weight:800;color:var(--accent-primary);font-size:16px;margin-bottom:4px;">Click to browse or drag & drop</p>
+                                <p style="font-size:12px;color:var(--text-muted);">Supports: JPG · PNG · GIF · WEBP · PDF · DOC · DOCX</p>
+                                <div id="fPreview" style="display:none;margin-top:16px;padding:14px 18px;background:var(--glass-bg);border-radius:12px;border:1px solid var(--glass-border);align-items:center;gap:12px;justify-content:center;">
+                                    <i id="fPreviewIcon" class="ph-fill ph-file-cloud" style="font-size:24px;color:var(--accent-primary);flex-shrink:0;"></i>
+                                    <div style="text-align:left;">
+                                        <div id="fPreviewName" style="font-size:14px;font-weight:700;color:var(--text-main);"></div>
+                                        <div id="fPreviewSize" style="font-size:11px;color:var(--text-muted);margin-top:2px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="display:flex;align-items:flex-end;">
+                            <button id="fSendBtn" onclick="window.sendFile()" class="btn btn-primary" style="width:100%;" disabled>
+                                <i class="ph-bold ph-paper-plane-tilt"></i> Send File
+                            </button>
+                        </div>
+                        <div class="form-group" style="display:flex;align-items:flex-end;">
+                            <div id="fProgress" style="display:none;flex:1;">
+                                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                                    <span id="fProgressLabel" style="font-size:12px;font-weight:700;color:var(--text-muted);">Uploading to Cloudinary...</span>
+                                    <span id="fProgressPct" style="font-size:12px;font-weight:800;color:var(--accent-primary);">0%</span>
+                                </div>
+                                <div style="background:var(--glass-border);border-radius:100px;height:8px;overflow:hidden;">
+                                    <div id="fProgressBar" style="height:100%;background:var(--accent-primary);width:0%;transition:width 0.4s ease;border-radius:100px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section-title"><i class="ph-bold ph-list-checks"></i> Sent Files</div>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+                    <select id="fFilterRecipient" class="form-control" style="max-width:260px;" onchange="window.loadSentFiles()">
+                        <option value="">All Recipients</option>
+                        <option value="all">📢 All Students</option>
+                    </select>
+                    <select id="fFilterType" class="form-control" style="max-width:180px;" onchange="window.filterSentFiles()">
+                        <option value="">All Types</option>
+                        <option value="image">🖼 Images</option>
+                        <option value="pdf">📄 PDFs</option>
+                        <option value="doc">📝 Documents</option>
+                    </select>
+                    <button onclick="window.loadSentFiles()" class="btn btn-primary" style="padding:10px 20px;font-size:13px;"><i class="ph-bold ph-arrows-clockwise"></i> Refresh</button>
+                </div>
+                <div id="sentFilesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">
+                    <p style="color:var(--text-muted);">Loading...</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -269,10 +340,14 @@
         const app = initializeApp({ apiKey: "AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI", authDomain: "plv-grades-portal.firebaseapp.com", projectId: "plv-grades-portal", storageBucket: "plv-grades-portal.firebasestorage.app", messagingSenderId: "951401194726", appId: "1:951401194726:web:28ea9972358d0e30fb4727", measurementId: "G-TKG574DYYB" });
         const db = getFirestore(app);
 
+        // ── Cloudinary Config ──
+        const CLOUD_NAME = 'dfdlqf6ng';
+        const UPLOAD_PRESET = 'plv_files';
+
         window.toggleTab = function(showId, element) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            element.classList.add('active'); 
+            element.classList.add('active');
             document.getElementById(showId).classList.add('active');
         }
 
@@ -280,145 +355,86 @@
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toast-icon');
             document.getElementById('toast-msg').innerText = message;
-            toast.className = 'toast'; 
+            toast.className = 'toast';
             if(type === 'error') { toast.classList.add('error'); icon.className = 'ph-fill ph-warning-circle'; } else { icon.className = 'ph-fill ph-check-circle'; }
-            toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000);
+            toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
-        // --- SETTINGS & RANKING LOGIC ---
+        // ── SETTINGS & RANKING ──
         const settingsRef = doc(db, "settings", "global");
-        let sectionData = {}; // Stores { SectionName: { Students: [], SubjectCode: '...' } }
-        
+        let sectionData = {};
+
         async function loadSettingsAndRankings() {
-            // 1. Load Toggle
             try {
                 const snap = await getDoc(settingsRef);
-                if(snap.exists()) {
-                    document.getElementById('toggleStanding').checked = snap.data().showStanding || false;
-                } else { await setDoc(settingsRef, { showStanding: false }); }
+                if(snap.exists()) { document.getElementById('toggleStanding').checked = snap.data().showStanding || false; }
+                else { await setDoc(settingsRef, { showStanding: false }); }
             } catch(e) { console.error(e); }
 
-            // 2. Pre-process Data for Rankings
             try {
-                // Get all enrollments to group students by section
                 const enrollSnap = await getDocs(collection(db, "enrollments"));
                 sectionData = {};
-
                 enrollSnap.forEach(doc => {
                     const d = doc.data();
-                    if(!sectionData[d.section]) {
-                        sectionData[d.section] = { 
-                            students: [], 
-                            subjectCode: d.subjectCode 
-                        };
-                    }
-                    sectionData[d.section].students.push({
-                        no: d.studentNo,
-                        name: d.studentName,
-                        totalScore: 0
-                    });
+                    if(!sectionData[d.section]) { sectionData[d.section] = { students: [], subjectCode: d.subjectCode }; }
+                    sectionData[d.section].students.push({ no: d.studentNo, name: d.studentName, totalScore: 0 });
                 });
-
-                // Populate Dropdown
                 const select = document.getElementById('rankingSectionFilter');
                 select.innerHTML = '<option value="">Select Section to View Ranking</option>';
-                Object.keys(sectionData).sort().forEach(sec => {
-                    select.innerHTML += `<option value="${sec}">${sec}</option>`;
-                });
-
+                Object.keys(sectionData).sort().forEach(sec => { select.innerHTML += `<option value="${sec}">${sec}</option>`; });
             } catch(e) { console.error("Err loading enrollments", e); }
         }
 
         window.renderRankings = async function() {
             const section = document.getElementById('rankingSectionFilter').value;
             const container = document.getElementById('rankingContainer');
-            
-            if(!section) {
-                container.innerHTML = '<p style="color:var(--text-muted); text-align:center;">Select a section to view rankings.</p>';
-                return;
-            }
-
+            if(!section) { container.innerHTML = '<p style="color:var(--text-muted); text-align:center;">Select a section to view rankings.</p>'; return; }
             container.innerHTML = '<p style="text-align:center;">Calculating scores...</p>';
-
             const data = sectionData[section];
             const subjectCode = data.subjectCode;
             let grandTotalPerfect = 0;
             const activityIds = new Set();
-
             try {
-                // 1. Fetch Activities for this Subject -> Get Total Possible Score
                 const actSnap = await getDocs(query(collection(db, "activities"), where("subjectCode", "==", subjectCode)));
-                actSnap.forEach(doc => {
-                    const act = doc.data();
-                    grandTotalPerfect += Number(act.perfectScore);
-                    activityIds.add(doc.id);
-                });
-
-                // 2. Fetch ALL Scores (Filtering locally is easier than many complex queries)
+                actSnap.forEach(doc => { grandTotalPerfect += Number(doc.data().perfectScore); activityIds.add(doc.id); });
                 const scoresSnap = await getDocs(collection(db, "scores"));
-                const studentScoresMap = {}; // { studentNo: totalScore }
-
+                const studentScoresMap = {};
                 scoresSnap.forEach(doc => {
                     const s = doc.data();
-                    // Only count scores if the activity belongs to this subject
-                    if(activityIds.has(s.activityId)) {
-                        if(!studentScoresMap[s.studentNo]) studentScoresMap[s.studentNo] = 0;
-                        studentScoresMap[s.studentNo] += Number(s.score);
-                    }
+                    if(activityIds.has(s.activityId)) { if(!studentScoresMap[s.studentNo]) studentScoresMap[s.studentNo] = 0; studentScoresMap[s.studentNo] += Number(s.score); }
                 });
-
-                // 3. Map Scores to Students
                 const rankedStudents = data.students.map(stud => {
                     const total = studentScoresMap[stud.no] || 0;
                     const percent = grandTotalPerfect > 0 ? (total / grandTotalPerfect) * 100 : 0;
                     return { ...stud, total, percent };
                 });
-
-                // 4. Sort: Highest Percentage = Rank 1
                 rankedStudents.sort((a, b) => b.percent - a.percent);
-
-                // 5. Render
                 let html = `<table class="ranking-table"><thead><tr><th style="text-align:center;">Rank</th><th>Student Name</th><th>Total Score</th><th>Rating</th></tr></thead><tbody>`;
-                
                 rankedStudents.forEach((s, index) => {
                     let rankDisplay = `<span class="rank-badge rank-other">${index + 1}</span>`;
                     if(index === 0) rankDisplay = `<span class="rank-badge rank-1">1</span>`;
                     if(index === 1) rankDisplay = `<span class="rank-badge rank-2">2</span>`;
                     if(index === 2) rankDisplay = `<span class="rank-badge rank-3">3</span>`;
-                    
-                    html += `<tr>
-                        <td style="text-align:center;">${rankDisplay}</td>
-                        <td>${s.name}</td>
-                        <td>${s.total} <span style="font-size:11px; color:var(--text-muted);">/ ${grandTotalPerfect}</span></td>
-                        <td><strong>${s.percent.toFixed(2)}%</strong></td>
-                    </tr>`;
+                    html += `<tr><td style="text-align:center;">${rankDisplay}</td><td>${s.name}</td><td>${s.total} <span style="font-size:11px;color:var(--text-muted);">/ ${grandTotalPerfect}</span></td><td><strong>${s.percent.toFixed(2)}%</strong></td></tr>`;
                 });
                 html += `</tbody></table>`;
                 container.innerHTML = html;
-
             } catch(e) { console.error(e); container.innerHTML = '<p style="color:var(--danger)">Error calculating rankings.</p>'; }
         }
 
         window.saveSettings = async function() {
             try {
-                await updateDoc(settingsRef, {
-                    showStanding: document.getElementById('toggleStanding').checked
-                });
+                await updateDoc(settingsRef, { showStanding: document.getElementById('toggleStanding').checked });
                 window.showToast("Visibility settings updated!");
             } catch(e) { console.error(e); window.showToast("Error saving settings", "error"); }
         }
         loadSettingsAndRankings();
 
-        // --- DEADLINES & ANNOUNCEMENTS ---
+        // ── DEADLINES ──
         document.getElementById('deadlineForm').addEventListener('submit', async(e) => {
             e.preventDefault();
             try {
-                await addDoc(collection(db, "deadlines"), {
-                    title: document.getElementById('dTitle').value,
-                    desc: document.getElementById('dDesc').value,
-                    status: document.getElementById('dStatus').value,
-                    createdAt: new Date()
-                });
+                await addDoc(collection(db, "deadlines"), { title: document.getElementById('dTitle').value, desc: document.getElementById('dDesc').value, status: document.getElementById('dStatus').value, createdAt: new Date() });
                 window.showToast("Deadline Added!"); e.target.reset(); loadDeadlines();
             } catch(e) { console.error(e); }
         });
@@ -426,27 +442,19 @@
         async function loadDeadlines() {
             const list = document.getElementById('deadlinesList');
             try {
-                const q = query(collection(db, "deadlines"), orderBy("createdAt", "desc"));
-                const snap = await getDocs(q);
+                const snap = await getDocs(query(collection(db, "deadlines"), orderBy("createdAt", "desc")));
                 list.innerHTML = '';
                 if(snap.empty) { list.innerHTML = '<p style="color:var(--text-muted);">No active deadlines.</p>'; return; }
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    list.innerHTML += `<div class="managed-item"><div class="item-details"><h5>${d.title}</h5><p>${d.desc}</p></div><div style="display:flex; align-items:center;"><span class="item-meta">${d.status}</span><button class="btn-danger" onclick="window.deleteItem('deadlines', '${doc.id}')"><i class="ph-bold ph-trash"></i></button></div></div>`;
-                });
+                snap.forEach(d => { const data = d.data(); list.innerHTML += `<div class="managed-item"><div class="item-details"><h5>${data.title}</h5><p>${data.desc}</p></div><div style="display:flex;align-items:center;"><span class="item-meta">${data.status}</span><button class="btn-danger" onclick="window.deleteItem('deadlines','${d.id}')"><i class="ph-bold ph-trash"></i></button></div></div>`; });
             } catch(e) { console.error(e); }
         }
         loadDeadlines();
 
+        // ── ANNOUNCEMENTS ──
         document.getElementById('announceForm').addEventListener('submit', async(e) => {
             e.preventDefault();
             try {
-                await addDoc(collection(db, "announcements"), {
-                    title: document.getElementById('aTitle').value,
-                    message: document.getElementById('aMsg').value,
-                    isUrgent: document.getElementById('aUrgent').value === 'true',
-                    createdAt: new Date()
-                });
+                await addDoc(collection(db, "announcements"), { title: document.getElementById('aTitle').value, message: document.getElementById('aMsg').value, isUrgent: document.getElementById('aUrgent').value === 'true', createdAt: new Date() });
                 window.showToast("Announcement Posted!"); e.target.reset(); loadAnnouncements();
             } catch(e) { console.error(e); }
         });
@@ -454,15 +462,14 @@
         async function loadAnnouncements() {
             const list = document.getElementById('announceList');
             try {
-                const q = query(collection(db, "announcements"), orderBy("createdAt", "desc"));
-                const snap = await getDocs(q);
+                const snap = await getDocs(query(collection(db, "announcements"), orderBy("createdAt", "desc")));
                 list.innerHTML = '';
                 if(snap.empty) { list.innerHTML = '<p style="color:var(--text-muted);">No active announcements.</p>'; return; }
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    const urgentClass = d.isUrgent ? 'item-urgent' : '';
-                    const badgeText = d.isUrgent ? 'URGENT' : 'NORMAL';
-                    list.innerHTML += `<div class="managed-item" style="align-items: flex-start;"><div class="item-details" style="flex:1; padding-right: 10px;"><h5>${d.title}</h5><p>${d.message}</p></div><div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;"><span class="item-meta ${urgentClass}">${badgeText}</span><button class="btn-danger" onclick="window.deleteItem('announcements', '${doc.id}')"><i class="ph-bold ph-trash"></i></button></div></div>`;
+                snap.forEach(d => {
+                    const data = d.data();
+                    const urgentClass = data.isUrgent ? 'item-urgent' : '';
+                    const badgeText = data.isUrgent ? 'URGENT' : 'NORMAL';
+                    list.innerHTML += `<div class="managed-item" style="align-items:flex-start;"><div class="item-details" style="flex:1;padding-right:10px;"><h5>${data.title}</h5><p>${data.message}</p></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;"><span class="item-meta ${urgentClass}">${badgeText}</span><button class="btn-danger" onclick="window.deleteItem('announcements','${d.id}')"><i class="ph-bold ph-trash"></i></button></div></div>`;
                 });
             } catch(e) { console.error(e); }
         }
@@ -473,9 +480,260 @@
             try { await deleteDoc(doc(db, col, id)); window.showToast("Deleted!"); if(col === 'deadlines') loadDeadlines(); else loadAnnouncements(); } catch(e) { console.error(e); }
         }
 
+        // ── THEME ──
         const themeToggleBtn = document.getElementById('themeToggle'); const themeIcon = document.getElementById('themeIcon'); const body = document.body;
         if (localStorage.getItem('theme') === 'dark') { body.classList.add('dark-theme'); themeIcon.className = 'ph-fill ph-moon'; } else { themeIcon.className = 'ph-fill ph-sun'; }
         themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); const isDark = body.classList.contains('dark-theme'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeIcon.style.transform = 'rotate(360deg)'; setTimeout(() => { themeIcon.className = isDark ? 'ph-fill ph-moon' : 'ph-fill ph-sun'; themeIcon.style.transform = 'rotate(0deg)'; }, 150); });
+
+        // ══════════════════════════════════════════
+        //  FILE SHARING — powered by Cloudinary
+        // ══════════════════════════════════════════
+
+        // Load students into dropdowns
+        async function loadStudentDropdowns() {
+            try {
+                const snap = await getDocs(collection(db, 'users'));
+                const sendSel = document.getElementById('fRecipient');
+                const filterSel = document.getElementById('fFilterRecipient');
+                const students = [];
+                snap.forEach(d => {
+                    const u = d.data();
+                    if (u.role === 'student') students.push(u);
+                });
+                students.sort((a, b) => (a.fullName || '').localeCompare(b.fullName || ''));
+                students.forEach(u => {
+                    const name = u.fullName || u.studentName || u.username || u.studentNo || 'Unknown';
+                    const val = u.studentNo || u.username;
+                    if (!val) return;
+                    const opt = `<option value="${val}">${name} (${val})</option>`;
+                    sendSel.innerHTML += opt;
+                    filterSel.innerHTML += opt;
+                });
+            } catch(e) { console.error('Dropdown load error:', e); window.showToast('Could not load student list', 'error'); }
+        }
+        loadStudentDropdowns();
+
+        // File input — show preview
+        const fFileInput = document.getElementById('fFile');
+        fFileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+            const ext = file.name.split('.').pop().toLowerCase();
+            const icon = document.getElementById('fPreviewIcon');
+            if (['jpg','jpeg','png','gif','webp'].includes(ext)) icon.className = 'ph-fill ph-image';
+            else if (ext === 'pdf') icon.className = 'ph-fill ph-file-pdf';
+            else icon.className = 'ph-fill ph-file-doc';
+            document.getElementById('fPreviewName').textContent = file.name;
+            document.getElementById('fPreviewSize').textContent = formatSize(file.size);
+            const preview = document.getElementById('fPreview');
+            preview.style.display = 'flex';
+            if (!document.getElementById('fLabel').value) {
+                document.getElementById('fLabel').value = file.name.replace(/\.[^/.]+$/, '');
+            }
+            document.getElementById('fSendBtn').disabled = false;
+        });
+
+        // Drag & drop
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.transform = 'scale(1.02)'; });
+        dropZone.addEventListener('dragleave', () => { dropZone.style.transform = ''; });
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault(); dropZone.style.transform = '';
+            const dt = e.dataTransfer;
+            if (dt.files.length) { fFileInput.files = dt.files; fFileInput.dispatchEvent(new Event('change')); }
+        });
+
+        // Detect file type
+        function getFileType(name) {
+            const ext = (name || '').toLowerCase().split('.').pop();
+            if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return 'image';
+            if (ext === 'pdf') return 'pdf';
+            return 'doc';
+        }
+
+        function formatSize(bytes) {
+            if (!bytes) return '';
+            return bytes > 1024 * 1024 ? (bytes / 1024 / 1024).toFixed(1) + ' MB' : Math.round(bytes / 1024) + ' KB';
+        }
+
+        // ── SEND FILE via Cloudinary ──
+        window.sendFile = async function() {
+            const file = fFileInput.files[0];
+            if (!file) { window.showToast('Please choose a file first.', 'error'); return; }
+
+            const recipient = document.getElementById('fRecipient').value;
+            const label = document.getElementById('fLabel').value.trim() || file.name;
+            const btn = document.getElementById('fSendBtn');
+            const progressWrap = document.getElementById('fProgress');
+            const bar = document.getElementById('fProgressBar');
+            const pct = document.getElementById('fProgressPct');
+            const pLabel = document.getElementById('fProgressLabel');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph-bold ph-circle-notch" style="animation:spin 0.8s linear infinite;display:inline-block;"></i> Uploading...';
+            progressWrap.style.display = 'block';
+            bar.style.width = '10%';
+            pct.textContent = '10%';
+            pLabel.textContent = 'Uploading to Cloudinary...';
+
+            try {
+                // Upload to Cloudinary using XMLHttpRequest for progress tracking
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', UPLOAD_PRESET);
+                formData.append('folder', 'plv_shared_files');
+
+                const downloadURL = await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`);
+                    xhr.upload.onprogress = (e) => {
+                        if (e.lengthComputable) {
+                            const p = Math.round((e.loaded / e.total) * 85);
+                            bar.style.width = p + '%';
+                            pct.textContent = p + '%';
+                        }
+                    };
+                    xhr.onload = () => {
+                        if (xhr.status === 200) {
+                            const res = JSON.parse(xhr.responseText);
+                            if (res.secure_url) resolve(res.secure_url);
+                            else reject(new Error(res.error?.message || 'Cloudinary upload failed'));
+                        } else {
+                            reject(new Error(`Upload failed: HTTP ${xhr.status}`));
+                        }
+                    };
+                    xhr.onerror = () => reject(new Error('Network error during upload'));
+                    xhr.send(formData);
+                });
+
+                bar.style.width = '90%';
+                pct.textContent = '90%';
+                pLabel.textContent = 'Saving to database...';
+
+                // Save metadata to Firestore
+                await addDoc(collection(db, 'sharedFiles'), {
+                    fileName: label,
+                    originalName: file.name,
+                    fileUrl: downloadURL,
+                    fileType: getFileType(file.name),
+                    fileSize: file.size,
+                    recipientStudentNo: recipient,
+                    uploadedBy: user.name || user.fullName || user.username || 'Admin',
+                    uploadedAt: new Date()
+                });
+
+                bar.style.width = '100%';
+                pct.textContent = '100%';
+
+                setTimeout(() => {
+                    window.showToast('File sent successfully! ✓');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i> Send File';
+                    progressWrap.style.display = 'none';
+                    bar.style.width = '0%';
+                    fFileInput.value = '';
+                    document.getElementById('fLabel').value = '';
+                    document.getElementById('fPreview').style.display = 'none';
+                    btn.disabled = true;
+                    window.loadSentFiles();
+                }, 600);
+
+            } catch(e) {
+                console.error('Upload error:', e);
+                window.showToast('Upload failed: ' + e.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i> Send File';
+                progressWrap.style.display = 'none';
+                bar.style.width = '0%';
+            }
+        };
+
+        // Spin keyframe
+        const spinStyle = document.createElement('style');
+        spinStyle.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+        document.head.appendChild(spinStyle);
+
+        // ── LOAD SENT FILES ──
+        let allSentFiles = [];
+
+        window.loadSentFiles = async function() {
+            const container = document.getElementById('sentFilesGrid');
+            container.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;padding:20px 0;">Loading...</p>';
+            try {
+                const recipFilter = document.getElementById('fFilterRecipient').value;
+                let q;
+                if (recipFilter) {
+                    q = query(collection(db, 'sharedFiles'), where('recipientStudentNo', '==', recipFilter), orderBy('uploadedAt', 'desc'));
+                } else {
+                    q = query(collection(db, 'sharedFiles'), orderBy('uploadedAt', 'desc'));
+                }
+                const snap = await getDocs(q);
+                allSentFiles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                window.filterSentFiles();
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = `<p style="color:var(--danger);grid-column:1/-1;">Error: ${e.message}</p>`;
+            }
+        };
+
+        window.filterSentFiles = function() {
+            const typeFilter = document.getElementById('fFilterType').value;
+            const filtered = typeFilter ? allSentFiles.filter(f => f.fileType === typeFilter) : allSentFiles;
+            renderSentFiles(filtered);
+        };
+
+        function fmtDate(ts) {
+            if (!ts) return '';
+            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+        }
+
+        function renderSentFiles(files) {
+            const container = document.getElementById('sentFilesGrid');
+            if (!files.length) {
+                container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:56px 24px;color:var(--text-muted);">
+                    <i class="ph ph-folder-dashed-open" style="font-size:56px;display:block;margin-bottom:14px;opacity:0.35;"></i>
+                    <p style="font-weight:800;font-size:16px;color:var(--text-main);margin-bottom:6px;">No files sent yet</p>
+                    <p style="font-size:13px;">Upload a file above to share with students.</p>
+                </div>`;
+                return;
+            }
+            const iconMap = {
+                image: '<i class="ph-fill ph-image" style="color:#10b981;font-size:30px;"></i>',
+                pdf:   '<i class="ph-fill ph-file-pdf" style="color:#ef4444;font-size:30px;"></i>',
+                doc:   '<i class="ph-fill ph-file-doc" style="color:#3b82f6;font-size:30px;"></i>'
+            };
+            const bgMap = { image: 'rgba(16,185,129,0.1)', pdf: 'rgba(239,68,68,0.1)', doc: 'rgba(59,130,246,0.1)' };
+            const recipLabel = r => r === 'all' ? '📢 All Students' : `👤 ${r}`;
+            container.innerHTML = files.map(f => {
+                const ft = f.fileType || getFileType(f.originalName || f.fileName || '');
+                return `<div style="background:var(--input-bg);border:1px solid var(--glass-border);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:box-shadow 0.3s;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                        <div style="width:50px;height:50px;border-radius:14px;background:${bgMap[ft]||bgMap.doc};display:flex;align-items:center;justify-content:center;flex-shrink:0;">${iconMap[ft]||iconMap.doc}</div>
+                        <button onclick="window.deleteSentFile('${f.id}')" class="btn-danger" title="Delete"><i class="ph-bold ph-trash"></i></button>
+                    </div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text-main);line-height:1.4;word-break:break-word;">${f.fileName || f.originalName || 'File'}</div>
+                    <div style="font-size:11px;font-weight:800;color:var(--accent-primary);background:var(--accent-light);display:inline-block;padding:3px 10px;border-radius:100px;width:fit-content;">${recipLabel(f.recipientStudentNo)}</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+                        <span style="font-size:10px;color:var(--text-muted);">${fmtDate(f.uploadedAt)}${f.fileSize ? ' · ' + formatSize(f.fileSize) : ''}</span>
+                        <a href="${f.fileUrl}" target="_blank" rel="noopener" style="font-size:12px;font-weight:700;color:var(--accent-primary);text-decoration:none;display:flex;align-items:center;gap:4px;"><i class="ph-bold ph-arrow-square-out"></i> Open</a>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.deleteSentFile = async function(id) {
+            if (!confirm('Delete this file? Students will no longer see it.')) return;
+            try {
+                await deleteDoc(doc(db, 'sharedFiles', id));
+                window.showToast('File deleted!');
+                window.loadSentFiles();
+            } catch(e) { window.showToast('Delete failed: ' + e.message, 'error'); }
+        };
+
+        window.loadSentFiles();
+        // ══════════════════════════════════════════
+
     </script>
     <!-- MOBILE BOTTOM NAV -->
     <nav class="mobile-nav-bar">
