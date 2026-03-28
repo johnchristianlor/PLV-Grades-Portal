@@ -113,7 +113,6 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
 .lightbox img{max-width:90vw;max-height:85vh;border-radius:16px;object-fit:contain;box-shadow:0 32px 64px rgba(0,0,0,0.5);}
 .lb-close{position:absolute;top:24px;right:24px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;}
 .lb-close:hover{background:rgba(255,255,255,0.3);transform:scale(1.1);}
-.lb-caption{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.9);font-size:13px;font-weight:600;background:rgba(0,0,0,0.55);padding:9px 18px;border-radius:100px;white-space:nowrap;}
 .lb-dl{position:absolute;bottom:24px;right:24px;padding:10px 18px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:13px;font-weight:700;border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.3s;font-family:'Plus Jakarta Sans',sans-serif;}
 .lb-dl:hover{background:rgba(255,255,255,0.3);}
 
@@ -149,7 +148,6 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
 <div class="lightbox" id="lightbox" onclick="if(event.target===this)this.classList.remove('open')">
     <button class="lb-close" onclick="document.getElementById('lightbox').classList.remove('open')"><i class="ph-bold ph-x"></i></button>
     <img id="lb-img" src="" alt="">
-    <span class="lb-caption" id="lb-cap"></span>
     <button class="lb-dl" id="lb-dl-btn"><i class="ph-bold ph-download-simple"></i> Download</button>
 </div>
 
@@ -403,16 +401,22 @@ function renderFiles(files) {
         const badge = isNew(f.uploadedAt)
             ? `<span class="file-badge badge-new">New</span>`
             : `<span class="file-badge badge-file">${t.toUpperCase()}</span>`;
-        const openAction = isImg
-            ? `openLightbox('${safeUrl(f.fileUrl)}','${(f.fileName || f.originalName || 'File').replace(/'/g,"\\'")}');event.stopPropagation();`
-            : `window.open('${safeUrl(f.fileUrl)}','_blank');event.stopPropagation();`;
-        return `<div class="file-card" onclick="window.open('${safeUrl(f.fileUrl)}','_blank')">
+        const fname = (f.fileName || f.originalName || 'File').replace(/'/g,"\\'");
+        const url = safeUrl(f.fileUrl);
+        // Image: clicking card or button opens lightbox; non-image: triggers download
+        const cardClick = isImg
+            ? `openLightbox('${url}','${fname}');`
+            : `downloadFile('${url}','${fname}');`;
+        const btnClick = isImg
+            ? `event.stopPropagation();openLightbox('${url}','${fname}');`
+            : `event.stopPropagation();downloadFile('${url}','${fname}');`;
+        return `<div class="file-card" onclick="${cardClick}">
             <div class="file-icon ${iconClass(t)}">${fileIcon(t)}</div>
             ${badge}
             <div class="file-name">${f.fileName || f.originalName || 'File'}</div>
             <div class="file-date">${fmtDate(f.uploadedAt)}</div>
-            <button class="open-btn" onclick="${openAction}">
-                <i class="ph-bold ph-${isImg ? 'eye' : 'download-simple'}"></i> ${isImg ? 'View Image' : 'Open File'}
+            <button class="open-btn" onclick="${btnClick}">
+                <i class="ph-bold ph-${isImg ? 'eye' : 'download-simple'}"></i> ${isImg ? 'View Image' : 'Download'}
             </button>
         </div>`;
     }).join('');
@@ -545,10 +549,36 @@ loadFiles();
 // ── LIGHTBOX ──
 window.openLightbox = (url, name) => {
     document.getElementById('lb-img').src = url;
-    document.getElementById('lb-cap').textContent = name;
-    document.getElementById('lb-dl-btn').onclick = () => window.open(url, '_blank');
+    document.getElementById('lb-dl-btn').onclick = () => downloadFile(url, name);
     document.getElementById('lightbox').classList.add('open');
 };
+
+// ── FORCE DOWNLOAD (bypasses browser open-in-tab behaviour) ──
+async function downloadFile(url, name) {
+    try {
+        const btn = document.getElementById('lb-dl-btn');
+        btn.innerHTML = '<i class="ph-bold ph-circle-notch" style="animation:spin 0.8s linear infinite;display:inline-block;"></i> Downloading…';
+        btn.disabled = true;
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = name || 'file';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(a.href);
+        btn.innerHTML = '<i class="ph-bold ph-download-simple"></i> Download';
+        btn.disabled = false;
+    } catch(e) {
+        // Fallback: open in new tab if fetch blocked (CORS)
+        window.open(url, '_blank');
+        const btn = document.getElementById('lb-dl-btn');
+        btn.innerHTML = '<i class="ph-bold ph-download-simple"></i> Download';
+        btn.disabled = false;
+    }
+}
+window.downloadFile = downloadFile;
 
 // Close lightbox on Escape key
 document.addEventListener('keydown', e => {
