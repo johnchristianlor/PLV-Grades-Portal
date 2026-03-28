@@ -75,7 +75,7 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
 
 /* FILE CARDS */
 .files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;}
-.file-card{background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:20px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all 0.3s;position:relative;overflow:hidden;}
+.file-card{background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:20px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:all 0.3s;position:relative;overflow:hidden;cursor:pointer;}
 .file-card:hover{transform:translateY(-4px);border-color:var(--accent-primary);box-shadow:0 16px 40px rgba(0,35,102,0.12);}
 .dark-theme .file-card:hover{box-shadow:0 16px 40px rgba(0,0,0,0.5);}
 .file-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent-primary);opacity:0;transition:0.3s;border-radius:20px 20px 0 0;}
@@ -101,6 +101,12 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
 .skeleton{background:linear-gradient(90deg,var(--glass-border) 25%,var(--glass-bg) 50%,var(--glass-border) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:20px;height:200px;}
 @keyframes shimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}
 
+/* REFRESH BTN */
+.refresh-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:100px;background:var(--accent-light);border:1.5px solid transparent;color:var(--accent-primary);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.25s;font-family:'Plus Jakarta Sans',sans-serif;margin-left:auto;}
+.refresh-btn:hover{background:var(--accent-primary);color:#fff;}
+.refresh-btn.spinning i{animation:spin 0.7s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);};}
+
 /* LIGHTBOX */
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
 .lightbox.open{display:flex;}
@@ -115,6 +121,13 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
 .toast{position:fixed;bottom:32px;right:32px;background:var(--success);color:#fff;padding:16px 24px;border-radius:12px;font-weight:600;display:flex;align-items:center;gap:12px;transform:translateX(150%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);z-index:10000;}
 .toast.show{transform:translateX(0);}
 .toast.error{background:var(--danger);}
+
+/* STATUS BANNER */
+.status-banner{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:14px;font-size:13px;font-weight:600;margin-bottom:16px;}
+.status-banner.info{background:var(--accent-light);color:var(--accent-primary);border:1px solid rgba(0,61,165,0.15);}
+.status-banner.warn{background:rgba(234,179,8,0.12);color:#854d0e;border:1px solid rgba(234,179,8,0.2);}
+.dark-theme .status-banner.warn{color:#fde047;}
+.status-banner.error-banner{background:rgba(225,29,72,0.10);color:var(--danger);border:1px solid rgba(225,29,72,0.15);}
 
 /* MOBILE NAV */
 .mobile-nav-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--glass-bg);backdrop-filter:blur(32px);border-top:1px solid var(--glass-border);z-index:200;padding:6px 0 max(6px,env(safe-area-inset-bottom));}
@@ -168,7 +181,7 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
     <div class="card glass">
         <div class="tab-controls">
             <button class="tab-btn active" onclick="switchTab('tab-profile',this)"><i class="ph-fill ph-user"></i> My Profile</button>
-            <button class="tab-btn" onclick="switchTab('tab-files',this)">
+            <button class="tab-btn" onclick="switchTab('tab-files',this);loadFilesIfNeeded()">
                 <i class="ph-fill ph-folder-open"></i> My Files
                 <span id="newBadge" style="display:none;background:var(--danger);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:100px;"></span>
             </button>
@@ -195,6 +208,7 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
         <!-- FILES TAB -->
         <div id="tab-files" class="tab-content">
             <div class="sec-title"><i class="ph-bold ph-folder-simple-star"></i> Files Shared by Admin</div>
+            <div id="statusBanner" style="display:none;"></div>
             <div class="filter-bar">
                 <button class="chip active" onclick="setFilter('all',this)"><i class="ph-bold ph-squares-four"></i> All <span class="cnt" id="c-all">0</span></button>
                 <button class="chip" onclick="setFilter('image',this)"><i class="ph-bold ph-image"></i> Images <span class="cnt" id="c-img">0</span></button>
@@ -204,6 +218,7 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
                     <i class="ph-bold ph-magnifying-glass"></i>
                     <input type="text" id="searchInput" placeholder="Search files..." oninput="applyFilter()">
                 </div>
+                <button class="refresh-btn" id="refreshBtn" onclick="refreshFiles()"><i class="ph-bold ph-arrows-clockwise" id="refreshIcon"></i> Refresh</button>
             </div>
             <div class="files-grid" id="filesGrid">
                 <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
@@ -219,6 +234,7 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
         <li><a href="student-dashboard.html"><i class="ph-fill ph-squares-four"></i>Dashboard</a></li>
         <li><a href="student-activity.html"><i class="ph ph-calendar-check"></i>Activities</a></li>
         <li><a href="student-grades.html"><i class="ph ph-exam"></i>Grades</a></li>
+        <li><a href="student-attendance.html"><i class="ph ph-calendar-dots"></i>Attendance</a></li>
         <li><a href="student-settings.html" class="active"><i class="ph-fill ph-gear"></i>Settings</a></li>
         <li><a onclick="window.logout()"><i class="ph ph-sign-out"></i>Logout</a></li>
     </ul>
@@ -226,12 +242,22 @@ body{background-color:var(--bg-body);color:var(--text-main);min-height:100vh;dis
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    query,
+    where,
+    orderBy,
+    limit
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// ── AUTH GUARD ──
 const user = JSON.parse(localStorage.getItem('loggedInUser'));
 if (!user || user.role !== 'student') window.location.href = 'index.html';
 window.logout = () => { localStorage.removeItem('loggedInUser'); window.location.href = 'index.html'; };
 
+// ── FIREBASE ──
 const app = initializeApp({
     apiKey: "AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI",
     authDomain: "plv-grades-portal.firebaseapp.com",
@@ -243,8 +269,14 @@ const app = initializeApp({
 const db = getFirestore(app);
 
 // ── THEME ──
-const themeBtn = document.getElementById('themeToggle'), themeIco = document.getElementById('themeIcon');
-if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-theme'); themeIco.className = 'ph-fill ph-moon'; } else { themeIco.className = 'ph-fill ph-sun'; }
+const themeBtn = document.getElementById('themeToggle');
+const themeIco = document.getElementById('themeIcon');
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-theme');
+    themeIco.className = 'ph-fill ph-moon';
+} else {
+    themeIco.className = 'ph-fill ph-sun';
+}
 themeBtn.addEventListener('click', () => {
     document.body.classList.toggle('dark-theme');
     const d = document.body.classList.contains('dark-theme');
@@ -268,78 +300,135 @@ function toast(msg, type = 'success') {
     ic.className = type === 'error' ? 'ph-fill ph-warning-circle' : 'ph-fill ph-check-circle';
     if (type === 'error') t.classList.add('error');
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+    setTimeout(() => t.classList.remove('show'), 3500);
 }
+
+// ── STATUS BANNER ──
+function showBanner(msg, type = 'info') {
+    const b = document.getElementById('statusBanner');
+    const iconMap = { info: 'ph-info', warn: 'ph-warning', 'error-banner': 'ph-warning-circle' };
+    b.className = 'status-banner ' + type;
+    b.innerHTML = `<i class="ph-bold ph-${iconMap[type] || 'ph-info'}" style="font-size:18px;flex-shrink:0;"></i> ${msg}`;
+    b.style.display = 'flex';
+}
+function hideBanner() { document.getElementById('statusBanner').style.display = 'none'; }
 
 // ── PROFILE ──
 async function loadProfile() {
     const name = user.name || user.fullName || user.username || '—';
     document.getElementById('pName').textContent = name;
     document.getElementById('pSub').textContent = 'Student No. ' + (user.studentNo || '—');
-    document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=003DA5&color=fff&bold=true&size=128`;
+    document.getElementById('profileAvatar').src =
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=003DA5&color=fff&bold=true&size=128`;
     document.getElementById('iName').textContent = name;
     document.getElementById('iNo').textContent = user.studentNo || '—';
     document.getElementById('iUser').textContent = user.username || '—';
-    // Fetch section from Firestore
     try {
-        const snap = await getDocs(query(collection(db, 'enrollments'), where('studentNo', '==', user.studentNo)));
-        if (!snap.empty) document.getElementById('iSec').textContent = snap.docs[0].data().section || '—';
-    } catch(e) { /* silent */ }
+        const snap = await getDocs(
+            query(collection(db, 'enrollments'), where('studentNo', '==', user.studentNo))
+        );
+        if (!snap.empty) {
+            document.getElementById('iSec').textContent = snap.docs[0].data().section || '—';
+        }
+    } catch(e) { /* silent — section field is optional */ }
 }
 loadProfile();
 
 // ── FILES ──
-let allFiles = [], curFilter = 'all';
+let allFiles = [];
+let curFilter = 'all';
+let filesLoaded = false;
+
+// Determine the student identifier used by admin when sharing
+// Admin stores recipientStudentNo = studentNo OR 'all'
+function getStudentId() {
+    return (user.studentNo || user.username || '').toString().trim();
+}
 
 function fileType(f) {
+    // Prefer saved fileType field first
+    if (f.fileType && ['image','pdf','doc'].includes(f.fileType)) return f.fileType;
     const name = (f.originalName || f.fileName || '').toLowerCase();
     const ext = name.split('.').pop();
     if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return 'image';
     if (ext === 'pdf') return 'pdf';
     return 'doc';
 }
+
 function fileIcon(t) {
     if (t === 'image') return '<i class="ph-fill ph-image"></i>';
-    if (t === 'pdf') return '<i class="ph-fill ph-file-pdf"></i>';
+    if (t === 'pdf')   return '<i class="ph-fill ph-file-pdf"></i>';
     return '<i class="ph-fill ph-file-doc"></i>';
 }
-function iconClass(t) { return t === 'image' ? 'fi-img' : t === 'pdf' ? 'fi-pdf' : 'fi-doc'; }
+
+function iconClass(t) {
+    return t === 'image' ? 'fi-img' : t === 'pdf' ? 'fi-pdf' : 'fi-doc';
+}
+
 function fmtDate(ts) {
     if (!ts) return '';
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+    try {
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch(e) { return ''; }
 }
+
 function isNew(ts) {
     if (!ts) return false;
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return Date.now() - d.getTime() < 48 * 3600 * 1000;
+    try {
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        return Date.now() - d.getTime() < 48 * 3600 * 1000;
+    } catch(e) { return false; }
+}
+
+function safeUrl(url) {
+    return (url || '').replace(/'/g, "\\'");
 }
 
 function renderFiles(files) {
     const g = document.getElementById('filesGrid');
     if (!files.length) {
-        g.innerHTML = `<div class="empty-state"><i class="ph ph-folder-dashed-open"></i><h3>No files yet</h3><p>Admin hasn't shared any files with you.</p></div>`;
+        g.innerHTML = `
+            <div class="empty-state">
+                <i class="ph ph-folder-dashed-open"></i>
+                <h3>No files yet</h3>
+                <p>Admin hasn't shared any files with you.</p>
+            </div>`;
         return;
     }
     g.innerHTML = files.map(f => {
-        const t = f.fileType || fileType(f);
+        const t = fileType(f);
         const isImg = t === 'image';
         const badge = isNew(f.uploadedAt)
             ? `<span class="file-badge badge-new">New</span>`
             : `<span class="file-badge badge-file">${t.toUpperCase()}</span>`;
-        const action = isImg
-            ? `openLightbox('${f.fileUrl.replace(/'/g,"\\'")}','${(f.fileName||'').replace(/'/g,"\\'")}')`
-            : `window.open('${f.fileUrl.replace(/'/g,"\\'")}','_blank')`;
-        return `<div class="file-card" onclick="${action}" style="cursor:pointer;">
+        const openAction = isImg
+            ? `openLightbox('${safeUrl(f.fileUrl)}','${(f.fileName || f.originalName || 'File').replace(/'/g,"\\'")}');event.stopPropagation();`
+            : `window.open('${safeUrl(f.fileUrl)}','_blank');event.stopPropagation();`;
+        return `<div class="file-card" onclick="window.open('${safeUrl(f.fileUrl)}','_blank')">
             <div class="file-icon ${iconClass(t)}">${fileIcon(t)}</div>
             ${badge}
             <div class="file-name">${f.fileName || f.originalName || 'File'}</div>
             <div class="file-date">${fmtDate(f.uploadedAt)}</div>
-            <button class="open-btn" onclick="event.stopPropagation();window.open('${f.fileUrl.replace(/'/g,"\\'")}','_blank')">
-                <i class="ph-bold ph-download-simple"></i> ${isImg ? 'View / Save' : 'Open File'}
+            <button class="open-btn" onclick="${openAction}">
+                <i class="ph-bold ph-${isImg ? 'eye' : 'download-simple'}"></i> ${isImg ? 'View Image' : 'Open File'}
             </button>
         </div>`;
     }).join('');
+}
+
+function updateCounts(files) {
+    const imgs = files.filter(f => fileType(f) === 'image').length;
+    const pdfs = files.filter(f => fileType(f) === 'pdf').length;
+    const docs = files.filter(f => fileType(f) === 'doc').length;
+    document.getElementById('c-all').textContent = files.length;
+    document.getElementById('c-img').textContent = imgs;
+    document.getElementById('c-pdf').textContent = pdfs;
+    document.getElementById('c-doc').textContent = docs;
+    const newCount = files.filter(f => isNew(f.uploadedAt)).length;
+    const b = document.getElementById('newBadge');
+    if (newCount > 0) { b.textContent = newCount; b.style.display = 'inline'; }
+    else { b.style.display = 'none'; }
 }
 
 window.setFilter = (f, el) => {
@@ -348,61 +437,122 @@ window.setFilter = (f, el) => {
     el.classList.add('active');
     applyFilter();
 };
+
 window.applyFilter = () => {
-    const search = document.getElementById('searchInput').value.toLowerCase();
+    const search = (document.getElementById('searchInput').value || '').toLowerCase().trim();
     let list = allFiles;
-    if (curFilter !== 'all') list = list.filter(f => (f.fileType || fileType(f)) === curFilter);
-    if (search) list = list.filter(f => (f.fileName || f.originalName || '').toLowerCase().includes(search));
+    if (curFilter !== 'all') list = list.filter(f => fileType(f) === curFilter);
+    if (search) list = list.filter(f =>
+        (f.fileName || '').toLowerCase().includes(search) ||
+        (f.originalName || '').toLowerCase().includes(search)
+    );
     renderFiles(list);
 };
 
+// ── LOAD FILES — no composite index required ──
+// Strategy: fetch ALL sharedFiles from Firestore (no orderBy on filtered queries),
+// then filter client-side by recipientStudentNo === studentId OR 'all'.
+// This avoids the Firestore composite index error.
 async function loadFiles() {
+    const g = document.getElementById('filesGrid');
+    g.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+    hideBanner();
+
+    const studentId = getStudentId();
+
+    if (!studentId) {
+        g.innerHTML = `<div class="empty-state"><i class="ph ph-warning-circle"></i><h3>Not signed in properly</h3><p>Please log out and log in again.</p></div>`;
+        return;
+    }
+
     try {
-        // Fetch files sent specifically to this student AND files sent to all
-        const [snapSpecific, snapAll] = await Promise.all([
-            getDocs(query(collection(db, 'sharedFiles'), where('recipientStudentNo', '==', user.studentNo || user.username || ''), orderBy('uploadedAt', 'desc'))),
-            getDocs(query(collection(db, 'sharedFiles'), where('recipientStudentNo', '==', 'all'), orderBy('uploadedAt', 'desc')))
-        ]);
+        // Fetch all sharedFiles and filter on client side.
+        // This is the most compatible approach — no composite indexes needed.
+        const snap = await getDocs(collection(db, 'sharedFiles'));
+
         const seen = new Set();
         allFiles = [];
-        [...snapSpecific.docs, ...snapAll.docs].forEach(d => {
-            if (!seen.has(d.id)) { seen.add(d.id); allFiles.push({ id: d.id, ...d.data() }); }
+
+        snap.docs.forEach(d => {
+            if (seen.has(d.id)) return;
+            const data = d.data();
+            const recipient = (data.recipientStudentNo || '').toString().trim();
+            // Include if shared with this specific student OR broadcast to all
+            if (recipient === studentId || recipient === 'all') {
+                seen.add(d.id);
+                allFiles.push({ id: d.id, ...data });
+            }
         });
+
+        // Sort newest first (client-side)
         allFiles.sort((a, b) => {
-            const at = a.uploadedAt?.toDate?.() ?? new Date(0);
-            const bt = b.uploadedAt?.toDate?.() ?? new Date(0);
+            const at = a.uploadedAt?.toDate?.() ?? (a.uploadedAt ? new Date(a.uploadedAt) : new Date(0));
+            const bt = b.uploadedAt?.toDate?.() ?? (b.uploadedAt ? new Date(b.uploadedAt) : new Date(0));
             return bt - at;
         });
 
-        const imgs = allFiles.filter(f => (f.fileType || fileType(f)) === 'image').length;
-        const pdfs = allFiles.filter(f => (f.fileType || fileType(f)) === 'pdf').length;
-        const docs = allFiles.filter(f => (f.fileType || fileType(f)) === 'doc').length;
-        document.getElementById('c-all').textContent = allFiles.length;
-        document.getElementById('c-img').textContent = imgs;
-        document.getElementById('c-pdf').textContent = pdfs;
-        document.getElementById('c-doc').textContent = docs;
+        updateCounts(allFiles);
+        applyFilter();
+        filesLoaded = true;
 
-        const newCount = allFiles.filter(f => isNew(f.uploadedAt)).length;
-        if (newCount > 0) {
-            const b = document.getElementById('newBadge');
-            b.textContent = newCount;
-            b.style.display = 'inline';
+        if (allFiles.length === 0) {
+            showBanner('No files have been shared with you yet. Check back later!', 'info');
         }
-        renderFiles(allFiles);
+
     } catch(e) {
-        console.error(e);
-        document.getElementById('filesGrid').innerHTML = `<div class="empty-state"><i class="ph ph-warning-circle"></i><h3>Could not load files</h3><p>${e.message}</p></div>`;
+        console.error('loadFiles error:', e);
+        let errMsg = e.message || 'Unknown error';
+
+        // Provide a helpful message for the most common Firestore error
+        if (errMsg.includes('index') || errMsg.includes('Index')) {
+            errMsg = 'Firestore index error. Please contact your admin.';
+        }
+
+        g.innerHTML = `
+            <div class="empty-state">
+                <i class="ph ph-warning-circle"></i>
+                <h3>Could not load files</h3>
+                <p>${errMsg}</p>
+                <button class="open-btn" style="width:auto;margin-top:16px;" onclick="refreshFiles()">
+                    <i class="ph-bold ph-arrows-clockwise"></i> Try Again
+                </button>
+            </div>`;
+        showBanner('Failed to load files. ' + errMsg, 'error-banner');
     }
 }
+
+// Only load files when the tab is first opened
+window.loadFilesIfNeeded = () => {
+    if (!filesLoaded) loadFiles();
+};
+
+// Manual refresh
+window.refreshFiles = async () => {
+    filesLoaded = false;
+    const btn = document.getElementById('refreshBtn');
+    const ico = document.getElementById('refreshIcon');
+    btn.classList.add('spinning');
+    ico.className = 'ph-bold ph-arrows-clockwise';
+    await loadFiles();
+    btn.classList.remove('spinning');
+    toast('Files refreshed!');
+};
+
+// Auto-load files on page load
 loadFiles();
 
-// Lightbox
+// ── LIGHTBOX ──
 window.openLightbox = (url, name) => {
     document.getElementById('lb-img').src = url;
     document.getElementById('lb-cap').textContent = name;
     document.getElementById('lb-dl-btn').onclick = () => window.open(url, '_blank');
     document.getElementById('lightbox').classList.add('open');
 };
+
+// Close lightbox on Escape key
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+});
 </script>
 </body>
 </html>
