@@ -261,11 +261,14 @@
 
                 <div style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:20px;padding:28px;margin-bottom:32px;">
                     <div class="form-grid">
-                        <div class="form-group">
+                        <div class="form-group" style="position:relative;">
                             <label class="form-label">Send To</label>
-                            <select id="fRecipient" class="form-control">
-                                <option value="all">📢 All Students</option>
-                            </select>
+                            <div style="position:relative;">
+                                <i class="ph-bold ph-magnifying-glass" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;pointer-events:none;z-index:1;"></i>
+                                <input type="text" id="fRecipientSearch" class="form-control" placeholder="Search student or select All…" autocomplete="off" style="padding-left:40px;" oninput="window.filterRecipientDropdown()" onfocus="window.showRecipientDropdown()" onblur="setTimeout(()=>window.hideRecipientDropdown(),200)">
+                            </div>
+                            <input type="hidden" id="fRecipient" value="all">
+                            <div id="fRecipientDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:200;background:var(--glass-bg);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:14px;box-shadow:0 16px 40px rgba(0,35,102,0.12);max-height:220px;overflow-y:auto;margin-top:4px;"></div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">File Label (optional)</label>
@@ -494,11 +497,12 @@
         //  FILE SHARING — Cloudinary upload + Firestore metadata
         // ══════════════════════════════════════════
 
-        // Load students into dropdowns from Firestore users collection
+        // ── SEARCHABLE RECIPIENT PICKER ──
+        let allStudents = []; // { name, val } — populated from Firestore
+
         async function loadStudentDropdowns() {
             try {
                 const snap = await getDocs(collection(db, 'users'));
-                const sendSel = document.getElementById('fRecipient');
                 const filterSel = document.getElementById('fFilterRecipient');
                 const students = [];
                 snap.forEach(d => {
@@ -510,13 +514,69 @@
                     const name = u.fullName || u.studentName || u.username || u.studentNo || 'Unknown';
                     const val = u.studentNo || u.username;
                     if (!val) return;
-                    const opt = `<option value="${val}">${name} (${val})</option>`;
-                    sendSel.innerHTML += opt;
-                    filterSel.innerHTML += opt;
+                    allStudents.push({ name, val });
+                    filterSel.innerHTML += `<option value="${val}">${name} (${val})</option>`;
                 });
+                // Set default display label
+                document.getElementById('fRecipientSearch').value = '📢 All Students';
             } catch(e) { console.error('Dropdown load error:', e); window.showToast('Could not load student list', 'error'); }
         }
         loadStudentDropdowns();
+
+        function buildRecipientItems(filter) {
+            const allItem = { name: '📢 All Students', val: 'all' };
+            const list = [allItem, ...allStudents];
+            const q = (filter || '').toLowerCase().trim();
+            return q ? list.filter(s => s.name.toLowerCase().includes(q) || s.val.toLowerCase().includes(q)) : list;
+        }
+
+        function renderRecipientDropdown(filter) {
+            const dd = document.getElementById('fRecipientDropdown');
+            const items = buildRecipientItems(filter);
+            if (!items.length) {
+                dd.innerHTML = `<div style="padding:14px 18px;font-size:13px;color:var(--text-muted);">No students found</div>`;
+                return;
+            }
+            const currentVal = document.getElementById('fRecipient').value;
+            dd.innerHTML = items.map(s => {
+                const active = s.val === currentVal ? 'background:var(--accent-light);color:var(--accent-primary);' : '';
+                return `<div onclick="window.selectRecipient('${s.val.replace(/'/g,"\'")}','${s.name.replace(/'/g,"\'")}')"
+                    style="padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;margin:3px 6px;transition:background 0.2s;${active}"
+                    onmouseenter="this.style.background='var(--accent-light)';this.style.color='var(--accent-primary)'"
+                    onmouseleave="this.style.background='${s.val === currentVal ? 'var(--accent-light)' : ''}';this.style.color='${s.val === currentVal ? 'var(--accent-primary)' : ''}'">
+                    ${s.name}${s.val !== 'all' ? `<span style="font-size:11px;color:var(--text-muted);margin-left:6px;">(${s.val})</span>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        window.selectRecipient = function(val, name) {
+            document.getElementById('fRecipient').value = val;
+            document.getElementById('fRecipientSearch').value = name;
+            window.hideRecipientDropdown();
+        };
+
+        window.showRecipientDropdown = function() {
+            const dd = document.getElementById('fRecipientDropdown');
+            renderRecipientDropdown(document.getElementById('fRecipientSearch').value);
+            dd.style.display = 'block';
+        };
+
+        window.hideRecipientDropdown = function() {
+            document.getElementById('fRecipientDropdown').style.display = 'none';
+            // If search is empty or doesn't match any student, reset to current hidden value
+            const currentVal = document.getElementById('fRecipient').value;
+            if (!currentVal) {
+                window.selectRecipient('all', '📢 All Students');
+            }
+        };
+
+        window.filterRecipientDropdown = function() {
+            const q = document.getElementById('fRecipientSearch').value;
+            // Clear hidden value while typing so user must pick from list
+            document.getElementById('fRecipient').value = '';
+            renderRecipientDropdown(q);
+            document.getElementById('fRecipientDropdown').style.display = 'block';
+        };
 
         // File input — show preview
         const fFileInput = document.getElementById('fFile');
@@ -567,6 +627,7 @@
             if (!file) { window.showToast('Please choose a file first.', 'error'); return; }
 
             const recipient = document.getElementById('fRecipient').value;
+            if (!recipient) { window.showToast('Please select a recipient first.', 'error'); document.getElementById('fRecipientSearch').focus(); return; }
             const label = document.getElementById('fLabel').value.trim() || file.name;
             const btn = document.getElementById('fSendBtn');
             const progressWrap = document.getElementById('fProgress');
@@ -639,6 +700,8 @@
                     document.getElementById('fLabel').value = '';
                     document.getElementById('fPreview').style.display = 'none';
                     btn.disabled = true;
+                    // Reset recipient picker to All Students
+                    window.selectRecipient('all', '📢 All Students');
                     window.loadSentFiles();
                 }, 600);
 
