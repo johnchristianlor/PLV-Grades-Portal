@@ -318,6 +318,10 @@
                         <option value="pdf">📄 PDFs</option>
                         <option value="doc">📝 Documents</option>
                     </select>
+                    <div style="position:relative;flex:1;min-width:180px;max-width:320px;">
+                        <i class="ph-bold ph-magnifying-glass" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;pointer-events:none;"></i>
+                        <input type="text" id="fSearchInput" class="form-control" placeholder="Search by file name…" oninput="window.filterSentFiles()" style="padding-left:40px;">
+                    </div>
                     <button onclick="window.loadSentFiles()" class="btn btn-primary" style="padding:10px 20px;font-size:13px;"><i class="ph-bold ph-arrows-clockwise"></i> Refresh</button>
                 </div>
                 <div id="sentFilesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">
@@ -673,7 +677,13 @@
 
         window.filterSentFiles = function() {
             const typeFilter = document.getElementById('fFilterType').value;
-            const filtered = typeFilter ? allSentFiles.filter(f => f.fileType === typeFilter) : allSentFiles;
+            const search = (document.getElementById('fSearchInput').value || '').toLowerCase().trim();
+            let filtered = allSentFiles;
+            if (typeFilter) filtered = filtered.filter(f => f.fileType === typeFilter);
+            if (search) filtered = filtered.filter(f =>
+                (f.fileName || '').toLowerCase().includes(search) ||
+                (f.originalName || '').toLowerCase().includes(search)
+            );
             renderSentFiles(filtered);
         };
 
