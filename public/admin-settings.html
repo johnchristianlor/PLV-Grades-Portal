@@ -345,15 +345,6 @@
         const CLOUD_NAME = 'dfdlqf6ng';
         const UPLOAD_PRESET = 'plv_files';
 
-        // ── localStorage helpers for shared files ──
-        const LS_KEY = 'plv_sharedFiles';
-        function lsGetFiles() {
-            try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; }
-        }
-        function lsSaveFiles(files) {
-            localStorage.setItem(LS_KEY, JSON.stringify(files));
-        }
-
         window.toggleTab = function(showId, element) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -496,10 +487,10 @@
         themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); const isDark = body.classList.contains('dark-theme'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); themeIcon.style.transform = 'rotate(360deg)'; setTimeout(() => { themeIcon.className = isDark ? 'ph-fill ph-moon' : 'ph-fill ph-sun'; themeIcon.style.transform = 'rotate(0deg)'; }, 150); });
 
         // ══════════════════════════════════════════
-        //  FILE SHARING — Cloudinary upload + localStorage metadata
+        //  FILE SHARING — Cloudinary upload + Firestore metadata
         // ══════════════════════════════════════════
 
-        // Load students into dropdowns from Firebase users collection
+        // Load students into dropdowns from Firestore users collection
         async function loadStudentDropdowns() {
             try {
                 const snap = await getDocs(collection(db, 'users'));
@@ -566,7 +557,7 @@
             return bytes > 1024 * 1024 ? (bytes / 1024 / 1024).toFixed(1) + ' MB' : Math.round(bytes / 1024) + ' KB';
         }
 
-        // ── SEND FILE via Cloudinary + localStorage ──
+        // ── SEND FILE: upload to Cloudinary, save metadata to Firestore ──
         window.sendFile = async function() {
             const file = fFileInput.files[0];
             if (!file) { window.showToast('Please choose a file first.', 'error'); return; }
@@ -617,12 +608,10 @@
 
                 bar.style.width = '90%';
                 pct.textContent = '90%';
-                pLabel.textContent = 'Saving file info...';
+                pLabel.textContent = 'Saving to database...';
 
-                // Save metadata to localStorage (shared with student-settings)
-                const files = lsGetFiles();
-                files.unshift({
-                    id: 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+                // Save metadata to Firestore — permanent, survives logout & device changes
+                await addDoc(collection(db, 'sharedFiles'), {
                     fileName: label,
                     originalName: file.name,
                     fileUrl: downloadURL,
@@ -630,9 +619,8 @@
                     fileSize: file.size,
                     recipientStudentNo: recipient,
                     uploadedBy: user.name || user.fullName || user.username || 'Admin',
-                    uploadedAt: new Date().toISOString()
+                    uploadedAt: new Date()
                 });
-                lsSaveFiles(files);
 
                 bar.style.width = '100%';
                 pct.textContent = '100%';
@@ -660,17 +648,27 @@
             }
         };
 
-        // ── LOAD SENT FILES from localStorage ──
+        // ── LOAD SENT FILES from Firestore ──
         let allSentFiles = [];
 
-        window.loadSentFiles = function() {
+        window.loadSentFiles = async function() {
             const container = document.getElementById('sentFilesGrid');
             container.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;padding:20px 0;">Loading...</p>';
-            const recipFilter = document.getElementById('fFilterRecipient').value;
-            let files = lsGetFiles();
-            if (recipFilter) files = files.filter(f => f.recipientStudentNo === recipFilter);
-            allSentFiles = files;
-            window.filterSentFiles();
+            try {
+                const recipFilter = document.getElementById('fFilterRecipient').value;
+                let q;
+                if (recipFilter) {
+                    q = query(collection(db, 'sharedFiles'), where('recipientStudentNo', '==', recipFilter), orderBy('uploadedAt', 'desc'));
+                } else {
+                    q = query(collection(db, 'sharedFiles'), orderBy('uploadedAt', 'desc'));
+                }
+                const snap = await getDocs(q);
+                allSentFiles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                window.filterSentFiles();
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = `<p style="color:var(--danger);grid-column:1/-1;">Error loading files: ${e.message}</p>`;
+            }
         };
 
         window.filterSentFiles = function() {
@@ -681,7 +679,7 @@
 
         function fmtDate(ts) {
             if (!ts) return '';
-            const d = new Date(ts);
+            const d = ts.toDate ? ts.toDate() : new Date(ts);
             return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
         }
 
@@ -719,12 +717,13 @@
             }).join('');
         }
 
-        window.deleteSentFile = function(id) {
+        window.deleteSentFile = async function(id) {
             if (!confirm('Delete this file? Students will no longer see it.')) return;
-            const files = lsGetFiles().filter(f => f.id !== id);
-            lsSaveFiles(files);
-            window.showToast('File deleted!');
-            window.loadSentFiles();
+            try {
+                await deleteDoc(doc(db, 'sharedFiles', id));
+                window.showToast('File deleted!');
+                window.loadSentFiles();
+            } catch(e) { window.showToast('Delete failed: ' + e.message, 'error'); }
         };
 
         window.loadSentFiles();
