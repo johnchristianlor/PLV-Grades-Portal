@@ -57,10 +57,18 @@
         .mobile-nav-bar ul {
             display: flex;
             list-style: none;
-            justify-content: space-around;
             align-items: center;
             padding: 0 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            gap: 2px;
         }
+        .mobile-nav-bar ul::-webkit-scrollbar { display: none; }
+        .mobile-nav-bar ul li { flex: 0 0 auto; scroll-snap-align: start; }
         .mobile-nav-bar ul li a {
             display: flex;
             flex-direction: column;
@@ -72,11 +80,12 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 14px;
             transition: all 0.3s;
             cursor: pointer;
-            min-width: 56px;
+            min-width: 62px;
+            white-space: nowrap;
         }
         .mobile-nav-bar ul li a i { font-size: 22px; }
         .mobile-nav-bar ul li a:hover,
@@ -313,6 +322,8 @@
             <li><a href="student-dashboard.html" id="mnav-dash"><i class="ph-fill ph-squares-four"></i>Dashboard</a></li>
             <li><a href="student-activity.html" id="mnav-act"><i class="ph ph-calendar-check"></i>Activities</a></li>
             <li><a href="student-grades.html" id="mnav-grd"><i class="ph ph-exam"></i>Grades</a></li>
+            <li><a href="student-attendance.html" id="mnav-att"><i class="ph ph-calendar-dots"></i>Attendance</a></li>
+            <li><a href="student-settings.html" id="mnav-set"><i class="ph-fill ph-gear"></i>Settings</a></li>
             <li><a href="#" onclick="window.logout()" id="mnav-out"><i class="ph ph-sign-out"></i>Logout</a></li>
         </ul>
     </nav>

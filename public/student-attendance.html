@@ -91,10 +91,12 @@
         .empty-state p { color:var(--text-muted); font-size:15px; font-weight:600; }
         /* Mobile nav */
         .mobile-nav-bar { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--glass-bg); backdrop-filter:blur(32px); border-top:1px solid var(--glass-border); z-index:200; padding:6px 0 max(6px,env(safe-area-inset-bottom)); }
-        .mobile-nav-bar ul { display:flex; list-style:none; justify-content:space-around; padding:0 8px; }
-        .mobile-nav-bar ul li a { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:var(--text-muted); font-size:10px; font-weight:700; text-transform:uppercase; padding:8px 12px; border-radius:14px; min-width:56px; }
+        .mobile-nav-bar ul { display:flex; list-style:none; align-items:center; padding:0 8px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; scrollbar-width:none; -ms-overflow-style:none; gap:2px; }
+        .mobile-nav-bar ul::-webkit-scrollbar { display:none; }
+        .mobile-nav-bar ul li { flex:0 0 auto; scroll-snap-align:start; }
+        .mobile-nav-bar ul li a { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:var(--text-muted); font-size:10px; font-weight:700; text-transform:uppercase; padding:8px 14px; border-radius:14px; min-width:62px; white-space:nowrap; transition:all 0.3s; cursor:pointer; }
         .mobile-nav-bar ul li a i { font-size:22px; }
-        .mobile-nav-bar ul li a.active { color:var(--accent-primary); background:var(--accent-light); }
+        .mobile-nav-bar ul li a.active, .mobile-nav-bar ul li a:hover { color:var(--accent-primary); background:var(--accent-light); }
         @media (max-width:992px) { body { flex-direction:column; } .sidebar { width:100%; height:auto; padding:20px 32px; flex-direction:row; justify-content:space-between; align-items:center; border-right:none; border-bottom:1px solid var(--glass-border); } .logo-container { margin-bottom:0; } .nav-menu { display:none; } .mobile-nav-bar { display:block; } .main-wrapper { padding:24px 20px; padding-bottom:90px !important; } .bento-grid { grid-template-columns:1fr 1fr; } }
         @media (max-width:600px) { .bento-grid { grid-template-columns:1fr 1fr; } .main-wrapper { padding:16px 12px; padding-bottom:90px !important; } .card-hero { padding:24px 20px; } .hero-content h2 { font-size:22px; } }
     </style>
@@ -214,10 +216,11 @@
 
     <nav class="mobile-nav-bar">
         <ul>
-            <li><a href="student-dashboard.html"><i class="ph-fill ph-squares-four"></i>Home</a></li>
+            <li><a href="student-dashboard.html"><i class="ph-fill ph-squares-four"></i>Dashboard</a></li>
             <li><a href="student-activity.html"><i class="ph ph-calendar-check"></i>Activities</a></li>
             <li><a href="student-grades.html"><i class="ph ph-exam"></i>Grades</a></li>
             <li><a href="student-attendance.html" class="active"><i class="ph-fill ph-calendar-dots"></i>Attendance</a></li>
+            <li><a href="student-settings.html"><i class="ph-fill ph-gear"></i>Settings</a></li>
             <li><a onclick="window.logout()"><i class="ph ph-sign-out"></i>Logout</a></li>
         </ul>
     </nav>
