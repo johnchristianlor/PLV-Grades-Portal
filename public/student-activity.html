@@ -234,6 +234,37 @@
         const app = initializeApp({ apiKey: "AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI", authDomain: "plv-grades-portal.firebaseapp.com", projectId: "plv-grades-portal", storageBucket: "plv-grades-portal.firebasestorage.app", messagingSenderId: "951401194726", appId: "1:951401194726:web:28ea9972358d0e30fb4726", measurementId: "G-TKG574DYYB" });
         const db = getFirestore(app);
 
+        // ─── HEARTBEAT / ACTIVITY TRACKING ────────────────────────────────────────
+        // Pings Firestore every 2 min and on user activity so admin dashboard
+        // can show who is truly active (within last 10 min = online).
+        (async () => {
+            const { doc: _doc, updateDoc: _upd, serverTimestamp: _sts } =
+                await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            const _ref = _doc(db, "users", user.studentNo);
+            const HB = 2 * 60 * 1000, DB = 30 * 1000;
+            const ping = async () => {
+                try { await _upd(_ref, { lastActiveAt: _sts(), isOnline: true }); }
+                catch(e) { /* silent */ }
+            };
+            await ping();
+            const _hbt = setInterval(ping, HB);
+            let _dt = null;
+            ['mousemove','keydown','click','touchstart','scroll'].forEach(e =>
+                document.addEventListener(e, () => { if(_dt) return; _dt = setTimeout(() => { ping(); _dt = null; }, DB); }, { passive: true })
+            );
+            const _prevLogout = window.logout;
+            window.logout = async function() {
+                clearInterval(_hbt);
+                try { await _upd(_ref, { isOnline: false, lastActiveAt: null }); } catch(e) {}
+                localStorage.removeItem('loggedInUser');
+                window.location.href = 'index.html';
+            };
+            window.addEventListener('beforeunload', () => {
+                _upd(_ref, { isOnline: false }).catch(() => {});
+            });
+        })();
+        // ─────────────────────────────────────────────────────────────────────────
+
         window.showToast = function(message, type = 'success') {
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toast-icon');

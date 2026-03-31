@@ -253,7 +253,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where, doc, getDoc, orderBy, limit, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, where, doc, getDoc, orderBy, limit, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const user = JSON.parse(localStorage.getItem('loggedInUser'));
     if (!user || user.role !== 'student') window.location.href = 'index.html';
@@ -261,21 +261,43 @@
     const app = initializeApp({ apiKey: "AIzaSyCM9-ZupC7stf2VSdGD5zWh4AVZH3H7rCI", authDomain: "plv-grades-portal.firebaseapp.com", projectId: "plv-grades-portal", storageBucket: "plv-grades-portal.firebasestorage.app", messagingSenderId: "951401194726", appId: "1:951401194726:web:28ea9972358d0e30fb4727", measurementId: "G-TKG574DYYB" });
     const db = getFirestore(app);
 
-    // --- ONLINE STATUS LOGIC ---
-    updateDoc(doc(db, "users", user.studentNo), { isOnline: true }).catch(e => console.log("Init Online status error", e));
+    // ─── HEARTBEAT / ACTIVITY TRACKING ────────────────────────────────────────
+    // Pings Firestore every 2 min and on user activity so admin dashboard
+    // can detect true online status (active within last 10 minutes).
+    const HB_INTERVAL = 2 * 60 * 1000;  // 2 minutes
+    const HB_DEBOUNCE = 30 * 1000;       // 30 seconds
 
-    window.logout = async function() { 
+    async function pingOnline() {
         try {
-            await updateDoc(doc(db, "users", user.studentNo), { isOnline: false });
-        } catch(e) { console.error("Logout status error", e); }
-        finally {
-            localStorage.removeItem('loggedInUser'); 
-            window.location.href = 'index.html'; 
-        }
+            await updateDoc(doc(db, "users", user.studentNo), {
+                lastActiveAt: serverTimestamp(),
+                isOnline: true
+            });
+        } catch(e) { /* silent - don't break page */ }
     }
 
+    pingOnline();
+    const _heartbeatTimer = setInterval(pingOnline, HB_INTERVAL);
+
+    let _actDebounce = null;
+    function onActivity() {
+        if (_actDebounce) return;
+        _actDebounce = setTimeout(() => { pingOnline(); _actDebounce = null; }, HB_DEBOUNCE);
+    }
+    ['mousemove','keydown','click','touchstart','scroll'].forEach(evt =>
+        document.addEventListener(evt, onActivity, { passive: true })
+    );
+
+    window.logout = async function() {
+        clearInterval(_heartbeatTimer);
+        try { await updateDoc(doc(db, "users", user.studentNo), { isOnline: false, lastActiveAt: null }); }
+        catch(e) { /* silent */ }
+        localStorage.removeItem('loggedInUser');
+        window.location.href = 'index.html';
+    };
+
     window.addEventListener('beforeunload', () => {
-        updateDoc(doc(db, "users", user.studentNo), { isOnline: false });
+        updateDoc(doc(db, "users", user.studentNo), { isOnline: false }).catch(() => {});
     });
 
     window.showToast = function(message, type = 'success') {
