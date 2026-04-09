@@ -83,6 +83,71 @@
         .att-btn-excused { border-color:var(--accent-primary); color:var(--accent-primary); background:transparent; }
         .att-btn-excused.selected, .att-btn-excused:hover { background:var(--accent-primary); color:#fff; }
         .att-btn-group { display:flex; gap:6px; align-items:center; }
+
+        /* ── SPREADSHEET / EXCEL STYLES ────────────────────────────── */
+        /* Roster input table */
+        .roster-spreadsheet { border-collapse:collapse; width:100%; font-size:14px; }
+        .roster-spreadsheet thead th { position:sticky; top:0; z-index:6; background:var(--accent-primary); color:#fff; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; padding:10px 14px; text-align:left; border:1px solid rgba(255,255,255,0.15); white-space:nowrap; }
+        .roster-spreadsheet tbody tr { transition:background 0.12s; border-bottom:1px solid var(--input-border); }
+        .roster-spreadsheet tbody tr:last-child { border-bottom:none; }
+        .roster-spreadsheet tbody tr.row-P { background:rgba(16,185,129,0.07); }
+        .roster-spreadsheet tbody tr.row-A { background:rgba(225,29,72,0.07); }
+        .roster-spreadsheet tbody tr.row-L { background:rgba(245,158,11,0.07); }
+        .roster-spreadsheet tbody tr.row-E { background:rgba(0,61,165,0.07); }
+        .roster-spreadsheet td { padding:8px 14px; border-right:1px solid var(--input-border); vertical-align:middle; }
+        .roster-spreadsheet td:last-child { border-right:none; }
+        .row-num { color:var(--text-muted); font-size:11px; font-weight:700; width:36px; text-align:center; background:rgba(0,0,0,0.03); }
+        .dark-theme .row-num { background:rgba(255,255,255,0.03); }
+        .col-sno { font-family:monospace; font-size:12px; color:var(--text-muted); width:120px; }
+        .col-name { font-weight:700; min-width:180px; }
+        .col-status { width:220px; }
+        .status-pill-group { display:flex; gap:4px; align-items:center; }
+        .status-pill { padding:6px 12px; border-radius:7px; border:1.5px solid transparent; font-size:12px; font-weight:800; cursor:pointer; background:transparent; transition:all 0.13s; letter-spacing:0.5px; }
+        .status-pill-P { color:var(--success); border-color:rgba(16,185,129,0.3); }
+        .status-pill-P.active { background:var(--success); color:#fff; border-color:var(--success); box-shadow:0 2px 8px rgba(16,185,129,0.3); }
+        .status-pill-A { color:var(--danger); border-color:rgba(225,29,72,0.3); }
+        .status-pill-A.active { background:var(--danger); color:#fff; border-color:var(--danger); box-shadow:0 2px 8px rgba(225,29,72,0.3); }
+        .status-pill-L { color:var(--warning); border-color:rgba(245,158,11,0.3); }
+        .status-pill-L.active { background:var(--warning); color:#fff; border-color:var(--warning); box-shadow:0 2px 8px rgba(245,158,11,0.3); }
+        .status-pill-E { color:var(--accent-primary); border-color:rgba(0,61,165,0.3); }
+        .status-pill-E.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); box-shadow:0 2px 8px rgba(0,61,165,0.25); }
+        .col-current { width:110px; text-align:center; }
+        .status-chip { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; }
+        .status-chip-P { background:rgba(16,185,129,0.12); color:var(--success); }
+        .status-chip-A { background:rgba(225,29,72,0.12); color:var(--danger); }
+        .status-chip-L { background:rgba(245,158,11,0.12); color:var(--warning); }
+        .status-chip-E { background:var(--accent-light); color:var(--accent-primary); }
+
+        /* Records spreadsheet (pivot) */
+        .view-toggle-wrap { display:flex; gap:6px; align-items:center; margin-bottom:16px; }
+        .view-toggle-btn { padding:8px 18px; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; border:1.5px solid var(--input-border); background:transparent; color:var(--text-muted); transition:all 0.2s; }
+        .view-toggle-btn.active { background:var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+        .pivot-hint { font-size:13px; color:var(--text-muted); font-weight:600; padding:20px; text-align:center; background:var(--accent-light); border-radius:12px; }
+        .ss-wrap { width:100%; overflow:auto; border-radius:12px; border:1px solid var(--glass-border); max-height:600px; }
+        .ss-table { border-collapse:collapse; font-size:12px; min-width:100%; }
+        .ss-table th { padding:8px 12px; background:var(--accent-primary); color:#fff; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; border:1px solid rgba(255,255,255,0.15); white-space:nowrap; position:sticky; top:0; z-index:5; }
+        .ss-table th.col-freeze { position:sticky; z-index:10; background:var(--accent-primary); }
+        .ss-table th.col-freeze:nth-child(1) { left:0; }
+        .ss-table th.col-freeze:nth-child(2) { left:110px; }
+        .ss-table td { border:1px solid var(--input-border); padding:0; }
+        .ss-table tbody tr:hover td { filter:brightness(0.95); }
+        .dark-theme .ss-table tbody tr:hover td { filter:brightness(1.1); }
+        .ss-td-freeze { position:sticky; background:var(--input-bg); z-index:4; padding:8px 12px; font-size:12px; white-space:nowrap; }
+        .ss-td-freeze:nth-child(1) { left:0; width:110px; font-family:monospace; color:var(--text-muted); font-size:11px; border-right:1px solid var(--input-border); }
+        .ss-td-freeze:nth-child(2) { left:110px; min-width:160px; font-weight:700; border-right:2px solid var(--accent-primary); }
+        .ss-cell { width:54px; height:36px; text-align:center; vertical-align:middle; font-size:12px; font-weight:800; cursor:pointer; }
+        .ss-P { background:rgba(16,185,129,0.15); color:var(--success); }
+        .ss-A { background:rgba(225,29,72,0.12); color:var(--danger); }
+        .ss-L { background:rgba(245,158,11,0.12); color:var(--warning); }
+        .ss-E { background:var(--accent-light); color:var(--accent-primary); }
+        .ss-empty { background:rgba(0,0,0,0.02); color:var(--text-muted); font-size:10px; }
+        .dark-theme .ss-empty { background:rgba(255,255,255,0.02); }
+        .ss-rate-cell { background:rgba(0,61,165,0.08); color:var(--accent-primary); font-weight:800; font-size:11px; padding:8px; text-align:center; position:sticky; right:0; z-index:3; border-left:2px solid var(--accent-primary); min-width:60px; }
+        .ss-total-row td { background:rgba(0,0,0,0.04); font-size:11px; font-weight:700; padding:6px 8px; text-align:center; }
+        .dark-theme .ss-total-row td { background:rgba(255,255,255,0.04); }
+        .legend-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
+        .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; }
+        .legend-dot { width:14px; height:14px; border-radius:4px; }
         .badge { display:inline-flex; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; text-transform:uppercase; }
         .badge-present { background:rgba(16,185,129,0.12); color:var(--success); }
         .badge-absent { background:rgba(225,29,72,0.12); color:var(--danger); }
@@ -116,6 +181,51 @@
         .filter-row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:20px; }
         .att-record-row td { cursor:pointer; }
         .att-record-row:hover td { background:var(--accent-light); }
+        .att-record-row.row-selected td { background:rgba(225,29,72,0.07) !important; }
+
+        /* ── CHECKBOX COLUMN ─── */
+        .cb-col { width:44px; text-align:center; padding:0 !important; }
+        .row-cb { width:18px; height:18px; cursor:pointer; accent-color:var(--danger); border-radius:4px; }
+        .select-all-cb { width:18px; height:18px; cursor:pointer; accent-color:var(--accent-primary); }
+
+        /* ── FLOATING SELECTION BAR ─── */
+        .selection-bar { position:sticky; bottom:80px; left:0; right:0; z-index:50; display:none; margin:0 -32px; padding:14px 32px; background:var(--danger); color:#fff; align-items:center; gap:16px; flex-wrap:wrap; box-shadow:0 -4px 24px rgba(225,29,72,0.25); animation:slideUp 0.25s ease; }
+        .selection-bar.visible { display:flex; }
+        @keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+        .sel-count { font-size:15px; font-weight:800; flex:1; }
+        .btn-sel-delete { background:#fff; color:var(--danger); border:none; padding:10px 20px; border-radius:10px; font-size:13px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:7px; }
+        .btn-sel-delete:hover { background:rgba(255,255,255,0.9); }
+        .btn-sel-clear { background:rgba(255,255,255,0.15); color:#fff; border:1.5px solid rgba(255,255,255,0.4); padding:10px 20px; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; }
+        .btn-sel-clear:hover { background:rgba(255,255,255,0.25); }
+
+        /* ── SMART DELETE MODAL ─── */
+        .del-modal-box { background:var(--glass-bg); backdrop-filter:blur(32px); padding:36px; border-radius:24px; max-width:520px; width:96%; border:1px solid var(--glass-border); box-shadow:0 20px 60px rgba(0,0,0,0.25); transform:scale(0.9); transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1); max-height:90vh; overflow-y:auto; }
+        .modal-overlay.open .del-modal-box { transform:scale(1); }
+        .del-header { display:flex; align-items:flex-start; gap:14px; margin-bottom:24px; }
+        .del-icon { width:52px; height:52px; background:rgba(225,29,72,0.12); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:26px; color:var(--danger); flex-shrink:0; }
+        .del-title { font-size:20px; font-weight:800; color:var(--text-main); margin-bottom:4px; }
+        .del-subtitle { font-size:13px; color:var(--text-muted); font-weight:600; }
+        .del-summary { background:rgba(225,29,72,0.07); border:1px solid rgba(225,29,72,0.2); border-radius:14px; padding:16px 20px; margin-bottom:20px; }
+        .del-summary-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid rgba(225,29,72,0.1); font-size:13px; }
+        .del-summary-row:last-child { border-bottom:none; }
+        .del-summary-label { color:var(--text-muted); font-weight:600; }
+        .del-summary-value { font-weight:800; color:var(--text-main); }
+        .del-count-badge { background:var(--danger); color:#fff; padding:3px 10px; border-radius:6px; font-size:13px; font-weight:800; }
+        .del-warning { background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); border-radius:12px; padding:12px 16px; font-size:12px; font-weight:700; color:var(--warning); display:flex; align-items:center; gap:8px; margin-bottom:20px; }
+        .del-actions { display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap; }
+        .btn-cancel-del { background:transparent; border:1.5px solid var(--input-border); color:var(--text-muted); font-weight:700; padding:12px 24px; border-radius:12px; cursor:pointer; font-size:14px; }
+        .btn-confirm-del { background:var(--danger); color:#fff; border:none; font-weight:800; padding:12px 28px; border-radius:12px; cursor:pointer; font-size:14px; display:flex; align-items:center; gap:8px; }
+        .btn-confirm-del:hover { opacity:0.9; transform:translateY(-1px); }
+        .btn-confirm-del:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+        .del-mode-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+        .del-mode-card { padding:14px 16px; border-radius:12px; border:2px solid var(--input-border); cursor:pointer; transition:all 0.15s; text-align:left; background:transparent; width:100%; }
+        .del-mode-card:hover { border-color:var(--danger); background:rgba(225,29,72,0.05); }
+        .del-mode-card.active { border-color:var(--danger); background:rgba(225,29,72,0.08); }
+        .del-mode-card .dm-icon { font-size:22px; margin-bottom:6px; display:block; }
+        .del-mode-card .dm-title { font-size:13px; font-weight:800; color:var(--text-main); display:block; }
+        .del-mode-card .dm-desc { font-size:11px; color:var(--text-muted); font-weight:600; display:block; margin-top:2px; }
+        .del-criteria-box { background:var(--accent-light); border-radius:12px; padding:16px; margin-bottom:16px; display:none; }
+        .del-criteria-box.visible { display:block; }
         @media (max-width:1024px) { body { flex-direction:column; } .sidebar { width:100%; height:auto; padding:20px; border-right:none; border-bottom:1px solid var(--glass-border); } .nav-menu { display:none; } .form-grid { grid-template-columns:1fr 1fr; } .form-group.full { grid-column:span 2; } }
         .mobile-nav-bar { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--glass-bg); backdrop-filter:blur(32px); border-top:1px solid var(--glass-border); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:200; padding:6px 0 max(6px,env(safe-area-inset-bottom)); }
         .mobile-nav-bar ul { display:flex; list-style:none; align-items:center; padding:0 12px; overflow-x:auto; gap:4px; scrollbar-width:none; }
@@ -201,13 +311,23 @@
                         <button class="btn btn-outline" style="padding:8px 16px; font-size:13px;" onclick="window.markAll('P')"><i class="ph-bold ph-check"></i> All Present</button>
                         <button class="btn" style="padding:8px 16px; font-size:13px; background:rgba(225,29,72,0.1); color:var(--danger); border:1px solid rgba(225,29,72,0.3);" onclick="window.markAll('A')"><i class="ph-bold ph-x"></i> All Absent</button>
                     </div>
-                    <div class="table-container">
-                        <table class="modern-table">
+                    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px; padding:10px 14px; background:var(--accent-light); border-radius:10px; align-items:center;">
+                        <span style="font-size:12px; font-weight:700; color:var(--text-muted);">LEGEND:</span>
+                        <span class="status-chip status-chip-P"><i class="ph-bold ph-check"></i> P = Present</span>
+                        <span class="status-chip status-chip-A"><i class="ph-bold ph-x"></i> A = Absent</span>
+                        <span class="status-chip status-chip-L"><i class="ph-bold ph-clock-countdown"></i> L = Late</span>
+                        <span class="status-chip status-chip-E"><i class="ph-bold ph-note"></i> E = Excused</span>
+                        <span style="font-size:11px; color:var(--text-muted); margin-left:auto;"><i class="ph-bold ph-info"></i> Row color reflects current status</span>
+                    </div>
+                    <div class="table-container" style="border-radius:12px; border:1px solid var(--input-border); overflow:hidden;">
+                        <table class="roster-spreadsheet">
                             <thead>
                                 <tr>
-                                    <th style="width:130px;">Student No.</th>
-                                    <th>Student Name</th>
-                                    <th style="text-align:center;">P = Present &nbsp;|&nbsp; A = Absent &nbsp;|&nbsp; L = Late &nbsp;|&nbsp; E = Excused</th>
+                                    <th class="row-num">#</th>
+                                    <th class="col-sno">Student No.</th>
+                                    <th class="col-name">Student Name</th>
+                                    <th class="col-status">Mark Attendance</th>
+                                    <th class="col-current">Current Status</th>
                                 </tr>
                             </thead>
                             <tbody id="rosterBody"></tbody>
@@ -241,23 +361,73 @@
                     <button class="btn btn-outline" style="padding:10px 16px; font-size:13px;" onclick="window.clearFilters()"><i class="ph-bold ph-funnel-x"></i> Clear</button>
                     <button class="btn btn-success" style="padding:10px 16px; font-size:13px;" onclick="window.exportAttendanceExcel()"><i class="ph-bold ph-download-simple"></i> Export Excel</button>
                 </div>
-                <div class="table-container">
-                    <table class="modern-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Student No.</th>
-                                <th>Student Name</th>
-                                <th>Section</th>
-                                <th>Subject</th>
-                                <th style="text-align:center;">Status</th>
-                                <th style="text-align:center;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recordsBody"><tr><td colspan="7" style="text-align:center;">Loading records...</td></tr></tbody>
-                    </table>
+
+                <!-- View Toggle -->
+                <div class="view-toggle-wrap">
+                    <span style="font-size:12px; font-weight:700; color:var(--text-muted);">VIEW AS:</span>
+                    <button class="view-toggle-btn active" id="btnListView" onclick="window.setViewMode('list')"><i class="ph-bold ph-list-bullets"></i> List View</button>
+                    <button class="view-toggle-btn" id="btnSheetView" onclick="window.setViewMode('sheet')"><i class="ph-bold ph-table"></i> Spreadsheet View</button>
                 </div>
-                <div style="margin-top:12px; color:var(--text-muted); font-size:13px; text-align:right;">Showing <span id="recordCount">0</span> records</div>
+
+                <!-- LIST VIEW -->
+                <div id="listViewContainer">
+                    <!-- Selection action bar (appears when rows are checked) -->
+                    <div class="selection-bar" id="selectionBar">
+                        <i class="ph-fill ph-trash" style="font-size:22px;"></i>
+                        <span class="sel-count" id="selCountText">0 records selected</span>
+                        <button class="btn-sel-clear" onclick="window.clearSelection()"><i class="ph-bold ph-x"></i> Deselect All</button>
+                        <button class="btn-sel-delete" onclick="window.openDeleteSelected()"><i class="ph-bold ph-trash"></i> Delete Selected</button>
+                    </div>
+
+                    <!-- Toolbar: select all + bulk delete button -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <label style="display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:var(--text-muted); cursor:pointer;">
+                                <input type="checkbox" id="selectAllCb" class="select-all-cb" onchange="window.toggleSelectAll(this)">
+                                Select All Visible
+                            </label>
+                            <span style="font-size:12px; color:var(--text-muted);" id="selectionHint"></span>
+                        </div>
+                        <button class="btn" style="padding:9px 18px; font-size:13px; background:rgba(225,29,72,0.1); color:var(--danger); border:1.5px solid rgba(225,29,72,0.3);" onclick="window.openSmartBulkDelete()">
+                            <i class="ph-bold ph-trash"></i> Smart Bulk Delete
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th class="cb-col"></th>
+                                    <th>Date</th>
+                                    <th>Student No.</th>
+                                    <th>Student Name</th>
+                                    <th>Section</th>
+                                    <th>Subject</th>
+                                    <th style="text-align:center;">Status</th>
+                                    <th style="text-align:center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recordsBody"><tr><td colspan="8" style="text-align:center;">Loading records...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top:12px; color:var(--text-muted); font-size:13px; text-align:right;">Showing <span id="recordCount">0</span> records</div>
+                </div>
+
+                <!-- SPREADSHEET PIVOT VIEW -->
+                <div id="sheetViewContainer" style="display:none;">
+                    <div class="legend-row">
+                        <span class="status-chip status-chip-P"><i class="ph-bold ph-check"></i> Present</span>
+                        <span class="status-chip status-chip-A"><i class="ph-bold ph-x"></i> Absent</span>
+                        <span class="status-chip status-chip-L"><i class="ph-bold ph-clock-countdown"></i> Late</span>
+                        <span class="status-chip status-chip-E"><i class="ph-bold ph-note"></i> Excused</span>
+                        <span style="font-size:11px; color:var(--text-muted); margin-left:auto;">Click any cell to edit status</span>
+                    </div>
+                    <div id="pivotHint" class="pivot-hint"><i class="ph-bold ph-funnel" style="margin-right:6px;"></i>Select a <strong>Section</strong> and <strong>Subject</strong> above to generate the spreadsheet view.</div>
+                    <div id="pivotContainer" style="display:none;">
+                        <div class="ss-wrap" id="ssWrap"></div>
+                        <div style="margin-top:10px; color:var(--text-muted); font-size:12px; font-weight:600;"><span id="pivotInfo"></span></div>
+                    </div>
+                </div>
             </div>
 
             <!-- TAB 3: BULK UPLOAD -->
@@ -282,6 +452,93 @@
             </div>
         </div>
     </main>
+
+    <!-- DELETE SELECTED MODAL -->
+    <div id="deleteSelectedModal" class="modal-overlay">
+        <div class="del-modal-box glass">
+            <div class="del-header">
+                <div class="del-icon"><i class="ph-bold ph-trash"></i></div>
+                <div><div class="del-title">Delete Selected Records</div><div class="del-subtitle" id="delSelSubtitle">You are about to permanently delete records.</div></div>
+            </div>
+            <div class="del-summary" id="delSelSummary"></div>
+            <div class="del-warning"><i class="ph-bold ph-warning"></i> This action cannot be undone. All selected attendance records will be permanently removed.</div>
+            <div class="del-actions">
+                <button class="btn-cancel-del" onclick="window.closeDeleteModals()">Cancel</button>
+                <button class="btn-confirm-del" id="btnConfirmDelSel" onclick="window.confirmDeleteSelected()"><i class="ph-bold ph-trash"></i> Delete <span id="delSelCountBtn"></span> Records</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMART BULK DELETE MODAL -->
+    <div id="smartDeleteModal" class="modal-overlay">
+        <div class="del-modal-box glass">
+            <div class="del-header">
+                <div class="del-icon"><i class="ph-bold ph-trash-simple"></i></div>
+                <div><div class="del-title">Smart Bulk Delete</div><div class="del-subtitle">Choose what to delete — preview before confirming.</div></div>
+            </div>
+
+            <div style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:10px;">Delete Mode</div>
+            <div class="del-mode-grid">
+                <button class="del-mode-card active" id="dm-filtered" onclick="window.selectDelMode('filtered')">
+                    <span class="dm-icon"><i class="ph-bold ph-funnel"></i></span>
+                    <span class="dm-title">All Filtered Records</span>
+                    <span class="dm-desc">Delete everything matching current filters</span>
+                </button>
+                <button class="del-mode-card" id="dm-session" onclick="window.selectDelMode('session')">
+                    <span class="dm-icon"><i class="ph-bold ph-calendar-x"></i></span>
+                    <span class="dm-title">Entire Session</span>
+                    <span class="dm-desc">Delete one full class session by date</span>
+                </button>
+                <button class="del-mode-card" id="dm-student" onclick="window.selectDelMode('student')">
+                    <span class="dm-icon"><i class="ph-bold ph-user-minus"></i></span>
+                    <span class="dm-title">By Student</span>
+                    <span class="dm-desc">Delete all records for one student</span>
+                </button>
+                <button class="del-mode-card" id="dm-daterange" onclick="window.selectDelMode('daterange')">
+                    <span class="dm-icon"><i class="ph-bold ph-calendar-dots"></i></span>
+                    <span class="dm-title">Date Range</span>
+                    <span class="dm-desc">Delete records within a date range</span>
+                </button>
+            </div>
+
+            <!-- Criteria inputs per mode -->
+            <div class="del-criteria-box visible" id="criteria-filtered">
+                <div style="font-size:13px; font-weight:700; color:var(--text-muted); margin-bottom:8px;"><i class="ph-bold ph-info"></i> Will delete all records matching your current filters above:</div>
+                <div id="filteredCriteriaSummary" style="font-size:13px; color:var(--text-main); font-weight:700;"></div>
+            </div>
+            <div class="del-criteria-box" id="criteria-session">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                    <div><div class="form-label" style="font-size:11px; margin-bottom:5px;">Section</div><select id="dsSec" class="form-control" style="padding:9px;font-size:13px;"><option value="">All</option></select></div>
+                    <div><div class="form-label" style="font-size:11px; margin-bottom:5px;">Subject</div><select id="dsSub" class="form-control" style="padding:9px;font-size:13px;"><option value="">All</option></select></div>
+                    <div><div class="form-label" style="font-size:11px; margin-bottom:5px;">Date</div><input type="date" id="dsDate" class="form-control" style="padding:9px;font-size:13px;"></div>
+                </div>
+            </div>
+            <div class="del-criteria-box" id="criteria-student">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div><div class="form-label" style="font-size:11px; margin-bottom:5px;">Student No.</div><input type="text" id="dStudentNo" class="form-control" style="padding:9px;font-size:13px;" placeholder="e.g. 2021-00001"></div>
+                    <div><div class="form-label" style="font-size:11px; margin-bottom:5px;">Subject (optional)</div><select id="dStudentSub" class="form-control" style="padding:9px;font-size:13px;"><option value="">All Subjects</option></select></div>
+                </div>
+            </div>
+            <div class="del-criteria-box" id="criteria-daterange">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                    <div><div class="form-label" style="font-size:11px; margin-bottom:5px;">From Date</div><input type="date" id="drFrom" class="form-control" style="padding:9px;font-size:13px;"></div>
+                    <div><div class="form-label" style="font-size:11px; margin-bottom:5px;">To Date</div><input type="date" id="drTo" class="form-control" style="padding:9px;font-size:13px;"></div>
+                    <div><div class="form-label" style="font-size:11px; margin-bottom:5px;">Section (optional)</div><select id="drSec" class="form-control" style="padding:9px;font-size:13px;"><option value="">All</option></select></div>
+                </div>
+            </div>
+
+            <!-- Preview area -->
+            <div id="bulkDelPreview" style="margin-bottom:16px; display:none;">
+                <div class="del-summary" id="bulkDelSummaryBox"></div>
+            </div>
+
+            <div class="del-actions">
+                <button class="btn-cancel-del" onclick="window.closeDeleteModals()">Cancel</button>
+                <button class="btn" style="padding:12px 22px; font-size:13px; background:var(--accent-light); color:var(--accent-primary); border:none;" onclick="window.previewBulkDelete()"><i class="ph-bold ph-eye"></i> Preview</button>
+                <button class="btn-confirm-del" id="btnConfirmBulkDel" disabled onclick="window.confirmBulkDelete()"><i class="ph-bold ph-trash"></i> Delete <span id="bulkDelCountBtn">0</span> Records</button>
+            </div>
+        </div>
+    </div><i id="toast-icon" class="ph-fill ph-check-circle" style="font-size:24px;"></i><span id="toast-msg">Success!</span></div>
 
     <div id="toast" class="toast"><i id="toast-icon" class="ph-fill ph-check-circle" style="font-size:24px;"></i><span id="toast-msg">Success!</span></div>
 
@@ -406,22 +663,28 @@
                 students.sort((a,b) => a.studentName.localeCompare(b.studentName));
 
                 tbody.innerHTML = '';
+                let rowNum = 1;
                 students.forEach(st => {
                     const existing = existingMap[st.studentNo];
                     const defStatus = existing ? existing.status : 'P';
                     const docId = existing ? existing.id : '';
+                    const statusLabels = { P:'Present', A:'Absent', L:'Late', E:'Excused' };
                     tbody.innerHTML += `
-                        <tr>
-                            <td style="font-family:monospace;color:var(--text-muted);">${st.studentNo}</td>
-                            <td style="font-weight:700;">${st.studentName}</td>
-                            <td>
-                                <div class="att-btn-group">
-                                    <button class="att-btn att-btn-present ${defStatus==='P'?'selected':''}" onclick="window.setStatus(this,'P','${st.studentNo}')">P</button>
-                                    <button class="att-btn att-btn-absent ${defStatus==='A'?'selected':''}" onclick="window.setStatus(this,'A','${st.studentNo}')">A</button>
-                                    <button class="att-btn att-btn-late ${defStatus==='L'?'selected':''}" onclick="window.setStatus(this,'L','${st.studentNo}')">L</button>
-                                    <button class="att-btn att-btn-excused ${defStatus==='E'?'selected':''}" onclick="window.setStatus(this,'E','${st.studentNo}')">E</button>
+                        <tr class="row-${defStatus}" data-status="${defStatus}">
+                            <td class="row-num">${rowNum++}</td>
+                            <td class="col-sno">${st.studentNo}</td>
+                            <td class="col-name">${st.studentName}</td>
+                            <td class="col-status">
+                                <div class="status-pill-group">
+                                    <button class="status-pill status-pill-P ${defStatus==='P'?'active':''}" onclick="window.setStatus(this,'P','${st.studentNo}')">✓ P</button>
+                                    <button class="status-pill status-pill-A ${defStatus==='A'?'active':''}" onclick="window.setStatus(this,'A','${st.studentNo}')">✗ A</button>
+                                    <button class="status-pill status-pill-L ${defStatus==='L'?'active':''}" onclick="window.setStatus(this,'L','${st.studentNo}')">⏱ L</button>
+                                    <button class="status-pill status-pill-E ${defStatus==='E'?'active':''}" onclick="window.setStatus(this,'E','${st.studentNo}')">📝 E</button>
                                     <input type="hidden" class="status-val" data-sno="${st.studentNo}" data-docid="${docId}" value="${defStatus}">
                                 </div>
+                            </td>
+                            <td class="col-current">
+                                <span class="status-chip status-chip-${defStatus}" id="chip-${st.studentNo}">${statusLabels[defStatus]}</span>
                             </td>
                         </tr>`;
                 });
@@ -430,21 +693,36 @@
         }
 
         window.setStatus = function(btn, status, sno) {
-            const group = btn.closest('.att-btn-group');
-            group.querySelectorAll('.att-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
+            const group = btn.closest('.status-pill-group');
+            group.querySelectorAll('.status-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
             const hidden = group.querySelector('.status-val');
             if(hidden) hidden.value = status;
+            // Update row color
+            const row = btn.closest('tr');
+            if(row) { row.className = `row-${status}`; }
+            // Update chip
+            const chip = document.getElementById(`chip-${sno}`);
+            const labels = { P:'Present', A:'Absent', L:'Late', E:'Excused' };
+            if(chip) { chip.className = `status-chip status-chip-${status}`; chip.textContent = labels[status]; }
             window.updateCounts();
         }
 
         window.markAll = function(status) {
-            document.querySelectorAll('.att-btn-group').forEach(group => {
-                group.querySelectorAll('.att-btn').forEach(b => b.classList.remove('selected'));
-                const target = group.querySelector(`.att-btn-${status === 'P' ? 'present' : 'absent'}`);
-                if(target) target.classList.add('selected');
+            const labels = { P:'Present', A:'Absent', L:'Late', E:'Excused' };
+            document.querySelectorAll('.status-pill-group').forEach(group => {
+                group.querySelectorAll('.status-pill').forEach(b => b.classList.remove('active'));
+                const target = group.querySelector(`.status-pill-${status}`);
+                if(target) target.classList.add('active');
                 const hidden = group.querySelector('.status-val');
-                if(hidden) hidden.value = status;
+                if(hidden) {
+                    const sno = hidden.getAttribute('data-sno');
+                    hidden.value = status;
+                    const row = hidden.closest('tr');
+                    if(row) row.className = `row-${status}`;
+                    const chip = document.getElementById(`chip-${sno}`);
+                    if(chip) { chip.className = `status-chip status-chip-${status}`; chip.textContent = labels[status]; }
+                }
             });
             window.updateCounts();
         }
@@ -474,7 +752,7 @@
                     const status = inp.value;
                     // Get student name from nearby cell
                     const row = inp.closest('tr');
-                    const studentName = row ? row.cells[1].textContent : '';
+                    const studentName = row ? row.cells[2].textContent : '';
 
                     if(docId) {
                         batch.update(doc(db, "attendance", docId), { status });
@@ -490,10 +768,112 @@
             } catch(e) { console.error(e); window.showToast("Error saving attendance.", "error"); }
         }
 
-        // RECORDS TAB
+        // View mode toggle (list vs spreadsheet)
+        let currentViewMode = 'list';
+        window.setViewMode = function(mode) {
+            currentViewMode = mode;
+            document.getElementById('btnListView').classList.toggle('active', mode === 'list');
+            document.getElementById('btnSheetView').classList.toggle('active', mode === 'sheet');
+            document.getElementById('listViewContainer').style.display = mode === 'list' ? 'block' : 'none';
+            document.getElementById('sheetViewContainer').style.display = mode === 'sheet' ? 'block' : 'none';
+            if(mode === 'sheet') window.renderPivot();
+        }
+
+        window.renderPivot = function() {
+            const sec = document.getElementById('filterSection').value;
+            const sub = document.getElementById('filterSubject').value;
+            const hint = document.getElementById('pivotHint');
+            const container = document.getElementById('pivotContainer');
+            if(!sec || !sub) { hint.style.display='block'; container.style.display='none'; return; }
+            hint.style.display='none'; container.style.display='block';
+
+            // Filter data for this section+subject
+            const data = allAttendanceData.filter(r => r.section===sec && r.subjectCode===sub);
+            if(data.length === 0) {
+                document.getElementById('ssWrap').innerHTML = '<div class="pivot-hint">No attendance records found for this Section + Subject.</div>';
+                return;
+            }
+
+            // Get unique students (sorted by name) and dates (sorted ASC)
+            const studentMap = {}; // sno -> name
+            const dateSet = new Set();
+            data.forEach(r => { studentMap[r.studentNo] = r.studentName || r.studentNo; dateSet.add(r.date); });
+            const dates = Array.from(dateSet).sort();
+            const students = Object.entries(studentMap).sort((a,b) => a[1].localeCompare(b[1]));
+
+            // Build lookup: sno+date -> {status, id}
+            const lookup = {};
+            data.forEach(r => { lookup[`${r.studentNo}|${r.date}`] = { status: r.status, id: r.id }; });
+
+            const statusIcon = { P:'✓', A:'✗', L:'⏱', E:'📝' };
+            const shortDate = d => { const [y,m,day] = d.split('-'); return `${m}/${day}`; };
+
+            // Build table
+            let html = `<table class="ss-table">
+                <thead>
+                    <tr>
+                        <th class="col-freeze" style="left:0;min-width:110px;">Student No.</th>
+                        <th class="col-freeze" style="left:110px;min-width:160px;">Name</th>
+                        ${dates.map(d => `<th title="${d}">${shortDate(d)}</th>`).join('')}
+                        <th style="position:sticky;right:0;background:var(--accent-hover);z-index:6;min-width:64px;">Rate</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            // Count totals per date
+            const dateTotals = {}; // date -> {P,A,L,E}
+            dates.forEach(d => dateTotals[d] = {P:0,A:0,L:0,E:0});
+
+            students.forEach(([sno, name]) => {
+                let pCount=0, totalCount=0;
+                const cells = dates.map(d => {
+                    const rec = lookup[`${sno}|${d}`];
+                    if(rec) {
+                        dateTotals[d][rec.status]++;
+                        if(rec.status==='P'||rec.status==='L') pCount++;
+                        totalCount++;
+                        return `<td class="ss-cell ss-${rec.status}" title="${name} — ${d}: ${rec.status==='P'?'Present':rec.status==='A'?'Absent':rec.status==='L'?'Late':'Excused'}" onclick="window.openEditModal('${rec.id}','${name}','${d}','${rec.status}')">${statusIcon[rec.status]}</td>`;
+                    }
+                    totalCount++;
+                    return `<td class="ss-cell ss-empty">—</td>`;
+                }).join('');
+                const rate = totalCount > 0 ? Math.round((pCount/totalCount)*100) : 0;
+                const rateColor = rate >= 80 ? 'var(--success)' : rate >= 60 ? 'var(--warning)' : 'var(--danger)';
+                html += `<tr>
+                    <td class="ss-td-freeze" style="left:0;">${sno}</td>
+                    <td class="ss-td-freeze" style="left:110px;">${name}</td>
+                    ${cells}
+                    <td class="ss-rate-cell" style="color:${rateColor};">${rate}%</td>
+                </tr>`;
+            });
+
+            // Totals row
+            const totalsRow = dates.map(d => {
+                const t = dateTotals[d];
+                const tot = t.P+t.A+t.L+t.E;
+                return `<td class="ss-cell" style="background:rgba(0,0,0,0.04);font-size:10px;padding:4px;line-height:1.4;text-align:center;vertical-align:middle;">
+                    <span style="color:var(--success);display:block;">${t.P}P</span>
+                    <span style="color:var(--danger);display:block;">${t.A}A</span>
+                    ${t.L>0?`<span style="color:var(--warning);display:block;">${t.L}L</span>`:''}
+                    ${t.E>0?`<span style="color:var(--accent-primary);display:block;">${t.E}E</span>`:''}
+                </td>`;
+            }).join('');
+
+            html += `<tr class="ss-total-row">
+                <td class="ss-td-freeze" style="left:0;font-weight:800;font-size:11px;color:var(--text-muted);">TOTALS</td>
+                <td class="ss-td-freeze" style="left:110px;font-size:11px;color:var(--text-muted);">${students.length} students</td>
+                ${totalsRow}
+                <td class="ss-rate-cell" style="font-size:10px;">—</td>
+            </tr>`;
+
+            html += '</tbody></table>';
+            document.getElementById('ssWrap').innerHTML = html;
+            document.getElementById('pivotInfo').innerHTML = `<i class="ph-bold ph-table"></i> ${students.length} students × ${dates.length} sessions — ${sec} / ${sub} &nbsp;|&nbsp; Click a cell to edit status`;
+        }
+
         window.loadRecords = async function() {
             const tbody = document.getElementById('recordsBody');
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Loading...</td></tr>';
             try {
                 const snap = await getDocs(collection(db, "attendance"));
                 allAttendanceData = [];
@@ -510,8 +890,11 @@
                 fSubj.innerHTML = '<option value="">All Subjects</option>';
                 Array.from(subjectSet).sort().forEach(s => fSubj.innerHTML += `<option value="${s}">${s}</option>`);
 
+                // Populate smart delete dropdowns
+                populateDelDropdowns(subjectSet);
+
                 window.filterRecords();
-            } catch(e) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);">Error loading data.</td></tr>'; }
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--danger);">Error loading data.</td></tr>'; }
         }
 
         window.filterRecords = function() {
@@ -528,6 +911,7 @@
             });
 
             renderRecords(filtered);
+            if(currentViewMode === 'sheet') window.renderPivot();
         }
 
         window.clearFilters = function() {
@@ -547,26 +931,261 @@
         function renderRecords(data) {
             const tbody = document.getElementById('recordsBody');
             document.getElementById('recordCount').textContent = data.length;
-            if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No records found.</td></tr>'; return; }
+            selectedIds.clear();
+            updateSelectionBar();
+            document.getElementById('selectAllCb').checked = false;
+            if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No records found.</td></tr>'; return; }
             tbody.innerHTML = '';
             data.forEach(r => {
+                const statusClass = r.status==='P'?'present':r.status==='A'?'absent':r.status==='L'?'late':'excused';
                 tbody.innerHTML += `
-                    <tr class="att-record-row">
+                    <tr class="att-record-row" id="row-${r.id}">
+                        <td class="cb-col"><input type="checkbox" class="row-cb" data-id="${r.id}" onchange="window.toggleRowSelect(this,'${r.id}')"></td>
                         <td>${r.date}</td>
-                        <td style="font-family:monospace;color:var(--text-muted);">${r.studentNo}</td>
+                        <td style="font-family:monospace;color:var(--text-muted);font-size:12px;">${r.studentNo}</td>
                         <td style="font-weight:700;">${r.studentName || '-'}</td>
                         <td>${r.section}</td>
                         <td>${r.subjectCode}</td>
                         <td style="text-align:center;">${statusBadge(r.status)}</td>
                         <td style="text-align:center;">
-                            <button class="att-btn att-btn-${r.status==='P'?'present':r.status==='A'?'absent':r.status==='L'?'late':'excused'} selected" 
-                                style="width:auto;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;"
-                                onclick="window.openEditModal('${r.id}','${r.studentName}','${r.date}','${r.status}')">
-                                Edit
-                            </button>
+                            <div style="display:flex;gap:6px;justify-content:center;">
+                                <button class="att-btn att-btn-${statusClass} selected" 
+                                    style="width:auto;padding:5px 11px;border-radius:8px;font-size:12px;font-weight:700;"
+                                    onclick="window.openEditModal('${r.id}','${r.studentName}','${r.date}','${r.status}')">
+                                    <i class="ph-bold ph-pencil-simple"></i> Edit
+                                </button>
+                                <button class="btn" style="padding:5px 11px;border-radius:8px;font-size:12px;font-weight:700;background:rgba(225,29,72,0.1);color:var(--danger);border:1.5px solid rgba(225,29,72,0.3);"
+                                    onclick="window.openSingleDelete('${r.id}','${r.studentName}','${r.date}','${r.subjectCode}','${r.section}')">
+                                    <i class="ph-bold ph-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>`;
             });
+        }
+
+        // ─── SELECTION LOGIC ─────────────────────────────────────────
+        let selectedIds = new Set();
+        let pendingDeleteIds = [];
+        let bulkDeleteTargets = [];
+        let currentDelMode = 'filtered';
+
+        window.toggleRowSelect = function(cb, id) {
+            if(cb.checked) { selectedIds.add(id); document.getElementById(`row-${id}`)?.classList.add('row-selected'); }
+            else { selectedIds.delete(id); document.getElementById(`row-${id}`)?.classList.remove('row-selected'); }
+            updateSelectionBar();
+            // Update select-all state
+            const allCbs = document.querySelectorAll('.row-cb');
+            const allChecked = [...allCbs].every(c => c.checked);
+            document.getElementById('selectAllCb').checked = allCbs.length > 0 && allChecked;
+        }
+
+        window.toggleSelectAll = function(masterCb) {
+            document.querySelectorAll('.row-cb').forEach(cb => {
+                cb.checked = masterCb.checked;
+                const id = cb.getAttribute('data-id');
+                if(masterCb.checked) { selectedIds.add(id); document.getElementById(`row-${id}`)?.classList.add('row-selected'); }
+                else { selectedIds.delete(id); document.getElementById(`row-${id}`)?.classList.remove('row-selected'); }
+            });
+            updateSelectionBar();
+        }
+
+        window.clearSelection = function() {
+            selectedIds.clear();
+            document.querySelectorAll('.row-cb').forEach(cb => cb.checked = false);
+            document.querySelectorAll('.att-record-row').forEach(r => r.classList.remove('row-selected'));
+            document.getElementById('selectAllCb').checked = false;
+            updateSelectionBar();
+        }
+
+        function updateSelectionBar() {
+            const bar = document.getElementById('selectionBar');
+            const count = selectedIds.size;
+            document.getElementById('selCountText').textContent = `${count} record${count !== 1 ? 's' : ''} selected`;
+            document.getElementById('selectionHint').textContent = count > 0 ? `${count} selected` : '';
+            bar.classList.toggle('visible', count > 0);
+        }
+
+        // ─── SINGLE DELETE ─────────────────────────────────────────
+        window.openSingleDelete = function(id, name, date, subject, section) {
+            pendingDeleteIds = [id];
+            document.getElementById('delSelSubtitle').textContent = 'You are about to permanently delete this record.';
+            document.getElementById('delSelSummary').innerHTML = `
+                <div class="del-summary-row"><span class="del-summary-label">Student</span><span class="del-summary-value">${name}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Date</span><span class="del-summary-value">${date}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Subject</span><span class="del-summary-value">${subject}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Section</span><span class="del-summary-value">${section}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Records to delete</span><span class="del-count-badge">1</span></div>`;
+            document.getElementById('delSelCountBtn').textContent = '1';
+            document.getElementById('deleteSelectedModal').classList.add('open');
+        }
+
+        // ─── DELETE SELECTED (MULTIPLE) ─────────────────────────────
+        window.openDeleteSelected = function() {
+            if(selectedIds.size === 0) return;
+            pendingDeleteIds = Array.from(selectedIds);
+            const recs = allAttendanceData.filter(r => selectedIds.has(r.id));
+            const sections = [...new Set(recs.map(r=>r.section))].join(', ') || '—';
+            const subjects = [...new Set(recs.map(r=>r.subjectCode))].join(', ') || '—';
+            const dates = [...new Set(recs.map(r=>r.date))].sort();
+            const dateRange = dates.length > 1 ? `${dates[0]} → ${dates[dates.length-1]}` : dates[0] || '—';
+            document.getElementById('delSelSubtitle').textContent = `You are about to permanently delete ${pendingDeleteIds.length} selected records.`;
+            document.getElementById('delSelSummary').innerHTML = `
+                <div class="del-summary-row"><span class="del-summary-label">Sections</span><span class="del-summary-value">${sections}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Subjects</span><span class="del-summary-value">${subjects}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Date Range</span><span class="del-summary-value">${dateRange}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Records to delete</span><span class="del-count-badge">${pendingDeleteIds.length}</span></div>`;
+            document.getElementById('delSelCountBtn').textContent = pendingDeleteIds.length;
+            document.getElementById('deleteSelectedModal').classList.add('open');
+        }
+
+        window.confirmDeleteSelected = async function() {
+            if(!pendingDeleteIds.length) return;
+            const btn = document.getElementById('btnConfirmDelSel');
+            btn.disabled = true; btn.innerHTML = '<i class="ph-bold ph-spinner"></i> Deleting...';
+            try {
+                const batch = writeBatch(db);
+                pendingDeleteIds.forEach(id => batch.delete(doc(db, "attendance", id)));
+                await batch.commit();
+                window.showToast(`${pendingDeleteIds.length} record${pendingDeleteIds.length!==1?'s':''} deleted.`);
+                window.closeDeleteModals();
+                window.clearSelection();
+                window.loadRecords();
+            } catch(e) { window.showToast("Delete failed.", "error"); }
+            btn.disabled = false; btn.innerHTML = `<i class="ph-bold ph-trash"></i> Delete Records`;
+        }
+
+        // ─── SMART BULK DELETE ─────────────────────────────────────
+        function populateDelDropdowns(subjectSet) {
+            const secs = [...new Set(allAttendanceData.map(r=>r.section))].sort();
+            const subs = Array.from(subjectSet).sort();
+            ['dsSec','drSec'].forEach(id => {
+                const el = document.getElementById(id);
+                el.innerHTML = '<option value="">All</option>';
+                secs.forEach(s => el.innerHTML += `<option value="${s}">${s}</option>`);
+            });
+            ['dsSub','dStudentSub'].forEach(id => {
+                const el = document.getElementById(id);
+                el.innerHTML = '<option value="">All Subjects</option>';
+                subs.forEach(s => el.innerHTML += `<option value="${s}">${s}</option>`);
+            });
+            // Update filtered criteria display
+            updateFilteredCriteria();
+        }
+
+        function updateFilteredCriteria() {
+            const sec = document.getElementById('filterSection')?.value;
+            const sub = document.getElementById('filterSubject')?.value;
+            const status = document.getElementById('filterStatus')?.value;
+            const date = document.getElementById('filterDate')?.value;
+            const statusLabel = { P:'Present', A:'Absent', L:'Late', E:'Excused' };
+            const parts = [];
+            if(sec) parts.push(`Section: <strong>${sec}</strong>`);
+            if(sub) parts.push(`Subject: <strong>${sub}</strong>`);
+            if(status) parts.push(`Status: <strong>${statusLabel[status]}</strong>`);
+            if(date) parts.push(`Date: <strong>${date}</strong>`);
+            document.getElementById('filteredCriteriaSummary').innerHTML = parts.length ? parts.join(' &nbsp;·&nbsp; ') : '<em>No filters applied — will delete ALL records</em>';
+        }
+
+        window.openSmartBulkDelete = function() {
+            updateFilteredCriteria();
+            selectDelMode('filtered');
+            document.getElementById('bulkDelPreview').style.display = 'none';
+            document.getElementById('btnConfirmBulkDel').disabled = true;
+            document.getElementById('bulkDelCountBtn').textContent = '0';
+            document.getElementById('smartDeleteModal').classList.add('open');
+        }
+
+        window.selectDelMode = function(mode) {
+            currentDelMode = mode;
+            ['filtered','session','student','daterange'].forEach(m => {
+                document.getElementById(`dm-${m}`).classList.toggle('active', m===mode);
+                document.getElementById(`criteria-${m}`).classList.toggle('visible', m===mode);
+            });
+            document.getElementById('bulkDelPreview').style.display = 'none';
+            document.getElementById('btnConfirmBulkDel').disabled = true;
+            document.getElementById('bulkDelCountBtn').textContent = '0';
+        }
+
+        window.previewBulkDelete = function() {
+            bulkDeleteTargets = [];
+            const mode = currentDelMode;
+            if(mode === 'filtered') {
+                const sec = document.getElementById('filterSection').value;
+                const sub = document.getElementById('filterSubject').value;
+                const status = document.getElementById('filterStatus').value;
+                const date = document.getElementById('filterDate').value;
+                bulkDeleteTargets = allAttendanceData.filter(r =>
+                    (!sec || r.section===sec) && (!sub || r.subjectCode===sub) &&
+                    (!status || r.status===status) && (!date || r.date===date)
+                );
+            } else if(mode === 'session') {
+                const sec = document.getElementById('dsSec').value;
+                const sub = document.getElementById('dsSub').value;
+                const date = document.getElementById('dsDate').value;
+                bulkDeleteTargets = allAttendanceData.filter(r =>
+                    (!sec || r.section===sec) && (!sub || r.subjectCode===sub) && (!date || r.date===date)
+                );
+            } else if(mode === 'student') {
+                const sno = document.getElementById('dStudentNo').value.trim();
+                const sub = document.getElementById('dStudentSub').value;
+                if(!sno) { window.showToast("Please enter a Student No.", "error"); return; }
+                bulkDeleteTargets = allAttendanceData.filter(r => r.studentNo===sno && (!sub || r.subjectCode===sub));
+            } else if(mode === 'daterange') {
+                const from = document.getElementById('drFrom').value;
+                const to = document.getElementById('drTo').value;
+                const sec = document.getElementById('drSec').value;
+                if(!from || !to) { window.showToast("Please select a date range.", "error"); return; }
+                bulkDeleteTargets = allAttendanceData.filter(r =>
+                    r.date >= from && r.date <= to && (!sec || r.section===sec)
+                );
+            }
+
+            const count = bulkDeleteTargets.length;
+            const secs = [...new Set(bulkDeleteTargets.map(r=>r.section))].join(', ') || '—';
+            const subs = [...new Set(bulkDeleteTargets.map(r=>r.subjectCode))].join(', ') || '—';
+            const dates = [...new Set(bulkDeleteTargets.map(r=>r.date))].sort();
+            const dRange = dates.length>1 ? `${dates[0]} → ${dates[dates.length-1]}` : dates[0] || '—';
+            const students = new Set(bulkDeleteTargets.map(r=>r.studentNo)).size;
+
+            document.getElementById('bulkDelSummaryBox').innerHTML = `
+                <div class="del-summary-row"><span class="del-summary-label">Sections</span><span class="del-summary-value">${secs}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Subjects</span><span class="del-summary-value">${subs}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Date Range</span><span class="del-summary-value">${dRange}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Students Affected</span><span class="del-summary-value">${students}</span></div>
+                <div class="del-summary-row"><span class="del-summary-label">Total Records</span><span class="del-count-badge">${count}</span></div>`;
+            document.getElementById('bulkDelPreview').style.display = count > 0 ? 'block' : 'none';
+            if(count === 0) { window.showToast("No records match this criteria.", "error"); }
+            document.getElementById('btnConfirmBulkDel').disabled = count === 0;
+            document.getElementById('bulkDelCountBtn').textContent = count;
+        }
+
+        window.confirmBulkDelete = async function() {
+            if(!bulkDeleteTargets.length) return;
+            const btn = document.getElementById('btnConfirmBulkDel');
+            btn.disabled = true; btn.innerHTML = '<i class="ph-bold ph-spinner"></i> Deleting...';
+            try {
+                // Firestore batch max 500 ops — chunk it
+                const ids = bulkDeleteTargets.map(r => r.id);
+                const chunkSize = 490;
+                for(let i = 0; i < ids.length; i += chunkSize) {
+                    const chunk = ids.slice(i, i + chunkSize);
+                    const batch = writeBatch(db);
+                    chunk.forEach(id => batch.delete(doc(db, "attendance", id)));
+                    await batch.commit();
+                }
+                window.showToast(`${ids.length} record${ids.length!==1?'s':''} deleted.`);
+                window.closeDeleteModals();
+                window.clearSelection();
+                window.loadRecords();
+            } catch(e) { console.error(e); window.showToast("Bulk delete failed.", "error"); }
+            btn.disabled = false;
+        }
+
+        window.closeDeleteModals = function() {
+            document.getElementById('deleteSelectedModal').classList.remove('open');
+            document.getElementById('smartDeleteModal').classList.remove('open');
+            pendingDeleteIds = [];
         }
 
         window.openEditModal = function(docId, name, date, currentStatus) {
